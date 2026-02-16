@@ -1,0 +1,16 @@
+# CAMEL Annotation Pipeline - Requirements
+# Install with: pip install -r requirements.txt
+
+# Core
+openai>=1.0.0
+pandas>=2.0.0
+openpyxl>=3.1.0
+pyyaml>=6.0.0
+python-dotenv>=1.0.0
+
+# Parallelism
+joblib>=1.3.0
+
+# For Apophis (local model serving) — install in separate venv
+# vllm>=0.4.0
+# huggingface_hub>=0.20.0
