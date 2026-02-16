@@ -1,0 +1,256 @@
+text_id,prompt_id,prompt_name,model,provider,temperature,run_number,Individualism,Collectivism,Honor,Tightness,Looseness,Care,Equality,Proportionality,Loyalty,Authority,Purity,Ownership,Liberty,Honesty,ThinMorality,OffensiveUncivilLanguage,Hate,Fear,Threat,CreativityInnovation,Kinship,Religion,IntellectualHumility,AnalyticalThinking,GeneralizedTrust,response__Individualism,response__Collectivism,response__Honor,response__Tightness,response__Looseness,response__Care,response__Equality,response__Proportionality,response__Loyalty,response__Authority,response__Purity,response__Ownership,response__Liberty,response__Honesty,response__ThinMorality,response__OffensiveUncivilLanguage,response__Hate,response__Fear,response__Threat,response__CreativityInnovation,response__Kinship,response__Religion,response__IntellectualHumility,response__AnalyticalThinking,response__GeneralizedTrust
+1,1,0-shot_binary,casperhansen/llama-3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"NO
+
+The text does not contain Individualism. The focus is on the group interests of ""white men"", ""women"", and ""minorities"", and how they are affected by the actions of others. There is no emphasis on individual self-interest, independence, or personal identity.","NO
+
+The text does not contain Collectivism. The conversation is about individualistic goals and motivations, focusing on how certain groups (white men) might benefit or not benefit from a situation, rather than prioritizing collective goals or emphasizing ""we"" consciousness.","NO
+
+My reasoning is that the text does not explicitly mention concern for one's reputation or how one is viewed by others, which is the core definition of Honor. The text focuses on the perceived motivations of a group (white men) and their potential actions towards women and minorities, but does not express a personal concern for reputation or social status.","NO
+
+The text does not contain any mention of strict norms, enforcement, or tolerance of deviant behavior, which are key aspects of the Tightness dimension. The discussion revolves around perceived motivations and biases, but does not touch on societal norms or governance.","NO
+
+The text does not contain Looseness. The conversation is about the perceived motivations of a group, discussing how they might tolerate or even desire the suppression of others (women and minorities) in order to maintain their own status. This implies a restrictive or tight cultural environment, rather than a loose one where deviant behavior is tolerated.","NO
+
+The text does not contain Care because it discusses the harmful intentions of a group towards women and minorities, but does not express a personal or collective responsibility to avoid emotional and physical damage to others. The text is more focused on criticizing the harmful behavior rather than promoting care or support.","NO
+
+The text does not explicitly promote or value equality. Instead, it suggests that some individuals prioritize pushing down women and minorities over their own self-interest, implying a desire for unequal treatment and outcomes.","NO
+
+The text does not contain Proportionality. The discussion revolves around the perceived benefits of pushing down women and minorities, without any mention of rewards or punishments being proportional to costs, contributions, effort, merit, or guilt.","NO
+
+The text does not contain Loyalty as it does not demonstrate cooperation or prioritization of an ingroup, nor does it express concerns about betraying or abandoning an ingroup. Instead, it describes a perceived motivation of a group (white men) to suppress others (women and minorities), which is more related to oppression or discrimination than loyalty.","NO
+
+The text does not contain Authority as it does not mention or imply submission to established figures, institutions, or traditions. Instead, it critiques the idea that certain groups (white men) might benefit from the oppression of others (women and minorities).","NO
+
+The text does not contain Purity. The conversation is about perceived motivations of a group, focusing on their potential desire to suppress others (women and minorities) rather than maintaining the sanctity of sacred entities. There is no mention of bodily or spiritual purity.","NO
+
+I answered NO because the text does not explicitly discuss rights and responsibilities related to possessing or controlling something. The conversation is about perceived benefits and consequences of a hypothetical scenario, but it does not involve ownership or control of property, intellectual or physical.","NO
+
+The text does not explicitly discuss freedom, autonomy, or the right to choose without coercion or constraint. The conversation revolves around perceived biases and oppression, but does not mention liberty or related concepts.","NO
+
+The text does not contain Honesty as it expresses a critical and cynical tone towards a group of people, implying that they are motivated by a desire to suppress others rather than seeking truth or sincerity. The phrase ""deep down many of them know this won't happen"" suggests that the author believes this group is not being truthful with themselves.","NO
+
+The text does not contain ThinMorality. The language used is evaluative, but it employs thick moral concepts such as ""bad"" (referring to Trump's character) and ""pushed down"" (implying oppression or unfair treatment). The text expresses a moral judgment about the motivations of certain individuals, but it does not use thin moral terms like ""right"", ""wrong"", ""permissible"", or ""ought"".","NO
+
+The text does not contain offensive or uncivil language. The language used is critical and analytical, but it does not include profanity, slurs, or derogatory terms. The tone is argumentative, but it does not display a disregard for societal norms of respectful communication. The text is discussing a perceived mindset of a group, but it does not contain harmful or disrespectful language towards that group.","NO
+
+The text does not contain hate speech. It appears to be a commentary on the motivations of a group of people, suggesting that they may be willing to suppress others (women and minorities) in order to maintain their own status, even if it doesn't benefit them directly. The language used is critical and analytical, but does not contain dehumanizing rhetoric, incitements to violence, or endorsements of hate groups or ideologies.","NO
+
+The text does not contain Fear speech as it does not express fear towards a target social group based on characteristics like race, ethnicity, religion, etc. Instead, it discusses the perceived motivations of a group (""them"") in relation to women and minorities, without instilling fear or promoting domination.","NO
+
+My reasoning is that the text does not contain any language that implies a pending danger or harm. The conversation is focused on the perceived motivations and biases of a group, but it does not express a threat or danger. The words ""pushed down"" could be interpreted as a form of oppression, but it is not a direct threat.","NO
+
+The text does not contain CreativityInnovation. It expresses a critical opinion about a group's motivations, but there is no original idea, imaginative expression, or innovative thought presented. The language used is straightforward and lacks openness to new experiences, which is a characteristic associated with creative individuals.","NO
+
+The text does not contain any references to family bonds, household structures, lineage, ancestry, or community cohesion, which are the essential elements of kinship. The discussion is focused on social and political issues, with no mention of kinship-related concepts.","NO
+
+There is no mention of religion, spiritual beliefs, practices, or sacred entities in the text. The conversation revolves around political opinions and social dynamics, with no observable evidence of religious themes or sentiments.","NO
+
+The text does not exhibit intellectual humility. The author presents a definitive and critical view of others' beliefs, without acknowledging any limitations or potential fallibilities in their own thinking. The tone is assertive and accusatory, lacking any language that suggests openness to alternative perspectives or recognition of the complexity of the issue.","NO
+
+The text does not exhibit analytical thinking. It presents a subjective opinion about a group's motivations, using phrases like ""deep down"" and ""I think,"" which suggest intuition rather than logical analysis. The text also lacks categorical thinking, object focus, and abstract analysis characteristic of analytical thinking.","NO
+
+The text does not contain GeneralizedTrust. The conversation is about a specific group's perceived motivations and biases, implying a lack of trust in their intentions, but it does not express a general trust or distrust in people or institutions."
+1,2,0-shot_binary_incentive,casperhansen/llama-3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"NO
+
+My reasoning is that the text does not emphasize individual self-interest, independence, or uniqueness. Instead, it highlights the perceived interests of a group (white men) and the potential suppression of another group (women and minorities). The focus is on group dynamics and power struggles, rather than individualism.","NO
+
+My reasoning is that the text does not contain any language that promotes collective goals, group solidarity, or prioritizes the needs of others over personal goals. Instead, it describes a scenario where a group (white men) seeks to advance their own interests at the expense of others (women and minorities). The focus is on individual or group self-interest rather than collective well-being.","NO
+
+My reasoning is that the text does not explicitly mention concern for one's reputation or how one is viewed by others, which is the core definition of Honor. The text focuses on the perceived motivations of a group (white men) and their potential actions towards women and minorities, but it does not express a personal concern for reputation or social status.","NO
+
+My reasoning is that the text does not explicitly mention or imply the enforcement of strict social norms, surveillance, or punishment for deviant behavior, which are key characteristics of tightness. The text instead focuses on the perceived motivations and biases of a group, discussing how they might tolerate or even desire the oppression of others.","NO
+
+The text does not contain Looseness. The conversation is about the perceived motivations of a group, focusing on their potential willingness to suppress others (women and minorities) even if it doesn't benefit them directly. There is no mention or implication of a cultural context that tolerates deviant behavior or lacks strict social norms, which is the defining characteristic of Looseness.","NO
+
+The text does not contain Care as it describes a scenario where individuals prioritize pushing down women and minorities, even if it doesn't benefit them personally, which is harmful and contradictory to the concept of Care.","NO
+
+The text does not contain Equality. Instead, it describes a scenario where women and minorities are ""pushed down"" and white men are allowed to ""get ahead"", which is the opposite of equal treatment and outcomes. The phrase ""pushed down"" implies a lack of fairness and equal opportunities.","NO
+
+The text does not contain Proportionality. The discussion revolves around the perceived benefits of pushing down women and minorities, without any mention of rewards or punishments being proportional to costs, contributions, effort, merit, or guilt. The focus is on maintaining power dynamics rather than ensuring proportionality.","NO
+
+The text does not contain Loyalty as it does not demonstrate cooperation or prioritization of an ingroup, nor does it express concerns about betraying or abandoning an ingroup. Instead, it describes the perceived motivations of a group (white men) in a negative light, implying outgroup competition.","NO
+
+My reasoning is that the text does not contain any mention of established figures or institutions being viewed as a means of providing stability or maintaining boundaries. Instead, the text discusses the motivations of a group of people (those who support Trump) and their perceived willingness to suppress others (women and minorities) even if it doesn't benefit them personally. There is no reference to authority or tradition in this context.","NO
+
+The text does not contain Purity. The discussion revolves around the perceived motivations of a group, focusing on their potential desire to suppress others (women and minorities) rather than maintaining the sanctity of sacred entities. The language used is more related to social hierarchy and power dynamics than purity concerns.","NO
+
+My reasoning is that the text does not explicitly discuss rights or responsibilities related to possessing or controlling something. The conversation is focused on perceived biases and social dynamics, with no mention of ownership or control over intellectual or physical property.","NO
+
+My reasoning is that the text does not explicitly discuss freedom, autonomy, or the right to choose without coercion or constraint. Instead, it focuses on the perceived motivations of a group of people (white men) who might be willing to suppress others (women and minorities) even if it doesn't benefit them personally. The text highlights a potential desire for dominance or oppression, which is the opposite of liberty.","NO
+
+The text does not contain Honesty as it expresses a cynical and sarcastic tone, implying that the subject's true intentions are not genuine. The phrase ""deep down many of them know this won't happen"" suggests that the author believes the subject is not being truthful about their motivations.","NO
+
+The text does not contain ThinMorality. The language used is evaluative, but it employs thick moral concepts such as ""bad"" (referring to Trump's character) and implies moral values like fairness and equality. The text expresses a moral judgment about the motivations of certain individuals, but it does not use thin moral terms like ""right"", ""wrong"", or ""permissible"".","NO
+
+My reasoning is that the text does not contain explicit profanity, slurs, or derogatory terms. The language used is critical and argumentative, but it does not display a disregard for societal norms of respectful communication. The tone is more analytical and explanatory, rather than hostile or aggressive. The text is discussing a perceived mindset of a group, rather than targeting a specific individual or group with harmful intent.","NO
+
+The text does not contain hate speech. It appears to be a commentary on the motivations of a group of people, suggesting that they may be willing to suppress the advancement of women and minorities even if it doesn't benefit them personally. The language used is critical and analytical, but it does not contain dehumanizing rhetoric, harmful stereotypes, or calls for violence.","NO
+
+The text does not contain Fear speech. It expresses a critical opinion about a group's motivations, but it does not aim to instill fear of a target social group based on characteristics like race, ethnicity, religion, etc. The text focuses on the perceived motivations of ""them"" (likely referring to Trump supporters) rather than creating fear about a specific group.","NO
+
+My reasoning is that the text does not contain explicit language related to pending danger or harm. The discussion is focused on the perceived motivations and biases of a group, but it does not imply a direct threat. The phrase ""pushed down"" could be interpreted as a form of oppression, but it does not convey a sense of imminent danger or harm.","NO
+
+The text does not contain CreativityInnovation. It expresses a critical opinion about a group's motivations, but does not demonstrate originality, imagination, or expressiveness. The language used is straightforward and lacks creative elements.","NO
+
+My reasoning is that the text does not mention or imply any of the essential elements of kinship, such as family bonds, household structures, lineage, or community cohesion. The text focuses on social and political issues, specifically the perceived interests of white men, women, and minorities, without any reference to kinship relationships.","NO
+
+My reasoning is that there is no mention of religious beliefs, practices, or spiritual themes in the text. The conversation revolves around political and social issues, specifically the treatment of women and minorities, with no reference to religion or the sacred.","NO
+
+The text does not exhibit intellectual humility. The author presents a definitive and critical view of others' beliefs, without acknowledging any limitations or potential fallibilities in their own thinking. The tone is assertive and accusatory, lacking any language that suggests openness to alternative perspectives or recognition of the complexity of the issue.","NO
+
+The text does not exhibit analytical thinking. It presents a subjective opinion about a group's motivations, using phrases like ""deep down"" and ""I think,"" which suggest intuition rather than logical analysis. The text also lacks categorical thinking, object focus, and abstract analysis, instead relying on emotional and social inferences.","NO
+
+The text does not contain GeneralizedTrust. The conversation is about a specific group's perceived motivations and biases, implying a lack of trust in their intentions. The tone is critical and suspicious, with no indication of a general trust in others or institutions."
+1,3,0-shot_binary_threat,casperhansen/llama-3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,1,0,"NO
+
+The text does not contain Individualism. The focus is on the group interests of ""white men"" and the oppression of ""women and minorities"", emphasizing the importance of group membership and collective outcomes over individual self-interest.","NO
+
+The text does not contain Collectivism. The focus is on individual groups (white men, women, minorities) and their perceived interests, rather than collective goals or ""we"" consciousness. The text highlights the potential harm to certain groups, but does not emphasize collective identity or shared duties.","NO
+
+The text does not contain Honor as it focuses on the perceived motivations of a group (white men) to suppress others (women and minorities) rather than concern for one's own reputation or how one is viewed by others. The text does not mention protecting or maintaining honor, nor does it imply a sense of reciprocity or concern for social status.","NO
+
+The text does not contain Tightness. The conversation is about the perceived motivations of a group, but it does not mention or imply the enforcement of strict norms or tolerance of deviant behavior, which are key aspects of the Tightness dimension.","NO
+
+The text does not contain Looseness. The conversation is about the perceived motivations of a group, focusing on their potential willingness to suppress others (women and minorities) even if it doesn't benefit them directly. There is no mention or implication of a cultural context that tolerates deviant behavior or lacks strict social norms, which is the defining characteristic of Looseness.","NO
+
+The text does not contain Care as it discusses the potential harm and oppression of women and minorities, but does not express a personal or collective responsibility to avoid emotional and physical damage to others. The tone is more critical and analytical, highlighting the potential harm caused by certain actions, rather than promoting a nurturing or supportive environment.","NO
+
+The text does not contain Equality. Instead, it describes a scenario where women and minorities are ""pushed down"" and white men are allowed to get ahead, which is the opposite of equal treatment and outcomes.","NO
+
+The text does not contain Proportionality. The discussion revolves around the perceived benefits of pushing down women and minorities, without any mention of rewards or punishments being proportional to costs, contributions, effort, merit, or guilt. The focus is on maintaining power dynamics rather than ensuring proportionality.","NO
+
+The text does not contain Loyalty as it does not demonstrate cooperation or prioritization of an ingroup, but rather a criticism of a perceived desire to suppress outgroups (women and minorities). The phrase ""pushed down"" implies a negative action against outgroups, rather than loyalty to an ingroup.","NO
+
+The text does not contain Authority as it does not mention or imply submission to established figures, institutions, or traditions. Instead, it critiques the idea that certain groups (white men) might benefit from pushing down others (women and minorities).","NO
+
+The text does not contain Purity, as it discusses the oppression of women and minorities, but does not mention the sanctity or contamination of sacred entities. The focus is on social hierarchy and power dynamics, not purity or degradation.","NO
+
+The text does not contain Ownership, as it discusses social dynamics and hypothetical scenarios, but does not mention rights or responsibilities related to possessing or controlling something. The phrases ""get ahead"" and ""pushed down"" refer to social status, not ownership or control of property.","NO
+
+The text discusses the perceived motivations of a group, but it does not explicitly mention freedom, autonomy, or the right to choose without coercion or constraint, which are the key aspects of the Liberty dimension. The focus is on the potential suppression of certain groups (women and minorities) rather than the promotion of liberty.","YES
+
+The text expresses honesty through the author's candid and sincere opinion about the motivations of a group of people. The phrase ""I think deep down many of them know this won't happen"" suggests a genuine and truthful insight into the minds of others.","YES
+
+The text contains ThinMorality because it uses evaluative terms like ""bad"" to describe Trump, which is a thin moral concept. Additionally, the phrase ""pushed down"" implies a negative judgment, which is also a thin moral evaluation.","YES
+
+The text contains OffensiveUncivilLanguage because it implies that certain groups (white men) are superior to others (women and minorities) and that pushing down the latter is desirable. The phrase ""pushed down"" has a derogatory tone, implying oppression or suppression.","YES
+
+The text implies that some individuals want to push down women and minorities, suggesting a desire to harm or oppress these groups. The phrase ""pushed down"" has a derogatory tone, implying a desire to demean or dehumanize these groups.","NO
+
+The text does not contain fear speech. It expresses a critical opinion about a group's motivations, but it does not aim to instill fear of a target social group based on characteristics like race, ethnicity, religion, etc. The text focuses on the perceived motivations of ""them"" (likely referring to Trump supporters) rather than creating fear about a specific group.","NO
+
+My reasoning is that the text does not contain explicit language associated with threats, such as ""crisis,"" ""frightening,"" or ""violent."" The text discusses the perceived motivations of a group, but it does not convey a sense of pending danger or harm.","NO
+
+The text does not contain CreativityInnovation. It expresses a critical opinion about a group's motivations, but does not demonstrate originality, imagination, or expressiveness. The language used is straightforward and lacks creative elements.","NO
+
+The text does not contain any references to family bonds, household structures, lineage, or community cohesion, which are the essential elements of kinship. The discussion is focused on social and political issues, with no mention of kinship-related concepts.","NO
+
+There is no mention of religious beliefs, practices, or deities in the text. The conversation revolves around political and social issues, specifically the treatment of women and minorities, with no observable evidence of religious themes or sentiments.","NO
+
+The text does not demonstrate intellectual humility. The author presents a definitive and critical view of others' beliefs, without acknowledging any limitations or potential fallibilities in their own thinking. The tone is more accusatory than humble.","YES
+
+The text demonstrates analytical thinking by breaking down the motivations of a group (""many of them"") into distinct categories (""women and minorities"") and rules (""pushed down""), and then analyzing the consequences of these actions (""even if they don't get ahead as a result""). The text also uses abstract concepts (""get ahead"") and logical connections (""if...then"") to explain the behavior of the group.","NO
+
+The text expresses distrust and skepticism towards a group of people (those who support Trump) and their motivations, implying that they prioritize pushing down women and minorities over their own self-interest. This tone of distrust and cynicism suggests a lack of generalized trust."
+1,4,multi-shot_binary_reasoning,casperhansen/llama-3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,"NO
+
+This text does not contain Individualism. The language used focuses on the interests of groups (white men, women, minorities) rather than individual self-interest or personal identity. The text also implies a sense of collective oppression and group-based motivations, which contrasts with the emphasis on independence and self-reliance characteristic of Individualism.","NO
+
+This text does not contain Collectivism. The language used is focused on individual groups (white men, women, minorities) and their perceived interests, rather than emphasizing collective goals or shared identity. The tone is also critical and divisive, highlighting conflicts between groups rather than promoting unity or cooperation.","NO
+
+This text does not contain Honor. The conversation is about the perceived motivations of a group, focusing on their potential willingness to suppress others (women and minorities) even if it doesn't benefit them directly. There is no concern for reputation, reciprocity, or protection of one's own or family's honor.","NO
+
+This text does not contain Tightness. The conversation is about the perceived motivations of a group, suggesting that they prioritize suppressing others (women and minorities) over their own self-interest. There is no mention of strict norms, enforcement, or tolerance of deviant behavior, which are key indicators of Tightness.","NO
+
+This text does not contain Looseness. The conversation is about the perceived motivations of a group of people, specifically their willingness to suppress women and minorities in order to maintain their own power. The tone is critical and analytical, with no mention of tolerance, diversity, or acceptance, which are key features of Looseness.","NO
+
+This text does not contain Care. The language used is critical and analytical, discussing the motivations of a group of people, but it does not express a sense of responsibility to avoid harm or promote a positive environment. The tone is more observational and argumentative than caring or empathetic.","Answer: YES
+
+Analysis: The text implies that some individuals want to suppress women and minorities to maintain their own privilege, which is the opposite of promoting equality. The phrase ""pushed down"" suggests a desire to restrict opportunities and create unequal outcomes, highlighting the importance of equality.","NO
+
+The text does not contain Proportionality. The conversation is about the perceived motivations of a group, suggesting that they prioritize holding others back over their own advancement. There is no mention of rewards or punishments being proportional to costs, contributions, effort, merit, or guilt. The focus is on the perceived unfair treatment of certain groups, rather than promoting balance or fairness.","NO
+
+This text does not contain Loyalty. The text discusses the motivations of a group (white men) and their perceived willingness to suppress others (women and minorities) even if it doesn't benefit them directly. There is no expression of cooperation, prioritization, or commitment to an ingroup, which are key aspects of Loyalty.","NO
+
+The text does not contain Authority. The language used is critical and questioning, implying a lack of respect for authority figures (Trump). The tone is more rebellious and challenging, rather than submissive or deferential.","NO
+
+The text does not contain Purity. The conversation is about the perceived motivations of a group, focusing on their potential desire to suppress others (women and minorities) rather than maintaining the sanctity of sacred entities or avoiding contamination. The language used is more related to power dynamics and oppression than Purity.","NO
+
+Analysis: The text does not contain any language related to ownership, rights, or control over physical or intellectual property. The discussion revolves around perceived biases and social dynamics, with no mention of possession or responsibility.","NO
+
+My analysis: The text does not contain Liberty as it discusses the perceived motivations of a group (white men) to suppress others (women and minorities) rather than advocating for individual freedom or autonomy. The focus is on oppression, not liberty.","Answer: YES
+
+Analysis: The text expresses a candid and sincere opinion about the motivations of a group of people, using phrases like ""deep down many of them know"" and ""I think"", which convey a sense of honesty and transparency. The tone is critical and analytical, rather than deceitful or manipulative.","YES
+
+The text contains ThinMorality in the phrases ""as bad as"" and ""won't happen"", which imply a moral judgment without explicitly referencing moral values. The language used is evaluative, but does not convey a specific moral concept, making it an example of thin moral terms.","NO
+
+My analysis: The text does not contain offensive or uncivil language. The tone is critical and argumentative, but it does not use profanity, slurs, or derogatory terms. The language is not disrespectful or rude, and it does not target a disadvantaged social group in a harmful manner. The text presents a critical opinion about a group's beliefs, but it does not violate norms of politeness or display a disregard for respectful communication.","NO
+
+My analysis: The text does not contain hate speech. It presents a critical perspective on the motivations of a group, but it does not attack the dignity of that group or incite violence. The language used is analytical and does not contain harmful slurs, stereotypes, or calls for violence. The text is discussing a perceived mindset, rather than making a derogatory statement about a social group.","NO
+
+Analysis: The text does not contain fear speech as it does not create fear about a target group based on characteristics like race, ethnicity, religion, etc. The text is discussing the motivations of a group of people (those who support Trump) and their perceived willingness to suppress women and minorities, but it does not instill fear or promote domination.","Answer: YES
+
+Analysis: The text implies a threat to women and minorities, stating that they will be ""pushed down"" if certain individuals get their way. The phrase ""pushed down"" suggests a sense of oppression or harm, which aligns with the definition of threat.","NO
+
+This text does not contain CreativityInnovation. The language used is critical and analytical, discussing the motivations of a group of people, but it does not exhibit originality, imagination, or expressiveness. There is no mention of new ideas, techniques, or creative pursuits. The tone is more argumentative and explanatory rather than innovative or artistic.","NO
+
+This text does not contain Kinship. The conversation is about political beliefs and social dynamics, with no mention of family bonds, household structures, lineage, ancestry, or community cohesion. The text focuses on the relationships between social groups (white men, women, minorities) rather than kinship ties.","NO
+
+Analysis: There is no mention of religious beliefs, practices, or sacred entities in the text. The conversation revolves around political opinions and social dynamics, with no indication of religious themes or sentiments.","NO
+
+This text does not contain IntellectualHumility. The author presents a critical view of others' beliefs without acknowledging any potential limitations or fallibilities in their own thinking. The tone is accusatory and certain, with no indication of openness to alternative perspectives or willingness to revise their own beliefs.","NO
+
+The text does not exhibit analytical thinking. It presents a subjective opinion about a group's motivations, without breaking down the issue into discrete components, categorizing, or applying rules to understand the behavior. The language used is emotive and persuasive, rather than objective and analytical.","NO
+
+This text does not contain GeneralizedTrust. The tone is skeptical and critical, implying a lack of trust in the intentions of certain groups. Phrases like ""deep down many of them know this won't happen"" and ""even if they don't get ahead as a result"" suggest a distrust of their motivations."
+1,6,0-shot_binary_incentive_strict,casperhansen/llama-3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"NO
+
+The text does not contain direct evidence of individualism. It discusses the perceived motivations of a group (""them"") and their potential willingness to suppress others (""women and minorities"") for their own gain, which is more related to group dynamics and potential discrimination rather than individualism.","NO
+
+The text does not contain Collectivism. The conversation is about individualistic goals and motivations, focusing on how certain groups (white men) might benefit or not benefit, rather than prioritizing collective goals or emphasizing ""we"" consciousness.","NO
+
+The text does not contain direct evidence of concern for one's reputation or how one is viewed by others, which is the definition of Honor. The text discusses the motivations of a group of people, but it does not express a personal concern for reputation or social status.","NO
+
+The text does not contain direct, observable evidence of tightness-looseness. It discusses the perceived motivations of a group, but does not mention or imply the enforcement of social norms, surveillance, or punishment, which are key aspects of tightness.","NO
+
+There is no direct, observable evidence of Looseness in this text. The conversation is about the motivations of a group of people and their perceived tolerance for deviant behavior is not mentioned. The text does not describe a cultural setting or norms that would indicate Looseness.","NO
+
+The text does not contain Care because it does not express a personal or collective responsibility to avoid emotional and physical damage to others, nor does it promote nurturing relationships or providing support. Instead, it describes a negative scenario where women and minorities are pushed down, which is the opposite of Care.","NO
+
+The text does not explicitly mention or promote equal treatment or outcomes for all individuals. Instead, it describes a scenario where women and minorities are ""pushed down"" and white men are allowed to get ahead, which is the opposite of equality.","NO
+
+The text does not mention rewards or punishments being proportional to costs, contributions, effort, merit, or guilt. It discusses the perceived motivations of a group, but does not imply a sense of proportionality in their actions or outcomes.","NO
+
+The text does not contain Loyalty as it does not demonstrate cooperation or prioritization of an ingroup, nor does it express concerns about betraying or abandoning an ingroup. Instead, it describes the perceived motivations of a group (white men) in a negative light, implying outgroup competition.","NO
+
+Reasoning: There is no direct evidence of submitting to traditions or established figures/institutions to maintain stability or boundaries. The text discusses the motivations of a group, but does not invoke authority as a means to achieve their goals.","NO
+
+The text does not contain Purity. The conversation is about the motivations of a group of people, specifically their willingness to suppress others (women and minorities) even if it doesn't benefit them directly. There is no mention of maintaining the sanctity of sacred entities or avoiding contamination/degradation.","NO
+
+Reasoning: There is no direct mention of rights, responsibilities, or control related to possessing or controlling something, including intellectual and physical property. The text discusses social dynamics and hypothetical scenarios, but does not explicitly address ownership.","NO
+
+The text does not explicitly discuss freedom, autonomy, or the right to choose without coercion or constraint. It focuses on the perceived motivations of a group of people, specifically their willingness to suppress others (women and minorities) even if it doesn't benefit them personally.","NO
+
+The text does not contain Honesty as it expresses a critical and cynical view of others' motivations, but does not convey a truthful or sincere statement about the author's own thoughts or feelings. The language used is speculative and accusatory, rather than honest or self-reflective.","NO
+
+The text does not contain ThinMorality terms like ""right"", ""bad"", ""permissible"", or ""ought"". Instead, it uses evaluative language like ""convinced"", ""won't happen"", and ""worth it"", which are not moral foundation-relevant concepts. The text expresses a critical opinion about a group's motivations, but does not employ thin moral terms.","NO
+
+The text does not contain offensive or uncivil language. It presents a critical opinion about a group's beliefs and motivations, but does not use profanity, slurs, or derogatory terms. The tone is analytical and argumentative, but not hostile or aggressive.","NO
+
+The text does not contain hate speech. It describes the perceived motivations of a group (""them"") without using dehumanizing language, harmful stereotypes, or inciting violence. The text is a commentary on the perceived attitudes of others, rather than an attack on a social group's dignity.","NO
+
+The text does not contain fear speech as it does not aim to instill fear of a target social group based on characteristics like race, ethnicity, religion, etc. The text is discussing the motivations of a group of people (those who support Trump) and their perceived willingness to suppress women and minorities, but it does not create fear about a target group using notions of domination.","NO
+
+Reasoning: There is no direct, observable evidence of a pending danger that can cause harm in the text. The language used is more related to social and political opinions, rather than an explicit threat.","NO
+
+There is no direct, observable evidence of creativity or innovation in this text. The language used is critical and analytical, but it does not demonstrate originality, imagination, or expressiveness. The text is more focused on critiquing a perspective rather than presenting a new idea or solution.","NO
+
+There is no direct, observable evidence of kinship in this text. The conversation revolves around political opinions and social dynamics, but it does not mention family bonds, household structures, lineage, ancestry, or community cohesion.","NO
+
+There is no direct, observable evidence of religion or religious themes in this text. The conversation appears to be about political beliefs and social dynamics, with no mention of spiritual beliefs, practices, or sacred entities.","NO
+
+The text does not demonstrate intellectual humility. The author presents a critical opinion about a group of people without acknowledging any potential limitations or fallibilities in their own thinking. The tone is assertive and accusatory, without any indication of openness to alternative perspectives or willingness to revise their beliefs.","NO
+
+The text does not demonstrate analytical thinking. It presents a subjective opinion about a group's motivations, without isolating variables, applying rules, or using formal logic. The language used is emotive and interpretive, rather than objective and analytical.","NO
+
+The text does not contain GeneralizedTrust. The conversation is about a specific group's perceived motivations and biases, but it does not express a general trust or distrust in individuals or institutions. The tone is critical and skeptical, but it does not imply a broader trust or mistrust in people or systems."
