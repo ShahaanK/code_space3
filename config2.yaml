@@ -134,6 +134,12 @@ models:
     provider: local_vllm
     temperature: 0
     max_tokens: 4096
+    enabled: false
+
+  - name: "Qwen/Qwen2.5-72B-Instruct-AWQ"
+    provider: local_vllm
+    temperature: 0
+    max_tokens: 4096
     enabled: true
 
 # -----------------------------------------------------------------------------
