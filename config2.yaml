@@ -140,7 +140,7 @@ models:
     provider: local_vllm
     temperature: 0
     max_tokens: 4096
-    enabled: true
+    enabled: false
 
 # -----------------------------------------------------------------------------
 # Labels — EXACT definitions and ALL examples from the Annotation Guide PDF
@@ -785,7 +785,7 @@ prompts:
 
   - id: 2
     name: "0-shot_binary_incentive"
-    enabled: true
+    enabled: false
     include_markers: false
     include_examples: false
     num_examples: 0
@@ -815,7 +815,7 @@ prompts:
 
   - id: 3
     name: "0-shot_binary_threat"
-    enabled: true
+    enabled: false
     include_markers: false
     include_examples: false
     num_examples: 0
