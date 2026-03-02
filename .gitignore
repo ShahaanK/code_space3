@@ -31,3 +31,15 @@ Thumbs.db
 
 # Jupyter
 .ipynb_checkpoints/
+
+# vLLM server logs (regenerated each run)
+vllm_*.log
+
+# Jupyter Lab nohup output
+nohup.out
+
+# Package backup (local reference only)
+myenv_packages_backup.txt
+
+# Answer key (keep separate from public repo if needed)
+# sample_prompts_human_key.xlsx

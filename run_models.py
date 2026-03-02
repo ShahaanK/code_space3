@@ -48,7 +48,7 @@ LOCAL_MODELS = [
         "quantization": "awq_marlin",
         "tensor_parallel_size": 2,
         "max_model_len": 2048,
-        "gpu_memory_utilization": 0.95,
+        "gpu_memory_utilization": 0.90,
         "extra_flags": "",
         "enabled": True,
     },
@@ -61,7 +61,7 @@ LOCAL_MODELS = [
         "quantization_fallback_model": "Qwen/Qwen2.5-72B-Instruct-GPTQ-Int4",
         "tensor_parallel_size": 2,
         "max_model_len": 2048,
-        "gpu_memory_utilization": 0.95,
+        "gpu_memory_utilization": 0.90,
         "extra_flags": "--trust-remote-code",
         "enabled": True,
     },
@@ -73,7 +73,7 @@ LOCAL_MODELS = [
         "quantization_fallback": "awq",
         "tensor_parallel_size": 2,
         "max_model_len": 4096,  # R1 reasoning can be longer
-        "gpu_memory_utilization": 0.95,
+        "gpu_memory_utilization": 0.90,
         "extra_flags": "--trust-remote-code",
         "enabled": True,
     },
@@ -84,7 +84,7 @@ LOCAL_MODELS = [
         "quantization": "compressed-tensors",
         "tensor_parallel_size": 2,
         "max_model_len": 2048,
-        "gpu_memory_utilization": 0.95,
+        "gpu_memory_utilization": 0.90,
         "extra_flags": "",
         "enabled": False,  # enable when ready to test
     },
@@ -96,7 +96,7 @@ LOCAL_MODELS = [
         "quantization_fallback": "awq",
         "tensor_parallel_size": 2,
         "max_model_len": 2048,
-        "gpu_memory_utilization": 0.95,
+        "gpu_memory_utilization": 0.90,
         "extra_flags": "--trust-remote-code",
         "enabled": False,  # enable when ready to test
     },
@@ -109,9 +109,8 @@ LOCAL_MODELS = [
 
 VLLM_PORT = 8900
 VLLM_API_KEY = "sk-local-shahaan"
-VLLM_ENV = os.path.expanduser("~/.venv-vllm/bin/activate")
-PIPELINE_ENV = os.path.expanduser("~/.venv-camel/bin/activate")
-
+VLLM_ENV = os.path.expanduser("~/myenv/bin/activate")
+PIPELINE_ENV = os.path.expanduser("~/myenv/bin/activate")
 
 def start_vllm(model_config, log_file="vllm_server.log"):
     """Start vLLM server as a background process. Returns the process."""
@@ -123,6 +122,8 @@ def start_vllm(model_config, log_file="vllm_server.log"):
     extra = model_config.get("extra_flags", "")
 
     cmd = (
+	f"export CUDA_HOME=/usr/local/cuda-12.2 && "
+        f"export PATH=$CUDA_HOME/bin:$PATH && "
         f"source {VLLM_ENV} && "
         f"python -m vllm.entrypoints.openai.api_server "
         f"--model {name} "
@@ -131,7 +132,6 @@ def start_vllm(model_config, log_file="vllm_server.log"):
         f"--gpu-memory-utilization {gpu_util} "
         f"--max-model-len {max_len} "
         f"--kv-cache-dtype fp8_e4m3 "
-        f"--num-scheduler-steps 5 "
         f"--port {VLLM_PORT} "
         f"--api-key \"{VLLM_API_KEY}\""
     )
