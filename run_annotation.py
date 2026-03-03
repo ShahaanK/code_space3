@@ -48,7 +48,11 @@ def parse_yes_no(response_text):
     """
     if not response_text or response_text.startswith("ERROR:"):
         return -1
-
+    # Strip <think>...</think> blocks (DeepSeek-R1 reasoning chains)
+    # Interesting Find
+    cleaned = re.sub(r'<think>.*?</think>', '', response_text, flags=re.DOTALL).strip()
+    if cleaned:
+        response_text = cleaned
     upper = response_text.upper().strip()
 
     # Check the first ~80 characters (for prompts that ask YES/NO first)
