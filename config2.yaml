@@ -13,7 +13,7 @@ annotation_guidelines: "ANNOTATION GUIDELINES:\n1. Familiarize Yourself with the
   \ of the interplay between language,\npsychology, and technology. This work not only enhances academic knowledge\nbut also\
   \ paves the way for more empathetic and effective computational\nsystems in the future.\n"
 runtime:
-  sample_file: sample_prompts.xlsx
+  sample_file: samples/sample_prompts.xlsx
   text_id_column: Text Number
   text_column: Text
   output_dir: outputs
@@ -81,6 +81,36 @@ models:
   provider: local_vllm
   temperature: 0
   max_tokens: 1024
+  enabled: false
+- name: hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4
+  provider: local_vllm
+  temperature: 0
+  max_tokens: 1024
+  enabled: true
+- name: Qwen/Qwen2.5-72B-Instruct-GPTQ-Int4
+  provider: local_vllm
+  temperature: 0
+  max_tokens: 1024
+  enabled: false
+- name: Valdemardi/DeepSeek-R1-Distill-Qwen-32B-AWQ
+  provider: local_vllm
+  temperature: 0
+  max_tokens: 2048
+  enabled: false
+- name: RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w4a16
+  provider: local_vllm
+  temperature: 0
+  max_tokens: 1024
+  enabled: false
+- name: FreedomIntelligence/AceGPT-v2-70B-chat
+  provider: local_vllm
+  temperature: 0
+  max_tokens: 1024
+  enabled: false
+- name: openai/gpt-4o
+  provider: openrouter
+  temperature: 0
+  max_tokens: 300
   enabled: false
 labels:
   Individualism:

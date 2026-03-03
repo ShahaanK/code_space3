@@ -37,6 +37,11 @@ def parse_yes_no(response_text):
     import re
     if not response_text or response_text.startswith("ERROR:"):
         return -1
+    # Strip <think>...</think> blocks (DeepSeek-R1 reasoning chains)
+    cleaned = re.sub(r'<think>.*?</think>', '', response_text, flags=re.DOTALL).strip()
+    if cleaned:
+        response_text = cleaned
+
     upper = response_text.upper().strip()
     head = upper[:80]
     if re.match(r'^(\*\*)?YES(\*\*)?[\s\.,:;\-\n]', head) or head == "YES":
