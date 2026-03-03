@@ -1,0 +1,20 @@
+{
+  "results": [
+    {
+      "model": "llama-3.1-70b",
+      "status": "SUCCESS",
+      "elapsed_seconds": 413.6
+    },
+    {
+      "model": "qwen2.5-72b",
+      "status": "SUCCESS",
+      "elapsed_seconds": 413.9
+    },
+    {
+      "model": "deepseek-r1-32b",
+      "status": "SUCCESS",
+      "elapsed_seconds": 524.6
+    }
+  ],
+  "total_seconds": 1382.1
+}
