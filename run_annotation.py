@@ -23,6 +23,7 @@ import os
 import random
 import re
 import time
+import glob
 from datetime import datetime
 
 import pandas as pd
@@ -334,6 +335,15 @@ def main():
 
     skip_existing = runtime.get("skip_existing", True)
     completed = set()
+
+    # Load completed work from any existing CSVs in the output directory
+    if skip_existing:
+        existing_csvs = sorted(glob.glob(os.path.join(output_dir, f"{output_prefix}_*.csv")))
+        for csv_path in existing_csvs:
+            loaded = load_existing_results(csv_path)
+            completed.update(loaded)
+        if completed:
+            print(f"  Checkpoint: found {len(completed)} completed rows, will skip")
 
     # --- Build column structure ---
     meta_cols = ["text_id", "prompt_id", "prompt_name", "model", "provider",

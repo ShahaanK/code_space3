@@ -75,37 +75,37 @@ models:
 - name: casperhansen/llama-3-70b-instruct-awq
   provider: local_vllm
   temperature: 0
-  max_tokens: 1024
+  max_tokens: 256
   enabled: false
 - name: Qwen/Qwen2.5-72B-Instruct-AWQ
   provider: local_vllm
   temperature: 0
-  max_tokens: 1024
+  max_tokens: 256
   enabled: false
 - name: hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4
   provider: local_vllm
   temperature: 0
-  max_tokens: 1024
+  max_tokens: 256
   enabled: false
 - name: Qwen/Qwen2.5-72B-Instruct-GPTQ-Int4
   provider: local_vllm
   temperature: 0
-  max_tokens: 1024
+  max_tokens: 256
   enabled: false
 - name: Valdemardi/DeepSeek-R1-Distill-Qwen-32B-AWQ
   provider: local_vllm
   temperature: 0
-  max_tokens: 2048
+  max_tokens: 1024
   enabled: true
 - name: RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w4a16
   provider: local_vllm
   temperature: 0
-  max_tokens: 1024
+  max_tokens: 256
   enabled: false
 - name: FreedomIntelligence/AceGPT-v2-70B-chat
   provider: local_vllm
   temperature: 0
-  max_tokens: 1024
+  max_tokens: 256
   enabled: false
 - name: openai/gpt-4o
   provider: openrouter
