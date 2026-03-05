@@ -317,7 +317,7 @@ def main():
     text_col = runtime["text_column"]
 
     print(f"Loading texts from: {sample_file}")
-    texts_df = pd.read_excel(sample_file)
+    texts_df = pd.read_excel(sample_file) if sample_file.endswith((".xlsx", ".xls")) else pd.read_csv(sample_file)
 
     if args.subset:
         texts_df = texts_df.head(args.subset)

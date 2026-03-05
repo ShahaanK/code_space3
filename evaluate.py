@@ -62,7 +62,7 @@ def load_gold_standard(gold_path, approach="strict"):
     Returns:
         DataFrame with columns: text_id + 25 binary label columns (0/1).
     """
-    df = pd.read_excel(gold_path)
+    df = pd.read_excel(gold_path) if str(gold_path).endswith((".xlsx", ".xls")) else pd.read_csv(gold_path)
 
     # Detect format: could be "Number" or "Text Number" as ID column
     if "Number" in df.columns:

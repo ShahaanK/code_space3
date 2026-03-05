@@ -13,10 +13,10 @@ annotation_guidelines: "ANNOTATION GUIDELINES:\n1. Familiarize Yourself with the
   \ of the interplay between language,\npsychology, and technology. This work not only enhances academic knowledge\nbut also\
   \ paves the way for more empathetic and effective computational\nsystems in the future.\n"
 runtime:
-  sample_file: samples/sample_prompts.xlsx
-  text_id_column: Text Number
-  text_column: Text
-  output_dir: outputs/run_002_parse_fix1
+  sample_file: samples/50_random_samples.csv
+  text_id_column: Number
+  text_column: text
+  output_dir: outputs/run_005_testing_50_r2
   output_prefix: camel_results_fullguide
   max_retries: 3
   retry_delay_seconds: 2

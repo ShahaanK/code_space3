@@ -255,22 +255,6 @@ def update_config_model(config_path, model_name, output_dir=None):
 
     return config
 
-def update_config_model(config_path, model_name):
-    """Update the config file to enable only the specified model."""
-    with open(config_path) as f:
-        config = yaml.safe_load(f)
-
-    for m in config["models"]:
-        if m.get("provider") == "local_vllm":
-            m["enabled"] = (m["name"] == model_name)
-
-    with open(config_path, "w") as f:
-        yaml.dump(config, f, default_flow_style=False, sort_keys=False,
-                  width=120, allow_unicode=True)
-
-    return config
-
-
 def run_pipeline(config_path, workers, dry_run=False):
     """Run the annotation pipeline and return the exit code."""
     cmd = f"source {PIPELINE_ENV} && python run_annotation.py --config {config_path} --workers {workers}"
