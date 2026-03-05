@@ -122,7 +122,7 @@ def start_vllm(model_config, log_file="vllm_server.log"):
     extra = model_config.get("extra_flags", "")
 
     cmd = (
-	f"export CUDA_HOME=/usr/local/cuda-12.2 && "
+    f"export CUDA_HOME=/usr/local/cuda-12.2 && "
         f"export PATH=$CUDA_HOME/bin:$PATH && "
         f"source {VLLM_ENV} && "
         f"python -m vllm.entrypoints.openai.api_server "
@@ -220,6 +220,41 @@ def kill_vllm(proc):
 # PIPELINE EXECUTION
 # =============================================================================
 
+def get_next_run_number(output_base="outputs"):
+    """Scan outputs/ for existing run_NNN directories and return next number."""
+    os.makedirs(output_base, exist_ok=True)
+    existing = [d for d in os.listdir(output_base)
+                if os.path.isdir(os.path.join(output_base, d)) and d.startswith("run_")]
+    if not existing:
+        return 1
+    numbers = []
+    for d in existing:
+        # Extract number from run_001 or run_003_some_name
+        parts = d.split("_", 2)  # ['run', '001', ...] 
+        try:
+            numbers.append(int(parts[1]))
+        except (IndexError, ValueError):
+            pass
+    return max(numbers) + 1 if numbers else 1
+
+def update_config_model(config_path, model_name, output_dir=None):
+    """Update the config file to enable only the specified model."""
+    with open(config_path) as f:
+        config = yaml.safe_load(f)
+
+    for m in config["models"]:
+        if m.get("provider") == "local_vllm":
+            m["enabled"] = (m["name"] == model_name)
+
+    if output_dir:
+        config["runtime"]["output_dir"] = output_dir
+
+    with open(config_path, "w") as f:
+        yaml.dump(config, f, default_flow_style=False, sort_keys=False,
+                  width=120, allow_unicode=True)
+
+    return config
+
 def update_config_model(config_path, model_name):
     """Update the config file to enable only the specified model."""
     with open(config_path) as f:
@@ -263,6 +298,9 @@ def main():
                         help="Show what would run without executing")
     parser.add_argument("--models", type=str, default=None,
                         help="Comma-separated model indices to run (e.g. 0,2,3)")
+    parser.add_argument("--run-name", type=str, default=None,
+                        help="Optional description appended to run directory "
+                             "(e.g. 'deepseek_fix' → outputs/run_003_deepseek_fix/)")
     parser.add_argument("--vllm-timeout", type=int, default=600,
                         help="Seconds to wait for vLLM startup (default: 600)")
     args = parser.parse_args()
@@ -292,7 +330,7 @@ def main():
 
     if args.dry_run:
         print("\n  *** DRY RUN \u2014 showing plan only ***\n")
-        for i, model in enumerate(models_to_run):
+        for i, model in enumerate(models_to_run):    
             print(f"  Step {i+1}: Load {model['name']}")
             print(f"          Quant: {model['quantization']}, TP: {model['tensor_parallel_size']}")
             print(f"          Run pipeline with --workers {args.workers}")
@@ -300,6 +338,15 @@ def main():
             print()
         print("  Use without --dry-run to execute.")
         return
+    
+    # Build run directory
+    run_num = get_next_run_number("outputs")
+    if args.run_name:
+        run_dir = os.path.join("outputs", f"run_{run_num:03d}_{args.run_name}")
+    else:
+        run_dir = os.path.join("outputs", f"run_{run_num:03d}")
+    os.makedirs(run_dir, exist_ok=True)
+    print(f"  Output:  {run_dir}")
 
     # Run each model
     results = []
@@ -317,7 +364,7 @@ def main():
         try:
             # Step 1: Update config
             print(f"\n  [1/4] Updating config to enable {model['name']}...")
-            update_config_model(args.config, model["name"])
+            update_config_model(args.config, model["name"], output_dir=run_dir)
 
             # Step 2: Start vLLM
             print(f"\n  [2/4] Starting vLLM...")
@@ -338,7 +385,8 @@ def main():
                         status = "FAILED: vLLM startup (both primary and fallback)"
                         continue
                     # Update config to use the fallback model name
-                    update_config_model(args.config, fallback_model_name)
+                    update_config_model(args.config, fallback_model_name, output_dir=run_dir)
+
                 else:
                     status = "FAILED: vLLM startup"
                     continue
@@ -395,8 +443,7 @@ def main():
         print(f"  {marker} {r['model']:<23s} {r['status']:<30s} {r['elapsed_seconds']:>8.0f}s")
 
     # Save summary
-    summary_path = f"outputs/model_run_summary_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-    os.makedirs("outputs", exist_ok=True)
+    summary_path = os.path.join(run_dir, f"model_run_summary_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json")
     with open(summary_path, "w") as f:
         json.dump({"results": results, "total_seconds": round(total_elapsed, 1)}, f, indent=2)
     print(f"\n  Summary saved to: {summary_path}")
