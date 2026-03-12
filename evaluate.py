@@ -271,7 +271,7 @@ def print_label_table(eval_result, label_cols):
                   f"{m['f1']:>6.3f} {m['tp']:>4d} {m['fp']:>4d} {m['fn']:>4d} "
                   f"{m['tn']:>4d} {m['support']:>4d}{marker}")
 
-    print(f"\n  * = no positive examples in gold (F1 undefined, excluded from macro)")
+    print(f"\n  * = no positive examples in gold (F1 = 0.0, included in macro)")
 
 
 def build_detail_rows(results, gold, label_cols):
