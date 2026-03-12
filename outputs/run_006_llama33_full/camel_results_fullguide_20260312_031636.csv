@@ -1,0 +1,769 @@
+text_id,prompt_id,prompt_name,model,provider,temperature,run_number,Individualism,Collectivism,Honor,Tightness,Looseness,Care,Equality,Proportionality,Loyalty,Authority,Purity,Ownership,Liberty,Honesty,ThinMorality,OffensiveUncivilLanguage,Hate,Fear,Threat,CreativityInnovation,Kinship,Religion,IntellectualHumility,AnalyticalThinking,GeneralizedTrust,response__Individualism,response__Collectivism,response__Honor,response__Tightness,response__Looseness,response__Care,response__Equality,response__Proportionality,response__Loyalty,response__Authority,response__Purity,response__Ownership,response__Liberty,response__Honesty,response__ThinMorality,response__OffensiveUncivilLanguage,response__Hate,response__Fear,response__Threat,response__CreativityInnovation,response__Kinship,response__Religion,response__IntellectualHumility,response__AnalyticalThinking,response__GeneralizedTrust
+1,1,0-shot_binary,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,"NO
+
+The text does not contain Individualism. It discusses group interests and priorities (e.g., ""white men"", ""women and minorities"") rather than individual self-interest or personal identity, suggesting a focus on collective concerns over individualism.","NO
+The text focuses on individual interests and groups defined by demographics (e.g., ""white men"", ""women and minorities""), rather than collective goals or harmony, indicating no clear evidence of collectivism.","NO
+
+The text discusses social status and group dynamics, but doesn't explicitly mention concern for one's reputation or honor. Phrases like ""get ahead"" and ""pushed down"" imply social competition, but don't directly relate to honor or reputation.","NO
+The text discusses social dynamics and potential biases, but doesn't mention strict norms, enforcement, or punishment, which are key indicators of Tightness.","NO
+The text discusses social hierarchy and oppression, implying a desire for strict social norms that favor certain groups, which is opposite to the concept of Looseness.","NO
+
+The text discusses harmful intentions towards women and minorities, with no evidence of protection, support, or nurturing relationships, contradicting the definition of Care. Phrases like ""pushed down"" and ""won't happen"" imply harm rather than care.","NO
+The text implies unequal treatment, citing ""women and minorities"" being ""pushed down"" for the benefit of ""white men"", which contradicts the concept of equality.","NO
+The text discusses the perceived benefits of allowing a particular group to ""get ahead"" at the expense of others, without mentioning rewards or punishments being proportional to costs, contributions, or merit.","NO
+The text discusses the motivations of a group, but it does not demonstrate cooperation or prioritization of an ingroup, rather it highlights a perceived willingness to suppress outgroups (""women and minorities"") for potential personal gain.","NO
+The text does not mention established figures, institutions, or traditions, which are key indicators of Authority. It discusses individual beliefs and motivations, specifically in relation to Trump and social groups.","NO
+The text discusses social and political issues, but doesn't mention sacred entities, bodily or spiritual purity, or contamination. Words like ""pushed down"" imply oppression, not purity concerns.","NO
+The text discusses social dynamics and potential motivations, but does not mention rights or responsibilities related to possessing or controlling something, lacking keywords like ""own"" or ""property"".","NO
+The text discusses oppression and coercion (""pushed down""), implying a lack of freedom, but does not explicitly mention liberty, autonomy, or the right to choose.","YES
+The text expresses a sincere opinion about others' motivations, using phrases like ""I think deep down"" and ""to them"", indicating truthfulness about the author's beliefs.","YES
+The text contains ThinMorality through the use of terms like ""bad"", implying a moral evaluation without referencing specific moral values.","YES
+The text contains phrases like ""pushed down"" which implies demeaning or belittling women and minorities, indicating uncivil language.","NO
+
+The text criticizes a group's potential motivations and beliefs, but does not contain dehumanizing language, slurs, or calls for violence. Phrases like ""pushed down"" are used to describe perceived intentions, not to incite hatred or violence.","NO
+
+The text discusses the motivations of a group, but does not express fear of a target social group. It mentions ""pushed down"" in relation to women and minorities, but this is a statement about potential actions, not an attempt to instill fear.","NO
+The text discusses social and political opinions, but doesn't contain words or phrases associated with threats, such as ""crisis"", ""frightening"", or ""violent"", or mention socio-ecological threats like wars, natural disasters, or pathogens.","NO
+The text lacks original, imaginative, or expressive language, instead presenting a critical and analytical commentary on social dynamics, with no evident creative or innovative thinking.","NO
+The text discusses social and political opinions, but does not mention family, lineage, household structures, or community cohesion, which are key elements of kinship.","NO
+There is no mention of spiritual beliefs, practices, or deities in the text, which focuses on social and political opinions regarding Trump and social groups.","NO
+The text does not exhibit intellectual humility, as it presents a critical opinion without acknowledging potential limitations or fallibilities in the author's thinking, or showing willingness to revise beliefs.","NO
+The text lacks analytical thinking features, such as categorization, rules, or abstract analysis. It presents a subjective opinion on motivations, using phrases like ""I think"" and ""deep down,"" indicating a more intuitive or emotional perspective.","NO
+The text expresses distrust and cynicism towards a group's motivations, implying they prioritize pushing others down over their own advancement, as seen in ""if women and minorities are pushed down, that alone is worth it to them""."
+5,1,0-shot_binary,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,"NO
+The text does not contain Individualism. The response questions a broad statement about a family, focusing on not judging an individual based on their family, which suggests considering the individual separately from the group, but it's more about fairness than individualism.","NO
+The text does not contain Collectivism. It appears to be a critical response to a statement, focusing on individual guilt and policies, with no emphasis on group identity or collective goals.","NO
+The text discusses a political family and policies, without mentioning reputation, social status, or reciprocity, which are key aspects of honor.","NO
+The text discusses a political family and their perceived ideology, but doesn't mention norms, enforcement, or tolerance of deviant behavior, which are key aspects of Tightness.","NO
+The text does not exhibit looseness, as it discusses a sensitive topic (Neo-Nazis) and responds critically to a statement, showing no tolerance for deviant behavior or indication of loose cultural norms.","NO
+The text questions a statement about the Le Pen family, but doesn't express protection or support for individuals, and instead seems to critique ""guilt by association"", lacking clear evidence of care.","NO
+The text does not explicitly mention equal treatment or fairness. The phrase ""guilt by association"" implies a concern for individual fairness, but it does not directly relate to the concept of equality.","NO
+The text discusses guilt by association, implying unfair blame, but doesn't mention proportionate rewards or punishments, only questioning the fairness of the accusation with ""guilt by association"" and ""All of them?""","NO
+The text does not demonstrate loyalty, as it questions a negative statement about the Le Pen family, showing skepticism rather than defending or prioritizing an ingroup. The phrase ""guilt by association"" suggests a critical tone.","NO
+The text does not contain Authority, as it questions and challenges the association of the Le Pen family with a negative label, rather than submitting to or referencing established figures or institutions.","NO
+The text does not contain language related to maintaining sanctity or avoiding contamination, and instead discusses political affiliation and guilt by association, with phrases like ""guilt by association"" and ""Do you know any of her policies?""","NO
+The text does not discuss rights or responsibilities related to possessing or controlling something, and does not mention intellectual or physical property. It appears to be a political discussion, focusing on guilt by association and policy inquiry.","NO
+The text discusses a political family and critiques guilt by association, but doesn't mention freedom, autonomy, or choice, which are key to the concept of Liberty.","YES
+The text contains Honesty as the respondent seeks truthfulness by questioning the blanket statement about the Le Pen family, asking ""All of them?"" and ""Do you know any of her policies?"", indicating a desire for sincerity and accuracy.","NO
+The text does not contain ThinMorality terms like ""right"", ""bad"", or ""permissible"". Instead, it uses phrases like ""guilt by association"", which is a concept related to fairness and justice, but not a thin moral term.","NO
+The text does not contain overtly offensive language, but rather a critical statement about the Le Pen family. The tone is questioning and skeptical, but not necessarily uncivil. The phrase ""French Neo-Nazis"" could be seen as pejorative, but in this context, it appears to be a factual claim rather than an insult.","NO
+The text does not contain hate speech. Although it mentions ""French Neo-Nazis"", it does so in a questioning and skeptical tone (""All of them? Sounds like guilt by association""), implying criticism of blanket accusations rather than promoting hate.","NO
+The text does not contain fear speech, as it questions a statement about the Le Pen family and asks for policy information, without expressing fear or domination notions about a target group.","NO
+The text does not contain words or phrases associated with threats, such as ""crisis"", ""frightening"", or ""violent"". The discussion is about politics and policies, without implying a pending danger.","NO
+The text does not exhibit original or imaginative thinking, but rather a defensive response to a statement, using common phrases like ""guilt by association"".","NO
+The text mentions a family (""The Le Pen family""), but it does not express or imply any kinship elements such as family bonds, household structures, lineage, or community cohesion. The context is political criticism, not familial relationships.","NO
+There is no mention of spiritual beliefs, practices, or deities in the text, which focuses on politics and familial associations, with no observable evidence related to religion.","NO
+The text does not exhibit intellectual humility. The response is defensive and dismissive (""guilt by association""), rather than acknowledging potential limitations or nuances in the original statement.","NO
+The text does not exhibit analytical thinking. It challenges a statement with a question (""All of them?""), which is a critical thinking approach, but lacks categorization, rules, or abstract analysis, instead relying on a rhetorical question (""Do you know any of her policies?"").","NO
+The text expresses skepticism and criticism, indicated by ""guilt by association"" and questioning the speaker's knowledge of policies, rather than demonstrating trust in individuals or institutions."
+10808,1,0-shot_binary,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,"NO
+The text lacks evidence of individualism, as it focuses on the author's personal opinion and emotional expression, but doesn't prioritize self-interest or uniqueness, instead addressing and praising specific individuals (e.g., ""Akshay...dud u rock!"", ""Govinda...dude..."").","NO
+The text lacks evidence of collectivism, focusing on individual opinions and preferences, using phrases like ""i wonder"", ""m your big fan"", and ""u rock"", which emphasize personal thoughts and feelings rather than group or collective concerns.","NO
+
+The text lacks language related to reputation, social status, or reciprocity, which are key aspects of honor. It focuses on movie criticism and personal opinions, without referencing honor-related themes.","NO
+The text does not mention social norms, enforcement, or deviant behavior, focusing instead on a movie review with personal opinions and criticisms, e.g., ""waste of money and time"", ""u have to make right decisions"".","NO
+The text lacks evidence of loose culture characteristics, such as tolerance for deviant behavior or protests. It's a personal movie review with criticisms and praises, but no indication of social norm relaxation.","NO
+The text lacks expressions of care, instead focusing on criticism and personal opinions about a movie, with phrases like ""waste of money and time"" and ""stupid movie"", showing no concern for others' well-being.","NO
+The text does not mention equal treatment or fairness, focusing instead on personal opinions about a movie, with phrases like ""u have to make right decisions"" and ""u guys deserve better"" expressing individual preferences rather than advocating for equality.","NO
+The text lacks discussion of rewards or punishments being proportional to costs, contributions, or merit. It focuses on personal opinions about a movie, with phrases like ""waste of money and time"" and ""u have to make right decisions,"" which do not imply proportionality.","NO
+The text lacks expressions of loyalty, instead criticizing some actors and the director while praising others (e.g., ""Akshay...dud u rock!"", ""Lara Dutta, Tansuhree ....u guys deserve better"").","NO
+The text lacks reference to established figures or institutions as a means of providing stability or maintaining boundaries, which is the core of the Authority label. It's a personal opinion on a movie.","NO
+The text does not contain language related to maintaining sanctity or avoiding contamination, focusing instead on movie criticism and preferences, using phrases like ""waste of money"" and ""stupid movie"".","NO
+The text does not discuss rights or responsibilities related to possessing or controlling something, but rather expresses opinions on a movie, its cast, and director, using phrases like ""u have to make right decisions"" which is about advice, not ownership.","NO
+The text discusses a movie review, with no mention of freedom, autonomy, or choice, only criticizing the movie and its cast, using phrases like ""waste of money and time"" and ""stupid movie"".","YES
+The text expresses honest opinions, e.g., ""Bhagam Bhag was a waste of money and time"", ""u have to make right decisions"", and ""y the hell did Priyadarshan made such a stupid movie?"", showing truthfulness and sincerity.","NO
+The text does not contain ThinMorality. Although it expresses evaluative terms like ""waste of money"", ""right decisions"", and ""stupid movie"", these are not moral concepts, but rather personal opinions on the movie's quality.","NO
+The text is critical but doesn't contain profanity, slurs, or derogatory terms. Phrases like ""waste of money and time"" and ""stupid movie"" express disappointment, not offensiveness.","NO
+The text criticizes a movie and expresses disappointment with an actor's choice, but does not contain language that attacks the dignity of a group or incites violence, e.g., ""waste of money and time"" and ""stupid movie"" are opinions about the film, not hate speech.","NO
+The text does not contain fear speech, as it discusses a movie and expresses personal opinions about the film and its cast, without mentioning or targeting any social group based on characteristics like race, religion, or gender.","NO
+The text does not contain words or phrases associated with threats, such as ""crisis"", ""frightening"", or ""violent"". It appears to be a movie review with criticism and praise, but no indication of pending danger or harm.","NO
+The text lacks original thoughts, theories, or imaginative expressions. It primarily contains personal opinions and reactions to a movie, with no evident creative or innovative ideas.","NO
+The text does not contain any references to family, lineage, ancestry, or community relationships, which are essential elements of kinship. It appears to be a movie review with personal opinions and fan interactions.","NO
+The text does not contain any references to religion, spiritual beliefs, or practices. It appears to be a movie review, discussing actors and the director, with no mention of religious themes or elements.","NO
+The text lacks self-awareness of potential fallibility and limitations, with absolute statements like ""Bhagam Bhag was a waste of money and time"" and ""stupid movie"", showing no nuance or openness to alternative perspectives.","NO
+The text lacks analytical thinking, as it focuses on personal opinions and emotions, using phrases like ""waste of money and time"", ""u rock"", and ""stupid movie"", without applying logical rules or categories to support its claims.","NO
+The text lacks expressions of trust in individuals or institutions. It criticizes a movie and its director, Priyadarshan, using phrases like ""waste of money and time"" and ""stupid movie"", indicating distrust or disappointment rather than generalized trust."
+54325,1,0-shot_binary,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,1,0,0,0,0,0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,"YES
+The text implies a desire for uniqueness and individuality, as evidenced by ""You don't see other congresspeople posting on Reddit the way Jeff Jackson does"", highlighting Jackson's distinctive behavior.","NO
+The text does not contain collectivism, as it focuses on an individual (Jeff Jackson) and a personal request, without emphasizing group needs or collective goals.","NO
+The text does not mention reputation, social status, or reciprocity, which are key aspects of honor. It appears to be a positive endorsement of Jeff Jackson, without any indication of concern for reputation or honor.","NO
+The text does not mention norms, enforcement, or deviant behavior, only expresses a unique behavior of a congressperson and a request for a political appointment.","NO
+The text does not contain evidence of Looseness, as it lacks references to deviant behavior, protests, or relaxed social norms. The tone is informal, but it's a call for action, not an example of loose culture.","NO
+The text expresses admiration and a job endorsement for Jeff Jackson, but doesn't contain language related to protection, support, or nurturing relationships, which are key aspects of Care.","NO
+The text does not mention equal treatment or fairness, but rather expresses a personal preference for a political candidate, with no observable evidence related to equality.","NO
+The text does not mention rewards, punishments, costs, contributions, or merit, which are key concepts related to Proportionality. It simply expresses a desire for Jeff Jackson to be appointed attorney general.","YES
+The text shows loyalty by prioritizing and promoting an ingroup member, Jeff Jackson, with phrases like ""Please make him attorney general, NC!"", indicating support and cooperation for someone from the author's likely ingroup (North Carolina).","YES
+The text contains Authority as it references a congressperson (established figure) and a political position (attorney general), indicating submission to institutional traditions.","NO
+There is no mention of sacred entities, bodily or spiritual purity, or avoidance of contamination in the text. The text is a political endorsement, focusing on a congressperson's unique engagement style.","NO
+The text does not discuss rights or responsibilities related to possessing or controlling something, and does not imply ownership. It is a statement of support for a political figure.","NO
+The text does not mention freedom, autonomy, or the right to choose, focusing instead on a political endorsement with ""Please make him attorney general, NC!"".","YES
+The text implies sincerity through the genuine and heartfelt request, ""Please make him attorney general, NC!"", suggesting the author's truthful expression of support for Jeff Jackson.","NO
+The text does not contain evaluative terms like ""good"", ""bad"", ""right"", or ""wrong"" that are characteristic of thin moral concepts. It expresses a preference for a political candidate, but without using moral language.","NO
+The text does not contain offensive or uncivil language. The tone is polite and supportive, with a sincere request (""Please make him attorney general, NC!"").","NO
+The text does not contain hate speech, as it lacks language attacking the dignity of a group, dehumanization, or incitement to violence. It appears to be a positive endorsement of Jeff Jackson.","NO
+The text does not contain fear speech, as it lacks any mention of a target group or notions of domination, and instead expresses a positive sentiment towards Jeff Jackson.","NO
+There is no mention of danger, harm, or words associated with threats like ""crisis"", ""frightening"", or ""violent"" in the text. The tone appears to be supportive and encouraging.","NO
+The text does not contain language related to creativity or innovation, but rather a political endorsement. The phrase ""You don't see other congresspeople posting on Reddit"" implies uniqueness, but it's about a political action, not a creative idea.","NO
+The text does not mention family, household, lineage, or community relationships, only a political figure and a request for a public position.","NO
+There is no mention of spiritual beliefs, practices, or deities in the text, which only discusses a political figure and a request for his appointment.","NO
+The text does not exhibit intellectual humility, as it contains a direct and unconditional statement (""Please make him attorney general, NC!"") without acknowledging potential limitations or nuances.","NO
+The text lacks analytical language, instead using a brief, emotive statement to express support for Jeff Jackson, without categorization, rules, or abstract analysis.","YES
+The text implies trust in Jeff Jackson, with the author asking him to be appointed to a high position (""attorney general""), suggesting a positive view of his honesty and reliability, as evident in the phrase ""Please make him attorney general""."
+47580,1,0-shot_binary,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,"NO
+The text emphasizes moral judgment and criticism of a politician's actions, with phrases like ""That's fucked up"" and ""I would certainly have my doubts about serving them too"", indicating a focus on collective moral standards rather than individual interests or self-reliance.","NO
+The text prioritizes individual moral judgment over collective goals, using phrases like ""I would certainly have my doubts"" and criticizing a politician for promoting hatred, indicating an individualistic tone.","NO
+
+The text criticizes Le Pen's divisive behavior, focusing on her hatred and harmful comparisons, without mentioning reputation, social status, or reciprocity, which are key aspects of honor.","NO
+The text discusses intolerance and hatred, but doesn't mention strict norms or punishment, which are key indicators of Tightness. Words like ""hateful"" and ""divisive"" describe individual behavior, not societal norms.","NO
+The text does not exhibit looseness, as it condemns hateful behavior and promotes tolerance, evident in phrases like ""promotes the hatred of whole castes of people"" and ""that's fucked up"".","NO
+The text criticizes Le Pen's divisive behavior, but the tone is confrontational, using phrases like ""That's fucked up"" and ""hateful"", indicating outrage rather than care or concern for her well-being or the well-being of those she harms.","NO
+The text criticizes Le Pen's divisive behavior and hatred towards certain groups, implying a desire for equal treatment, but it doesn't explicitly promote equality; instead, it condemns discrimination, using phrases like ""hatred of whole castes of people"" and ""divisive"".","NO
+The text criticizes Le Pen's actions, but doesn't discuss rewards or punishments proportional to costs, contributions, or guilt, lacking a clear connection to the concept of proportionality.","NO
+The text criticizes Le Pen and her divisive behavior, showing no loyalty to her or her ingroup, instead expressing concern for marginalized groups like Muslims.","NO
+The text criticizes a politician (Le Pen) and questions serving a hateful majority, showing a rejection of authority figures rather than submission to them.","NO
+The text criticizes Le Pen's hateful speech, but doesn't mention maintaining sanctity or avoiding contamination of sacred entities, which are key aspects of Purity.","NO
+The text discusses a politician's actions and the speaker's opinions, but does not mention rights or responsibilities related to possessing or controlling something, lacking phrases that imply ownership.","NO
+The text discusses hatred and divisive behavior, but does not mention freedom, autonomy, or the right to choose, which are key aspects of Liberty.","YES
+The text expresses honest opinions and criticisms, using phrases like ""That's fucked up"" and ""I would certainly have my doubts,"" indicating sincerity and truthfulness.","NO
+The text uses thick moral terms like ""divisive"", ""hatred"", and ""hateful"" to express moral values, rather than thin terms like ""right"" or ""wrong"".","YES
+The text contains profanity (""fucked up"") and derogatory language, calling someone's actions ""hateful"", indicating a lack of courtesy and politeness.","NO
+The text criticizes Le Pen for promoting hatred, using phrases like ""promotes the hatred of whole castes of people"" and ""that's fucked up"", indicating opposition to hate speech, not perpetuation of it.","NO
+The text criticizes Le Pen's hateful speech, particularly her comparison of Muslims to Nazi occupation, but does not express fear of a target group itself, instead condemning the hatred.","NO
+The text contains strong negative emotions and criticism, but no explicit mention of pending danger or harm, such as words like ""crisis"" or ""violent"". Phrases like ""hatred"" and ""hateful"" convey negative sentiments, but do not imply a direct threat.","NO
+The text lacks original, imaginative, or expressive language, focusing on criticism and opinion rather than creative ideas or solutions, with phrases like ""That's fucked up"" indicating strong emotion rather than innovative thought.","NO
+The text discusses politics and hatred, with no mention of family, marriage, household, lineage, or community cohesion, which are essential elements of kinship.","YES
+The text mentions ""Muslims praying in the streets of France"", which relates to a religious practice, indicating the presence of the Religion label.","NO
+The text does not exhibit intellectual humility, as it contains strong, absolute statements (""That's fucked up"", ""hateful"") without acknowledging potential limitations or fallibilities in the author's thinking.","NO
+The text lacks analytical thinking features, instead using emotional language (""hatred"", ""fucked up"") and personal opinions, focusing on the author's feelings rather than categorizing or applying rules to understand the subject.","NO
+The text expresses distrust and criticism towards a politician, using phrases like ""promotes the hatred"" and ""I would certainly have my doubts"", indicating a lack of trust in certain individuals and their actions."
+22970,1,0-shot_binary,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,0,0,"NO
+The text discusses a politician and their supporters, focusing on group mentality and collective actions, without emphasizing self-interest, personal identity, or independence, which are key aspects of individualism.","NO
+The text does not contain collectivism, as it discusses individual politicians and their supporters' mentalities, without emphasizing group solidarity, collective goals, or ""we"" consciousness.","NO
+The text discusses politics and a politician's appeal, without mentioning reputation, social status, or reciprocity, which are key aspects of honor.","NO
+The text discusses a political leader's populist tendencies and the mentality of their supporters, but does not mention strict norms, enforcement, or punishment, which are key indicators of Tightness.","NO
+The text discusses a politician's populist tendencies and the potential backlash, but doesn't exhibit tolerance for deviant behavior or lack of strict social norms, which are key characteristics of looseness.","NO
+The text criticizes Macron and his supporters, using phrases like ""get all of these fuckers out"", indicating a negative tone without expressing concern for others' well-being or protection from harm.","NO
+The text discusses political tendencies and voter mentality, but does not mention equal treatment or fairness, which are core to the concept of equality.","NO
+The text discusses Macron's populist tendencies and the mentality of his supporters, but does not mention rewards, punishments, costs, contributions, or merit, which are key concepts related to Proportionality.","NO
+The text criticizes Macron and mentions potential negative consequences of his supporters' mentality, showing no clear loyalty to a group or ingroup.","NO
+The text criticizes and questions Macron's populist tendencies, implying a challenge to authority rather than submission to it, with phrases like ""get all of these fuckers out"" suggesting opposition to established figures.","NO
+The text discusses political ideologies and tendencies without mentioning sacred entities, bodily or spiritual purity, or contamination. Words like ""renew"" and ""get all of these fuckers out"" imply change and criticism, not purity concerns.","NO
+The text discusses political ideologies and a politician's appeal, but does not mention rights, responsibilities, or control over something, which are key to the concept of Ownership.","NO
+The text discusses political tendencies and election promises, but does not explicitly mention freedom, autonomy, or the right to choose, which are key aspects of Liberty.","YES
+The text expresses honest criticism, as seen in phrases like ""I love the guy, but"" and ""at least appeals to populist tendencies"", indicating a sincere and truthful evaluation.","YES
+The text contains ThinMorality due to the use of evaluative terms like ""good"", which is a thin moral concept.","YES
+The text contains the profanity ""fuckers"", which is a derogatory term aimed at belittling or demeaning a group, indicating OffensiveUncivilLanguage.","NO
+The text criticizes a politician's populist tendencies, but does not contain dehumanizing language, hate speech, or calls for violence, despite using a derogatory phrase (""get all of these fuckers out"") which is attributed to some of Macron's supporters, not expressed by the author themselves.","NO
+The text discusses Macron's populist tendencies, but does not express fear of a target social group. Phrases like ""get all of these fuckers out"" describe a mentality, but do not instill fear of a specific group based on characteristics like race, religion, etc.","NO
+The text does not contain explicit words associated with threats, but ""get all of these fuckers out"" implies hostility, it's not a direct threat, more of an aggressive sentiment.","NO
+The text lacks language associated with creativity, such as original ideas or openness to new experiences. It primarily discusses political opinions and criticisms, without expressing imaginative or innovative thoughts.","NO
+The text discusses politics and a political leader, Macron, without mentioning family, household, lineage, or community relationships, which are key elements of kinship.","NO
+There is no mention of spiritual beliefs, practices, or deities in the text, which focuses on politics and populist tendencies, with phrases like ""renew the political sphere"" and ""get all of these fuckers out"".","YES
+The text shows IntellectualHumility by acknowledging nuance and complexity, e.g., ""Macron is also a populist sometimes"" and ""il lead to a mentality... in the mind of some of his supporters"", indicating a recognition of multiple perspectives.","NO
+The text lacks analytical thinking features, as it focuses on Macron's appeal and supporters' mentality without categorizing or applying rules. Phrases like ""I love the guy"" and ""get all of these fuckers out"" suggest emotional and contextual reasoning rather than abstract analysis.","NO
+The text expresses a critical view of Macron and his supporters, using phrases like ""get all of these fuckers out"", indicating a lack of trust in certain individuals or groups."
+23566,1,0-shot_binary,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,1,0,0,0,0,0,0,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,1,0,"YES
+The text contains individualism as the author prioritizes their self-interest (""I watch"" TV, ""my home"") and considers setting boundaries with the tenant, indicating a focus on personal needs and autonomy.","NO
+The text focuses on individual concerns and personal space, using phrases like ""I watch"" and ""I was willing to tolerate"", indicating an individualistic tone rather than a collectivist one.","NO
+The text discusses a practical issue of shared space and rent, without mentioning reputation, social status, or reciprocity, which are key aspects of honor.","NO
+The text does not contain evidence of tightness, as it describes a personal living situation with flexible arrangements and tolerance for a tenant's needs, using phrases like ""I agreed"" and ""I was willing to tolerate"".","NO
+The text describes a personal living situation with established rules and boundaries, such as designated spaces and quiet hours, indicating a tighter social norm.","NO
+The text lacks evidence of care, as the author is considering asking for more rent due to the tenant's ""almost exclusive use"" of the kitchen, indicating a focus on personal convenience rather than protecting or supporting the tenant.","NO
+The text discusses a dispute over shared space and potential rent increase, but doesn't mention equal treatment or fairness for all individuals, which is the core of equality.","YES
+The text contains proportionality as the author considers asking for more rent due to the tenant's ""almost exclusive use of the kitchen 40 hours per week"", implying a desire for rewards (rent) proportional to the tenant's use of resources.","NO
+The text does not demonstrate loyalty as it discusses a landlord-tenant issue, focusing on personal convenience and rent, without mentioning group cohesion or ingroup prioritization.","NO
+The text lacks references to established figures, institutions, or traditions, which are key indicators of Authority. The discussion revolves around personal boundaries and rental agreements.","NO
+The text discusses a practical issue of shared space and rent, with no mention of sacred entities, bodily or spiritual purity, or contamination.","YES
+The text contains ownership as the author discusses control over their home, specifically the kitchen, and considers asking for more rent, indicating acknowledgment of rights and responsibilities related to their property (""my home"", ""I rent rooms out"", ""I agreed"").","NO
+The text discusses a living situation and a potential rent increase, but does not mention freedom, autonomy, or the right to choose, which are key aspects of the Liberty label.","YES
+The text expresses honesty through the landlord's sincere description of the situation and their feelings, using phrases like ""I was willing to tolerate"" and ""I agreed"", showing truthfulness about their intentions and boundaries.","NO
+Reasoning: The text discusses a personal issue and uses phrases like ""I was willing to tolerate"" but doesn't contain evaluative terms like ""right"", ""wrong"", or ""ought"" that are characteristic of thin moral concepts.","NO
+The text does not contain profanity, slurs, or derogatory terms, and the tone is descriptive and questioning rather than hostile or aggressive.","NO
+The text describes a landlord-tenant issue, focusing on space and noise concerns, without targeting or demeaning any social group.","NO
+The text describes a personal living situation and a dispute with a tenant, without mentioning any target social group or attempting to instill fear based on characteristics like race, ethnicity, or gender identity.","NO
+The text does not contain words or phrases associated with threat, such as ""crisis"", ""frightening"", or ""violent"". The conflict is a domestic dispute over kitchen usage.","NO
+The text lacks language related to originality, imagination, or openness to new experiences, focusing instead on a practical, everyday problem and its potential solution.","NO
+The text mentions ""my home"" and tenants, but there's no indication of family relationships or community bonds, which are essential elements of kinship.","NO
+There is no mention of spiritual beliefs, practices, or deities in the text, which focuses on a landlord-tenant issue and rent.","NO
+The text does not exhibit intellectual humility, as the author presents their situation and decision without acknowledging potential limitations or fallibilities in their thinking, or showing willingness to revise their beliefs.","YES
+The text shows analytical thinking through phrases like ""40 hours per week"", indicating a focus on categories (time usage) and rules (rent allocation), and weighing pros and cons of the situation.","NO
+The text does not express generalized trust, as the author is considering asking for more rent due to the tenant's ""almost exclusive use"" of the kitchen, indicating a focus on personal convenience and boundaries rather than trust in the tenant's honesty or reliability."
+53902,1,0-shot_binary,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,"NO
+The text lacks evidence of individualism, focusing on group-level issues (e.g., ""Le Pen's campaign"", ""Brexit"") and societal problems (e.g., ""scaremongering stories"") rather than personal identity or self-interest.","NO
+The text does not contain Collectivism. It discusses individual perspectives and grievances, using phrases like ""my point"" and ""I"", emphasizing individual opinion rather than collective goals or group identity.","NO
+The text discusses political campaigns and grievances, without mentioning reputation, social status, or reciprocity, which are key aspects of honor.","NO
+The text discusses political campaigns and grievances, but doesn't mention norms, enforcement, or tolerance of deviant behavior, which are key aspects of Tightness.","NO
+The text discusses political campaigns and grievances, but doesn't exhibit tolerance for deviant behavior or lack of strict social norms, which are characteristic of looseness.","NO
+The text criticizes scaremongering and ulterior motives, but doesn't express protection or support for individuals, lacking clear evidence of care.","NO
+The text discusses grievances and scaremongering, but doesn't explicitly mention equal treatment or fairness, which are core to the concept of Equality.","NO
+The text discusses grievances and motivations, but doesn't mention rewards, punishments, or proportionate treatment, lacking key concepts related to Proportionality.","NO
+The text discusses political campaigns and grievances, but doesn't express cooperation or prioritization of an ingroup, or competition against an outgroup, which are key indicators of Loyalty.","NO
+The text does not mention established figures, institutions, or traditions, which are key indicators of Authority. It discusses political campaigns and grievances, but does not invoke authority or submission to it.","NO
+The text discusses political campaigns and grievances, but doesn't mention sacred entities, bodily or spiritual purity, or contamination. Words like ""scaremongering"" and ""ulterior motives"" suggest a focus on political tactics rather than purity concerns.","NO
+The text discusses political campaigns and grievances, but does not mention rights or responsibilities related to possessing or controlling something, lacking keywords like ""mine"", ""yours"", or ""property"".","NO
+The text discusses political campaigns and grievances, but does not mention freedom, autonomy, or the right to choose, which are key aspects of Liberty.","YES
+The text expresses honesty through phrases like ""That was my point"" and ""Of course there are real grievances"", indicating a sincere and truthful expression of the author's intentions and acknowledgment of real issues.","NO
+The text discusses political campaigns and grievances, but doesn't contain evaluative terms like ""right"", ""wrong"", or ""bad"" in a moral context, instead using phrases like ""scaremongering stories"" and ""ulterior motives"" to criticize actions.","NO
+The text criticizes scaremongering stories, but does so without using profanity, slurs, or derogatory terms, maintaining a critical tone rather than an offensive one, e.g., ""scaremongering stories about immigrants and waves of rapists etc.""","NO
+The text criticizes scaremongering stories about immigrants, but does not contain dehumanizing language, hate-based rhetoric, or calls for violence, e.g., ""scaremongering stories"" implies criticism of misinformation, not hate speech.","NO
+The text mentions ""scaremongering stories about immigrants and waves of rapists"" but frames it as a critique of fear-mongering, rather than promoting fear itself.","YES
+The text contains words like ""scaremongering"" and ""waves of rapists"", which imply a sense of danger or harm, indicating a threat.","NO
+The text lacks original, imaginative, or expressive language, and does not introduce new ideas or perspectives, instead focusing on criticizing existing narratives with phrases like ""scaremongering stories"" and ""ulterior motives"".","NO
+The text discusses political campaigns and grievances, with no mention of family, household, lineage, or community relationships, which are key elements of kinship.","NO
+There is no mention of spiritual beliefs, practices, or deities in the text, which focuses on political campaigns and grievances.","NO
+The text lacks explicit acknowledgment of limitations or fallibilities in the author's own thinking, instead attributing flaws to others (""scaremongering stories"", ""ulterior motives"").","NO
+The text lacks analytical thinking features, as it focuses on context and emotional appeals (""scaremongering stories"", ""ulterior motives"") rather than categories, rules, and abstract analysis.","NO
+The text expresses skepticism and criticism towards certain narratives, using phrases like ""scaremongering stories"" and ""ulterior motives"", indicating a lack of trust in information and potentially in institutions or individuals promoting those narratives."
+102,1,0-shot_binary,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,"NO
+The text lacks evidence of individualism, as it consists of questions and uncertainty, seeking external opinions (""any better suggestions?""), rather than prioritizing self-interest or internal experiences.","NO
+The text lacks evidence of collectivism, focusing on individual opinions and personal viewing preferences, with phrases like ""I'm undecided"" and ""I'm all out of shit to watch,"" emphasizing individual thoughts and needs.","NO
+The text discusses TV show recommendations and personal viewing preferences, without mentioning reputation, social status, or reciprocity, which are key aspects of honor.","NO
+The text discusses TV shows and personal viewing preferences, with no mention of social norms, enforcement, or deviant behavior, which are key aspects of Tightness.","NO
+The text lacks evidence of cultural norms or tolerance for deviant behavior, focusing on personal TV show preferences with phrases like ""worth watching"" and ""i'm undecided"", showing no clear indication of looseness.","NO
+The text discusses TV show recommendations, with no mention of protecting individuals from harm, nurturing relationships, or providing support, which are key aspects of Care.","NO
+The text discusses TV show recommendations and personal viewing preferences, with no mention of equal treatment, fairness, or societal well-being, which are core aspects of the concept of equality.","NO
+The text discusses TV show recommendations and personal viewing preferences, without mentioning rewards, punishments, costs, or merits, which are key concepts related to Proportionality.","NO
+There's no mention of group cohesion, ingroups, or outgroups. The text discusses TV show preferences, with no indication of loyalty to a particular group.","NO
+There is no mention of established figures, institutions, or traditions in the text, which focuses on personal opinions about TV shows.","NO
+The text discusses TV shows and doesn't mention sacred entities, bodily or spiritual purity, or contamination. Words like ""shit"" and ""hurts"" have no relation to the concept of purity.","NO
+The text discusses TV shows and asks for suggestions, but does not mention rights, responsibilities, or control over physical or intellectual property.","NO
+The text discusses TV show recommendations and personal viewing preferences, without mentioning freedom, autonomy, or choice in the context of Liberty.","YES
+The text contains honesty through expressions of uncertainty and genuine inquiry, such as ""is Sons of Anarchy worth watching??"", ""i'm undecided"", and ""It kind of hurts"", which convey sincere and truthful emotions.","NO
+The text lacks evaluative terms related to morality, focusing on personal preferences and TV show recommendations, with phrases like ""worth watching"" and ""suggestions"" indicating a neutral, non-moral tone.","NO
+The text contains informal language (""shit to watch""), but it's used casually and not targeted at anyone, lacking intent to belittle or demean.","NO
+The text discusses TV shows and asks for suggestions, with no language attacking the dignity of a group or inciting hatred or violence.","NO
+The text discusses TV show recommendations and personal viewing preferences, with no mention of target groups or domination, citing phrases like ""Sons of Anarchy worth watching"" and ""i'm undecided"".","NO
+The text discusses TV shows and asks for suggestions, with no mention of danger, harm, or words associated with threats like ""crisis"" or ""violent"".","NO
+The text lacks original or imaginative language, and the discussion is about existing TV shows, with no mention of creating new work or ideas.","NO
+The text does not contain any references to family, lineage, household structures, or community cohesion, which are essential elements of kinship. It appears to be a discussion about TV shows.","NO
+There is no mention of spiritual beliefs, practices, or deities in the text, which only discusses TV shows.","NO
+The text lacks expressions of intellectual humility, such as acknowledging limitations or welcoming criticism. The language used is casual and inquiring, with phrases like ""is worth watching??"", indicating a desire for opinion or suggestion rather than a recognition of potential fallibility.","NO
+The text lacks analytical language, focusing on personal opinions and preferences (""worth watching"", ""i'm undecided"", ""it kind of hurts""). No categories, rules, or abstract analysis are applied.","NO
+The text lacks evidence of generalized trust, as it focuses on seeking opinions about TV shows, with phrases like ""any better suggestions?"" indicating a desire for input rather than trust in others' opinions."
+1,4,multi-shot_binary_reasoning,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,"NO
+The text does not contain individualism, as it discusses group dynamics and the perceived motivations of a particular group (""them"", ""white men"", ""women and minorities""), rather than focusing on personal identity, self-interest, or independence.","NO
+
+The text does not contain Collectivism. It discusses individual interests and groups (e.g., ""white men"", ""women and minorities"") in a competitive, rather than cooperative, context, with no emphasis on collective goals or harmony.","NO
+
+The text discusses the motivations of a group, but doesn't express concern for reputation, social status, or protecting one's own or family's honor. Phrases like ""get ahead"" and ""pushed down"" imply a focus on power dynamics rather than honor.","NO
+
+The text discusses social hierarchy and oppression, but doesn't imply strict norms or enforcement, instead highlighting potential motivations for maintaining social inequality (""pushed down"", ""worth it to them"").","NO
+
+The text discusses oppression and discrimination, implying a restrictive environment, not looseness. Phrases like ""pushed down"" and ""won't happen"" suggest strict social norms, contradicting looseness.","NO
+The text discusses a negative motivation, where some individuals prioritize pushing down women and minorities over their own advancement, with no indication of protection, support, or nurturing relationships.","NO
+The text implies a desire to suppress women and minorities, contradicting the concept of equality, as seen in phrases like ""pushed down"" and ""even if they don't get ahead"".","NO
+
+The text discusses the perceived motivations of certain individuals, focusing on the suppression of women and minorities rather than proportionate rewards or punishments. Phrases like ""pushed down"" and ""get ahead"" imply a zero-sum mentality, not proportionality.","NO
+
+The text does not contain Loyalty as it discusses the potential motivations of a group, but does not express cooperation, prioritization, or commitment to an ingroup. Phrases like ""pushed down"" and ""even if they don't get ahead"" suggest conflict rather than group cohesion.","NO
+
+The text does not contain Authority, as it discusses skepticism towards a leader (Trump) and criticizes the potential suppression of women and minorities, rather than submitting to or respecting established figures or institutions.","NO
+
+The text discusses social and political dynamics, but doesn't mention concepts related to purity, such as sanctity, contamination, or degradation of sacred entities. Words like ""pushed down"" imply oppression, not purity.","NO
+
+The text discusses social dynamics and potential motivations, but does not contain language related to possessing or controlling something, such as rights or property. Phrases like ""get ahead"" and ""pushed down"" refer to social status, not ownership.","NO
+The text discusses oppression and pushing down certain groups, implying a lack of freedom or autonomy, but it does not explicitly promote or discuss liberty, freedom, or autonomy.","NO
+
+The text expresses a critical and cynical view, implying that some individuals prioritize suppressing others over their own advancement, as seen in ""if women and minorities are pushed down, that alone is worth it to them"". This suggests a perception of deceit or insincerity in the motivations of others, rather than an expression of honesty itself.","YES
+Analysis: The text contains ThinMorality in phrases like ""as bad as Trump is"", implying a moral evaluation using a thin term (""bad"").","NO
+
+The text is critical and discusses potentially sensitive topics, but it does not contain profanity, slurs, or derogatory terms directly aimed at belittling individuals. Phrases like ""pushed down"" have a negative connotation, but in this context, they are used to describe a perceived effect of a policy rather than to demean a group directly.","NO
+
+The text criticizes a group's motivations, but doesn't contain dehumanizing language, slurs, or calls for violence. Phrases like ""pushed down"" imply disapproval, not hate.","NO
+
+The text discusses the motivations of a group, but does not express fear of a target social group. Phrases like ""pushed down"" imply oppression, not fear.","NO
+
+The text discusses social and political dynamics, but doesn't contain explicit words or phrases associated with threats, such as ""crisis,"" ""frightening,"" or ""violent."" The tone is critical and analytical, without implying a pending danger.","NO
+The text lacks creative language or innovative ideas, instead focusing on social commentary and criticism, with phrases like ""pushed down"" and ""won't happen"" indicating a critical tone rather than creative expression.","NO
+The text does not contain kinship, as it discusses social and political issues without mentioning family, lineage, or community bonds. Keywords like ""Trump"", ""white men"", ""women"", and ""minorities"" indicate a focus on social dynamics rather than kinship relationships.","NO
+Analysis: No mention of spiritual beliefs, practices, or religious themes are present in the text, which focuses on social and political opinions regarding Trump and social groups.","NO
+The text lacks intellectual humility, as it makes a generalized claim about a group's motivations (""many of them know"") without acknowledging potential limitations or nuances, and implies a negative judgment (""pushed down"") without considering alternative perspectives.","NO
+The text lacks analytical thinking, as it focuses on emotional and social dynamics without applying logical rules or categorization. Phrases like ""deep down"" and ""worth it to them"" suggest intuitive, rather than analytical, reasoning.","NO
+
+The text expresses skepticism and cynicism towards the motivations of certain individuals, implying a lack of trust in their intentions. Phrases like ""deep down many of them know"" and ""even if they don't get ahead"" suggest distrust and doubt."
+5,4,multi-shot_binary_reasoning,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,"NO
+The text does not contain individualism. It appears to be a critical response to a statement, focusing on the idea of ""guilt by association"" rather than personal identity, self-interest, or independence.","NO
+
+The text does not contain Collectivism. It appears to be a critical response to a statement about the Le Pen family, focusing on individual guilt and policies rather than group identity or collective goals. Phrases like ""All of them?"" and ""Do you know any of her policies?"" emphasize individual consideration over collective association.","NO
+
+The text does not contain honor, as it lacks language related to reputation, family legacy, or defending one's name. The discussion is focused on politics and guilt by association, without references to personal or familial honor.","NO
+
+The text does not contain Tightness. It appears to be a discussion about politics, with one user accusing the Le Pen family of being Neo-Nazis and the other responding with skepticism, questioning guilt by association. There is no mention of social norms, rules, or deviant behavior being enforced or tolerated.","NO
+
+The text does not exhibit Looseness, as it involves a critical and potentially confrontational exchange, rather than promoting diversity, freedom, or acceptance. Phrases like ""guilt by association"" suggest a defensive tone, not openness or tolerance.","NO
+
+The text does not contain Care. It appears to be a critical and skeptical response to a statement, with phrases like ""guilt by association"" indicating a defensive or argumentative tone, rather than a nurturing or supportive one.","NO
+The text discusses a political family and their alleged affiliation with Neo-Nazism, but does not explicitly mention equal treatment or fairness, which are core concepts of equality. The phrase ""guilt by association"" implies a discussion of fairness, but it's used to criticize, not promote equality.","NO
+
+The text does not contain proportionality. It discusses guilt by association, implying unfair judgment, but doesn't mention rewards or punishments being proportional to costs, contributions, or merit. The phrase ""guilt by association"" suggests the opposite of proportionality.","NO
+
+The text does not contain Loyalty. It appears to be a critical response to a statement about the Le Pen family, with the author questioning guilt by association and asking about policies, rather than showing cooperation or prioritization of an ingroup.","NO
+
+The text does not contain Authority, as it questions and challenges the association of the Le Pen family with a particular ideology, rather than submitting to or respecting established figures or institutions. The phrase ""guilt by association"" implies a critical tone towards blanket statements or assumptions.","NO
+
+The text does not contain Purity, as it discusses political affiliation and guilt by association without referencing sacred entities, bodily or spiritual purity, or avoiding contamination. The phrase ""guilt by association"" implies a concern with unfair judgment, not purity.","NO
+
+The text does not contain Ownership, as it discusses political views and policies without referencing rights, control, or possession of something. Key phrases like ""guilt by association"" and ""Do you know any of her policies?"" focus on argumentation rather than ownership.","NO
+
+The text discusses a political family and critiques guilt by association, but doesn't explicitly mention freedom, autonomy, or the right to choose, which are key aspects of Liberty.","NO
+
+The text does not express honesty, but rather skepticism and questioning. Phrases like ""Sounds like guilt by association"" and ""Do you know any of her policies?"" imply a critical tone, rather than a truthful or sincere statement.","YES
+Analysis: The text contains ""guilt"", implying a moral judgment, and ""Neo-Nazis"", which has negative connotations, but the key phrase is ""guilt by association"" which implies a thin moral concept of ""wrong"" or ""unfair"".","NO
+
+The text does not contain overtly offensive language, but rather a critical and questioning tone. The phrase ""guilt by association"" is used to challenge the initial statement, and ""Do you know any of her policies?"" is a legitimate inquiry, lacking hostility or aggression.","NO
+
+The text does not contain hate speech. Although it mentions ""French Neo-Nazis"", it does so in a questioning and skeptical tone, implying criticism of guilt by association rather than promoting hate or violence.","NO
+
+The text does not contain fear speech. It questions a statement about the Le Pen family, citing ""guilt by association"" and asks about policies, without expressing fear or domination notions about a target group.","NO
+
+The text does not contain explicit words or phrases associated with threats, such as ""crisis,"" ""frightening,"" or ""violent."" The discussion is about politics and policies, without any indication of pending danger or harm.","NO
+The text lacks creative language or innovative ideas, instead focusing on a critical response to a statement about the Le Pen family, using phrases like ""guilt by association"" to question the accusation.","NO
+The text mentions a family name (""Le Pen family""), but the context is political and critical, lacking any expression of family bonds, relationships, or kinship sentiments.","NO
+Analysis: No mention of spiritual beliefs, practices, or religious themes. The text discusses politics and familial associations, with no reference to religion or the sacred.","YES
+The text shows IntellectualHumility by questioning a broad statement (""All of them?"") and seeking more information (""Do you know any of her policies?""), demonstrating an openness to nuance and a willingness to consider multiple perspectives.","NO
+The text does not exhibit analytical thinking, as it involves a defensive response and a simplistic challenge to guilt by association, rather than breaking down complex issues or applying logical rules, as seen in phrases like ""Sounds like guilt by association"" which lacks in-depth analysis.","NO
+
+The text expresses skepticism and questioning of assumptions, indicated by phrases ""guilt by association"" and ""Do you know any of her policies?"", which suggest a lack of trust in the initial statement."
+10808,4,multi-shot_binary_reasoning,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,"NO
+Analysis: The text lacks individualistic language, instead focusing on the author's opinions about a movie and its cast, using phrases like ""u have to make right decisions"" and ""u guys deserve better"", which suggest a concern for others' actions rather than personal autonomy or self-interest.","NO
+Analysis: The text lacks collectivist language, focusing on individual opinions and criticisms of a movie, using phrases like ""I wonder"" and ""u rock"" to express personal thoughts and feelings, without emphasis on group or collective goals.","NO
+
+The text lacks concern for reputation or social status, focusing on movie criticism and personal opinions. No phrases indicate protection of one's or others' honor, unlike examples of honor which involve defending family or community legacy.","NO
+The text lacks references to social norms, rules, or traditions, instead focusing on personal opinions about a movie, with phrases like ""waste of money and time"" and ""u have to make right decisions.""","NO
+The text lacks indicators of looseness, such as tolerance for deviant behavior or open expression. Instead, it features critical and judgmental language, e.g., ""waste of money and time"", ""stupid movie"", suggesting a more rigid or tight cultural context.","NO
+The text lacks expressions of care, instead focusing on criticism of a movie and its actors, with no mentions of support, nurturing, or protection of individuals.","NO
+Analysis: The text discusses a movie review, focusing on the performance of actors and the director's decision-making. There's no mention of equal treatment, fairness, or social justice, which are core concepts of equality.","NO
+Analysis: The text lacks discussion of rewards or punishments being proportional to costs, contributions, or merit. It focuses on personal opinions about a movie, with phrases like ""waste of money and time"" and ""u have to make right decisions,"" which do not relate to proportionality.","NO
+The text lacks loyalty as it criticizes Govinda's movie choice and praises Akshay Kumar instead, showing no ingroup prioritization or cooperation, e.g., ""Govinda...dude...m your big fan, u have to make right decisions"" is a criticism rather than a show of loyalty.","NO
+Analysis: No reference to established figures, institutions, or traditions is made in a way that submits to their authority. The text criticizes the movie and its director, Priyadarshan, without showing respect for their authority.","NO
+The text does not contain themes of purity, but rather a movie review with criticism and praise for certain actors, using phrases like ""waste of money and time"" and ""stupid movie"", indicating a focus on entertainment quality rather than sanctity or contamination.","NO
+Analysis: No discussion of rights or control over physical/intellectual property. The text is a movie review, focusing on the author's opinion of the film and its cast, with no mention of ownership or possession.","NO
+The text discusses a movie review, criticizing the film and its casting choices, without mentioning freedom, autonomy, or rights, which are key aspects of Liberty.","YES
+The text contains honesty as the author expresses their genuine opinion, using phrases like ""Bhagam Bhag was a waste of money and time"" and ""y the hell did Priyadarshan made such a stupid movie?"", showing truthful criticism.","YES
+Analysis: The text contains thin moral terms such as ""waste of money and time"", ""right decisions"", ""steals the show"", ""rock"", ""deserve better"", and ""stupid movie"", indicating evaluative language with moral connotations.","NO
+
+The text is critical of the movie and its director, but the language used is not offensive or uncivil. Phrases like ""waste of money and time"" and ""stupid movie"" express disappointment, but are not derogatory or disrespectful towards individuals.","NO
+The text is a negative movie review, criticizing the film ""Bhagam Bhag"" and its director Priyadarshan, but does not contain hate speech or target a specific social group. Phrases like ""waste of money and time"" and ""stupid movie"" express disappointment, not hate.","NO
+The text is a movie review, criticizing ""Bhagam Bhag"" and praising certain actors. No language targets a social group, and no fear-inducing notions are present, e.g., no mentions of domination or existential threats.","NO
+The text does not contain words or phrases associated with threats, but rather expresses disappointment and criticism towards a movie, using phrases like ""waste of money and time"" and ""stupid movie"".","NO
+The text lacks creative language, instead focusing on criticism and opinion. Phrases like ""waste of money and time"" and ""stupid movie"" indicate a negative review, without showcasing original thought or imaginative expression.","NO
+The text lacks kinship elements, focusing on movie criticism with no mentions of family, lineage, or community bonds, using phrases like ""u rock"" and ""deserve better"" that are informal and fan-based rather than kinship-related.","NO
+Analysis: No mention of spiritual beliefs, practices, or religious themes. The text discusses a movie, expressing disappointment and praise for certain actors, with no reference to religion or the sacred.","NO
+The text lacks IntellectualHumility as it contains absolute statements (""Bhagam Bhag was a waste of money and time"", ""stupid movie"") and praise without nuance, indicating a lack of recognition of potential fallibilities or limitations in the author's opinion.","NO
+The text lacks analytical thinking, focusing on personal opinions and emotions rather than categorizing or analyzing the movie's attributes. Phrases like ""waste of money and time"" and ""u rock"" indicate emotional reactions rather than analytical thought.","NO
+
+The text lacks expressions of trust in individuals or institutions. It criticizes a movie and its director, Priyadarshan, using phrases like ""waste of money and time"" and ""stupid movie"", indicating a negative tone rather than trust."
+54325,4,multi-shot_binary_reasoning,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,1,"NO
+The text does not contain individualism, as it focuses on supporting a public figure (Jeff Jackson) for a government position, rather than emphasizing personal identity, self-interest, or independence.","NO
+The text lacks language emphasizing group harmony, shared identity, or collective goals, instead focusing on an individual (Jeff Jackson) and a personal request.","NO
+
+The text does not contain Honor, as it lacks language related to reputation, family, or social status. The tone is supportive and encouraging, but does not convey a sense of protecting one's honor or reputation.","NO
+The text does not contain Tightness, as it lacks references to strict norms, enforcement, or traditional customs. The tone is informal and supportive, with a focus on a political figure's unconventional behavior.","NO
+The text does not contain Looseness. It lacks words or phrases indicating tolerance for deviant behavior, diversity, or openness, instead focusing on a specific political figure and appointment.","NO
+The text lacks language related to protection, support, or nurturing relationships, instead focusing on a political endorsement with no apparent care-related context.","NO
+The text does not contain Equality, as it lacks language related to fairness, justice, or equal treatment. It appears to be a political endorsement, focusing on a specific individual, Jeff Jackson.","NO
+The text does not contain proportionality, as it lacks discussion of rewards or punishments being proportional to costs, contributions, or merit. The statement is a request for a political appointment without referencing balance or fairness.","YES
+The text shows loyalty to Jeff Jackson, with the author endorsing him for attorney general, citing his unique engagement with the community (""posting on Reddit"").","YES
+The text contains Authority as it mentions a congressperson and a potential appointment to a high-ranking position (""attorney general""), implying respect for institutional roles and figures of authority, such as ""congresspeople"".","NO
+The text does not contain Purity, as it lacks language related to sanctity, contamination, or degradation of sacred entities. The tone is informal and focused on a political endorsement, without references to purity or cleanliness.","NO
+The text does not contain Ownership, as it lacks discussion of rights, responsibilities, or control over something. It's a request for a political appointment, with no mention of possessing or owning something.","NO
+The text does not discuss freedom, autonomy, or the right to choose, but rather endorses a political candidate for a position, without mentioning liberty-related concepts.","YES
+The text implies sincerity through the genuine and direct request, ""Please make him attorney general, NC!"", suggesting honesty in the author's sentiment.","YES
+The text contains ThinMorality in the phrase ""Please make him attorney general"", implying he's the ""right"" person for the job, and the overall tone suggests approval, a thin moral concept.","NO
+The text does not contain offensive or uncivil language. It is a positive and supportive statement, encouraging Jeff Jackson for a position, without any profanity, slurs, or derogatory terms.","NO
+The text does not contain hate speech, as it lacks dehumanizing language, group attacks, or incitement to violence. It appears to be a positive endorsement of Jeff Jackson for attorney general.","NO
+The text does not contain fear speech, as it lacks any mention of a target social group or characteristics that could instill fear. The text is a positive endorsement of Jeff Jackson for attorney general.","NO
+The text does not contain words or phrases associated with threats, such as ""crisis,"" ""frightening,"" or ""violent."" It appears to be a positive endorsement of a political figure.","NO
+The text lacks creative language or innovative ideas, instead focusing on a political endorsement with a straightforward request (""Please make him attorney general, NC!"").","NO
+The text does not contain kinship, as it discusses a political figure and a request for a public office, without mentioning family, community, or relationships.","NO
+The text does not contain any words or phrases related to religion, such as spiritual beliefs, practices, or worship, and instead focuses on a political figure and a request for a government position.","NO
+The text lacks self-reflection, acknowledgment of limitations, or openness to opposing views, instead making a direct endorsement without nuance.","NO
+The text lacks analytical language, instead making a direct appeal (""Please make him attorney general"") without breaking down issues or applying rules/logic.","YES
+The text implies trust in Jeff Jackson, with the author asking to ""make him attorney general"", suggesting they trust his intentions and abilities, as evident in the phrase ""Please make him attorney general""."
+47580,4,multi-shot_binary_reasoning,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,"NO
+The text lacks individualistic language, instead focusing on social criticism and moral judgment, using phrases like ""that's fucked up"" and ""hateful"" to condemn Le Pen's actions, emphasizing a collective moral standard over personal interests.","NO
+
+The text does not contain Collectivism. It focuses on individual condemnation of Le Pen's actions and hatred, using phrases like ""That's fucked up"" and ""I would certainly have my doubts,"" emphasizing personal opinion over collective goals or group harmony.","NO
+
+The text does not contain honor, as it focuses on criticizing Le Pen's divisive behavior and promoting hatred, without mentioning reputation, family, or social status. Phrases like ""that's fucked up"" and ""hateful"" emphasize moral outrage rather than concern for honor.","NO
+
+The text does not contain Tightness. It expresses criticism of a politician's divisive behavior and promotion of hatred, with phrases like ""that's fucked up"" and ""hateful"", indicating a rejection of strict norms and intolerance, rather than an enforcement of them.","NO
+The text does not contain Looseness. It expresses strong criticism and condemnation of a politician's divisive behavior, using phrases like ""promotes the hatred"" and ""that's fucked up"", indicating a strict moral stance rather than tolerance for deviant behavior.","NO
+The text criticizes Le Pen's divisive behavior, but the tone is confrontational, focusing on condemnation rather than promoting care or support for affected groups, as seen in phrases like ""That's fucked up"" and ""hateful"".","NO
+The text criticizes Le Pen's divisive rhetoric and hatred towards certain groups, implying a desire for equality, but its primary focus is on condemning hatred and intolerance, rather than promoting equal treatment or outcomes.","NO
+
+The text does not contain proportionality. It expresses outrage and condemnation towards Le Pen's actions, without discussing rewards, punishments, or balance in relation to effort, merit, or guilt. Phrases like ""That's fucked up"" and ""hateful"" emphasize moral judgment rather than proportionate response.","NO
+
+The text does not contain Loyalty. It criticizes Le Pen and her divisive actions, with phrases like ""promotes the hatred of whole castes of people"" and ""that's fucked up"", indicating opposition rather than group cohesion or ingroup prioritization.","NO
+Analysis: The text criticizes a politician (Le Pen) and her divisive actions, with no reference to submitting to authority or tradition, instead expressing personal opinion and moral judgment.","NO
+
+The text does not contain Purity, as it discusses hatred and divisive behavior, with no mention of maintaining sanctity or avoiding contamination. Phrases like ""hatred of whole castes of people"" and ""that's fucked up"" convey a negative tone, opposing the concept of Purity.","NO
+
+The text does not contain ownership, as it discusses political opinions and social issues without mentioning rights or control over physical or intellectual property. Key phrases like ""divisive"", ""hatred"", and ""serving them"" relate to social and political commentary, not ownership.","NO
+Analysis: The text discusses a politician's divisive behavior and hatred towards certain groups, but does not mention freedom, autonomy, or the right to choose, which are key aspects of Liberty.","YES
+The text expresses honest criticism and concern, as seen in phrases like ""That's fucked up"" and ""I would certainly have my doubts,"" indicating a sincere and truthful expression of the author's opinions and feelings.","YES
+Analysis: The text contains thin moral terms such as ""divisive"", ""hatred"", and ""fucked up"", which imply moral judgment without referencing specific moral values.","YES
+The text contains OffensiveUncivilLanguage, specifically the phrase ""That's fucked up"" which includes profanity, and the tone is also critical and disapproving, implying hatred towards a group of people.","NO
+
+The text criticizes Le Pen's promotion of hatred, using phrases like ""promotes the hatred of whole castes of people"" and ""That's fucked up"", indicating opposition to hate speech, not endorsement.","NO
+
+The text criticizes Le Pen's divisive rhetoric and hatred towards Muslims, but does not express fear of Muslims taking over or dominating. Instead, it condemns Le Pen's comparison of Muslims to Nazi occupation, indicating a critique of hateful speech rather than fear speech.","NO
+Analysis: Although the text discusses hateful and divisive behavior, it does not contain explicit language of pending danger or harm, such as words like ""crisis"" or ""violent"". The tone is critical and disapproving, but does not convey a sense of threat.","NO
+The text lacks creative language or innovative ideas, instead focusing on criticism and opinion. No words or phrases suggest originality, imagination, or openness to new experiences.","NO
+Analysis: The text discusses politics and hatred, with no mention of family, community, or social relationships, which are key elements of kinship.","NO
+Analysis: Although the text mentions ""Muslims praying"", it does so in a context of criticizing hatred and discrimination, rather than expressing a spiritual belief or practice.","NO
+The text lacks IntellectualHumility as it contains strong, unyielding language (""That's fucked up"", ""hateful"") and doesn't show openness to opposing views or recognition of potential fallibility.","NO
+The text lacks analytical thinking, instead using emotional language (""That's fucked up"", ""hateful"") and making value judgments without breaking down the issue into discrete components or applying logical rules.","NO
+The text expresses distrust and criticism towards a politician, using phrases like ""promotes the hatred"" and ""that's fucked up"", indicating a lack of trust in the individual and their actions."
+22970,4,multi-shot_binary_reasoning,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,0,0,"NO
+The text lacks individualistic language, focusing on a political leader and their supporters rather than personal identity or self-interest, with phrases like ""in the mind of some of his supporters"" emphasizing group mentality.","NO
+The text lacks language emphasizing collective goals, group solidarity, or shared responsibilities, instead focusing on individual political figures and their supporters' mentalities, with phrases like ""the guy"" and ""his supporters"" indicating an individualistic tone.","NO
+
+The text discusses Macron's political stance and its effects on his supporters, without mentioning personal reputation, family, or social status, which are key aspects of honor.","NO
+The text discusses a political leader's populist tendencies and the potential backlash, but doesn't imply strict social norms or enforcement, unlike tight cultures. Words like ""renew"" and ""get all of these fuckers out"" suggest change and criticism, not adherence to traditional norms.","NO
+
+The text discusses a politician's populist tendencies and the potential negative mentality of some supporters, which doesn't convey a sense of looseness or tolerance for deviant behavior. Words like ""get all of these fuckers out"" suggest a more divisive tone.","NO
+The text lacks language indicating protection, support, or nurturing relationships, instead focusing on political critique and populist tendencies, with phrases like ""get all of these fuckers out"" implying division rather than care.","NO
+The text discusses Macron's populist tendencies and the potential negative mentality of his supporters, but does not explicitly mention equal treatment or outcomes, which is the core concept of equality.","NO
+The text discusses Macron's populist tendencies and the mentality of his supporters, but does not mention rewards, punishments, or proportionate responses based on effort, merit, or guilt, which are key aspects of proportionality.","NO
+The text criticizes Macron and acknowledges his populist tendencies, showing no clear loyalty to a group or individual, instead offering a nuanced evaluation of his politics.","NO
+Analysis: The text criticizes and questions Macron's populist tendencies, implying a challenge to authority rather than submission to it, with phrases like ""get all of these fuckers out"" indicating a rejection of established power.","NO
+The text discusses politics and populism, but doesn't mention concepts related to purity, such as sanctity, contamination, or degradation, except for the phrase ""renew the political sphere"", which implies change, not necessarily purity.","NO
+
+The text discusses political ideologies and a politician's appeal, but does not mention rights, responsibilities, or control over something, which are key aspects of ownership.","NO
+The text discusses Macron's populist tendencies and election promises, but does not explicitly mention freedom, autonomy, or individual rights, which are key aspects of Liberty.","YES
+The text contains honesty as the author expresses their genuine opinion about Macron, using phrases like ""I love the guy, but"" and ""he got elected on the promise"", indicating a sincere and truthful assessment.","YES
+Analysis: The text contains ThinMorality in phrases like ""which is certainly a good thing"", where ""good"" is a thin moral concept evaluating an action or outcome.","YES
+The text contains the profane word ""fuckers"", which is a derogatory term, indicating OffensiveUncivilLanguage.","NO
+
+The text criticizes Macron's populist tendencies, but does not contain hate speech. The phrase ""get all of these fuckers out"" is a quote of a mentality, not a call for violence or dehumanization, and is presented as a critique of populist thinking.","NO
+The text discusses Macron's populist tendencies, but does not express fear towards a specific social group. Phrases like ""get all of these fuckers out"" are critical of a mentality, not a target group.","NO
+The text discusses Macron's populist tendencies, but does not contain words or phrases associated with threats, such as danger or harm. The phrase ""get all of these fuckers out"" is a quote of a supporter's mentality, but is not a direct threat.","NO
+The text lacks creative language or innovative ideas, focusing on political analysis with phrases like ""populist tendencies"" and ""get all of these fuckers out"", indicating a critical tone rather than creative expression.","NO
+The text discusses politics and Macron's populist tendencies, with no mention of family, community, or social relationships, which are key elements of kinship.","NO
+Analysis: No mention of spiritual beliefs, practices, or religious themes. Text discusses politics and populist tendencies, with no reference to religion or the sacred.","YES
+Analysis: The text acknowledges nuance and complexity, citing Macron's populist tendencies while also recognizing his positive promise to ""renew the political sphere"", showing a balanced view (""I love the guy, but..."").","NO
+The text lacks analytical thinking features, instead expressing a personal opinion and emotional tone, with phrases like ""I love the guy"" and ""get all of these fuckers out"" indicating a more emotional and less categorical approach.","NO
+
+The text expresses a critical view of Macron and his supporters, using phrases like ""get all of these fuckers out"", indicating a lack of trust in their intentions and actions."
+23566,4,multi-shot_binary_reasoning,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,"NO
+Analysis: The text focuses on a shared living situation and the author's consideration of others (tenants), indicating a more collectivist tone, e.g., ""I was willing to tolerate the inconvenience"" and ""I agreed"" to the tenant's request.","NO
+Analysis: The text focuses on individual concerns and boundaries, using phrases like ""I watch"" and ""I was willing to tolerate"", indicating a personal perspective rather than a collective one.","NO
+Analysis: No language indicates concern for reputation or social status, focusing instead on practical issues like noise and rent.","NO
+Analysis: The text describes a personal, informal living situation with flexible boundaries, indicating looseness. Phrases like ""I agreed"" and ""I was willing to tolerate"" suggest a relaxed, accommodating atmosphere.","NO
+The text describes a personal living situation with set boundaries and expectations, lacking language that suggests tolerance for deviant behavior or openness to diverse lifestyles, which are characteristic of looseness.","NO
+Analysis: The text lacks language indicating care or concern for others' well-being, instead focusing on personal inconvenience and potential financial gain (""asked for more rent"").","NO
+Analysis: The text discusses a personal dispute over shared space, with no mention of equal treatment, fairness, or social justice, which are core concepts of equality.","YES
+Analysis: The text implies proportionality as the author considers asking for more rent due to the tenant's ""almost exclusive use of the kitchen 40 hours per week"", suggesting a desire for compensation proportional to the tenant's usage.","NO
+Analysis: The text discusses a landlord-tenant issue, focusing on convenience and rent, without expressing loyalty to any group or individual, such as ""my home"" or ""I was willing to tolerate"".","NO
+Analysis: The text lacks references to established figures, institutions, or traditions, which are key indicators of Authority. The discussion revolves around personal boundaries and rental agreements, without invoking authority or submitting to external rules.","NO
+Analysis: No language related to sanctity, contamination, or degradation of sacred entities is present. The text focuses on a practical issue of shared space and rent.","YES
+Analysis: The text contains ownership as the author discusses their home, renting out rooms, and setting boundaries with tenants, using phrases like ""my home"" and ""I agreed"", indicating control and responsibility.","NO
+Analysis: The text discusses a dispute over shared space and potential rent increase, but does not mention freedom, autonomy, or the right to choose, which are key aspects of Liberty.","YES
+The text contains honesty as the author openly shares their situation, feelings, and intentions, e.g., ""I was willing to tolerate the inconvenience"" and ""WIBTA if I asked for more rent"", showing sincerity and truthfulness.","NO
+Analysis: The text lacks evaluative terms like ""good"", ""right"", or ""wrong"", instead focusing on practical concerns and boundaries in a shared living space.","NO
+The text does not contain offensive or uncivil language. The tone is neutral and descriptive, with no profanity, slurs, or derogatory terms used. The author expresses a concern and asks a question in a polite manner.","NO
+The text does not contain hate speech, as it discusses a personal issue with a tenant and does not attack the dignity of any group.","NO
+The text does not contain fear speech, as it discusses a personal living situation and a dispute with a tenant, without mentioning or targeting any social group based on characteristics like race, religion, or gender identity.","NO
+Analysis: No words or phrases associated with threats, such as ""crisis"", ""frightening"", or ""violent"", are present in the text. The tone is descriptive and inquiring, focusing on a domestic situation and rent adjustment.","NO
+Analysis: The text discusses a practical issue with a tenant and noise complaints, with no language related to original work, imagination, or innovative ideas.","NO
+Analysis: The text discusses a landlord-tenant relationship, focusing on workspace and noise issues, with no mention of family bonds, marriages, lineage, or community cohesion, which are key elements of kinship.","NO
+Analysis: No words or phrases related to religion, spiritual beliefs, or practices are present in the text, which focuses on a landlord-tenant issue.","NO
+Analysis: The text lacks self-reflection, acknowledgment of limitations, or openness to opposing views. The author presents their situation and decision-making process in a straightforward manner, without expressing uncertainty or humility.","NO
+Analysis: The text lacks analytical language, instead focusing on practical concerns and personal boundaries, e.g., ""I was willing to tolerate the inconvenience"" and ""WIBTA if I asked for more rent"".","NO
+The text lacks expressions of trust in others, focusing on a specific conflict with a tenant. Phrases like ""complaining about the noise"" and ""I was willing to tolerate"" indicate frustration, not trust."
+53902,4,multi-shot_binary_reasoning,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,1,0,0,"NO
+The text lacks individualistic language, focusing on collective issues (e.g., ""Le Pen's campaign"", ""Brexit"") and societal problems, rather than personal interests or self-expression.","NO
+The text lacks language emphasizing collective goals, group identity, or interpersonal harmony, instead focusing on political issues and criticisms, with phrases like ""my point"" indicating individual perspective.","NO
+
+The text does not contain honor-related language, focusing on political campaigns and grievances rather than personal reputation, family, or social status.","NO
+
+The text discusses political campaigns and grievances, but doesn't mention social norms, rules, or enforcement, which are key aspects of Tightness. Words like ""scaremongering"" and ""ulterior motives"" suggest a focus on political rhetoric rather than societal norms.","NO
+The text discusses scaremongering and grievances, indicating a focus on social and political issues rather than tolerance for deviant behavior or openness to diverse lifestyles, which are characteristic of looseness.","NO
+The text lacks language indicating protection, support, or nurturing relationships, instead focusing on criticism and debate, with phrases like ""scaremongering stories"" and ""ulterior motives"" emphasizing conflict over care.","NO
+The text discusses grievances and scaremongering about immigrants, but doesn't explicitly promote or advocate for equal treatment or outcomes, instead focusing on the motivations behind certain complaints, using phrases like ""ulterior motives"" and ""scaremongering stories"".","NO
+The text discusses grievances and motivations, but doesn't mention rewards, punishments, or proportionate responses, lacking a clear connection to proportionality.","NO
+The text lacks expressions of group cohesion, cooperation, or prioritization of ingroups, instead focusing on criticizing scaremongering stories and ulterior motives, with phrases like ""my point"" indicating a personal perspective rather than loyalty to a group.","NO
+Analysis: The text critiques scaremongering and ulterior motives, lacking language that submits to or respects authority, traditions, or institutions.","NO
+The text discusses political campaigns and grievances, but doesn't mention sanctity, contamination, or degradation of sacred entities, which are key aspects of Purity. Words like ""scaremongering"" and ""ulterior motives"" imply manipulation, not Purity.","NO
+The text discusses political campaigns and grievances, but does not mention rights, responsibilities, or control over something, lacking ownership language.","NO
+The text discusses political campaigns and grievances, but does not mention freedom, autonomy, or the right to choose, which are key aspects of Liberty.","YES
+The text expresses honesty through phrases like ""That was my point"" and ""Of course there are real grievances"", indicating a sincere and truthful expression of the author's perspective.","YES
+Analysis: The text contains ThinMorality in phrases like ""real grievances"", implying a sense of what is ""right"" or ""wrong"", and ""scaremongering stories"", which has a negative connotation, similar to ""bad"" or ""unacceptable"".","NO
+
+The text does not contain overtly offensive language, but rather critiques scaremongering stories and ulterior motives, using phrases like ""scaremongering stories"" to convey concern.","NO
+
+The text criticizes scaremongering stories about immigrants, but does not contain hate speech or dehumanizing language, and instead discusses the issue in a critical and nuanced manner, using phrases like ""ulterior motives"" to express concern.","NO
+The text critiques scaremongering stories about immigrants, indicating a commentary on fear speech rather than perpetuating it, as seen in phrases like ""scaremongering stories"" and ""fanned by ulterior motives"".","NO
+The text discusses past political campaigns and scaremongering stories, but does not contain explicit language of pending danger or harm, such as words like ""crisis"" or ""violent"".","NO
+The text lacks creative language or innovative ideas, focusing on political discussion and criticism, with no apparent original or imaginative expression.","NO
+The text discusses political campaigns and grievances, with no mention of family, community, or social relationships, which are key elements of kinship.","NO
+Analysis: No mention of spiritual beliefs, practices, or religious themes are present in the text, which focuses on political campaigns and grievances.","YES
+The text shows IntellectualHumility by acknowledging ""real grievances"" and distinguishing them from unfounded concerns, demonstrating an awareness of nuance and complexity (""many are not real, but fanned by ulterior motives"").","NO
+The text lacks analytical thinking features, instead focusing on countering an argument with emotional topics like ""scaremongering stories"" and ""ulterior motives"", without breaking down issues into discrete components or applying logical rules.","NO
+The text expresses skepticism and criticism, implying distrust in certain narratives and motivations (""scaremongering stories"", ""ulterior motives""), indicating a lack of generalized trust."
+102,4,multi-shot_binary_reasoning,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"NO
+The text lacks individualistic language, focusing on seeking others' opinions and suggestions, using phrases like ""any better suggestions?"" which indicates a reliance on external input rather than internal decision-making.","NO
+The text lacks language indicating collectivist values, such as group harmony or prioritizing others' needs. It focuses on individual opinions and personal viewing preferences, using phrases like ""I'm undecided"" and ""I'm all out of shit to watch.""","NO
+
+The text discusses TV show recommendations and personal viewing preferences, without mentioning reputation, family, or social status, which are key aspects of honor.","NO
+
+The text lacks references to social norms, rules, or traditions, instead focusing on personal opinions and preferences about TV shows, with phrases like ""is worth watching"" and ""any better suggestions"".","NO
+The text lacks indicators of looseness, such as diversity, freedom, or tolerance for deviant behavior. It's a discussion about TV shows, with no mention of cultural or social norms.","NO
+The text lacks words or phrases indicating protection, support, or nurturing relationships, which are key components of Care. It appears to be a discussion about TV shows, with no emotional or physical well-being concerns mentioned.","NO
+The text discusses TV show recommendations and personal viewing preferences, with no mention of equal treatment, fairness, or social justice, which are core concepts of equality.","NO
+The text discusses TV show recommendations and personal viewing preferences, without mentioning rewards, punishments, or proportional outcomes based on effort or merit.","NO
+The text lacks expressions of group cohesion, cooperation, or prioritization of ingroups, which are key indicators of Loyalty. The conversation is about seeking suggestions for TV shows to watch, without mentioning any loyalty-related themes.","NO
+The text lacks references to established figures, institutions, or traditions, focusing on personal opinions and TV show recommendations instead.","NO
+The text does not contain themes of purity, as it discusses TV shows and asks for suggestions, without mentioning sacred entities, contamination, or degradation.","NO
+The text does not contain ownership, as it discusses TV show preferences and asks for suggestions, without mentioning rights, control, or possession of anything.","NO
+The text discusses TV show recommendations and personal viewing preferences, without mentioning freedom, autonomy, or rights, lacking any clear connection to the concept of Liberty.","NO
+
+The text lacks explicit expressions of truthfulness or sincerity. It consists of questions and uncertainty (""is Sons of Anarchy worth watching??"", ""i'm undecided"", ""Is this worth watching?""), rather than statements that convey honesty.","NO
+
+The text does not contain ThinMorality as it lacks evaluative terms like ""good"", ""bad"", ""right"", or ""wrong"" that are not clearly related to moral values. The language used is neutral, focusing on personal preferences and opinions about TV shows.","NO
+The text does not contain offensive or uncivil language. The language used is casual and informal, with phrases like ""all out of shit to watch"", but the tone is inquiring and seeking suggestions, without being disrespectful or rude.","NO
+The text discusses TV shows and asks for suggestions, with no language attacking a group's dignity or inciting hatred.","NO
+The text discusses TV show recommendations, with no mention of target groups or domination, and lacks language aimed at instilling fear.","NO
+The text discusses TV shows and asks for suggestions, with no mention of danger, harm, or threats, using phrases like ""worth watching"" and ""suggestions"".","NO
+The text lacks creative language or innovative ideas, focusing on seeking suggestions for TV shows to watch, with phrases like ""is Sons of Anarchy worth watching??"", indicating a desire for recommendations rather than expressing original thoughts.","NO
+Analysis: No mention of family, lineage, or community relationships. Text discusses TV shows, with phrases like ""Sons of Anarchy"", ""Better Call Saul"", and ""Westworld"", indicating a focus on entertainment rather than kinship.","NO
+Analysis: No mention of spiritual beliefs, practices, or religious themes. Text discusses TV shows, seeking recommendations.","NO
+The text lacks intellectual humility, as it consists of questions and statements seeking suggestions, without acknowledging limitations or fallibilities in the speaker's knowledge or opinions, or expressing openness to revising beliefs.","NO
+The text lacks analytical thinking, as it focuses on personal preferences and opinions about TV shows, without categorizing, applying rules, or abstract analysis. Phrases like ""is worth watching"" and ""i'm undecided"" indicate indecisiveness rather than analytical thought.","NO
+
+The text does not contain GeneralizedTrust as it discusses TV show recommendations and personal viewing preferences, without expressing trust or distrust in individuals or institutions."
+1,6,0-shot_binary_incentive_strict,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,"NO
+The text discusses group interests (white men, women, minorities) and prioritization of one group over others, rather than individual self-interest or internal experiences, which is more characteristic of collectivist thinking.","NO
+The text focuses on individual perspectives and motivations, lacking language that prioritizes collective goals or emphasizes ""we"" consciousness, which are key characteristics of collectivism.","NO
+The text discusses social status and group dynamics, but there's no direct evidence of concern for one's reputation or maintaining/protecting honor, as defined by the guidelines (e.g., no mention of ""reputation,"" ""honor,"" or ""face"").","NO
+The text discusses social dynamics and potential biases, but does not mention strict norms, enforcement, or punishment, which are key indicators of Tightness.","NO
+The text discusses oppressive attitudes and a desire to suppress certain groups, indicating a preference for strict social hierarchy rather than looseness, which is characterized by tolerance for deviant behavior.","NO
+The text discusses harmful intentions towards women and minorities, implying a lack of protection from harm, which contradicts the definition of Care.","NO
+The text implies unequal treatment, mentioning pushing ""women and minorities down"", which contradicts the concept of equality.","NO
+The text discusses the perceived benefits of allowing certain groups to ""get ahead"" without mentioning rewards or punishments being proportional to costs, contributions, or merit.","NO
+The text discusses the motivations of a group, but it does not demonstrate cooperation or prioritization of an ingroup, rather it highlights a perceived negative motivation towards outgroups (women and minorities).","NO
+The text does not mention established figures, institutions, or traditions, which are key indicators of Authority. It discusses individual beliefs and motivations, but does not invoke authority.","NO
+The text discusses social and political issues, but there's no direct mention of maintaining sanctity or avoiding contamination of sacred entities, which is the core of Purity.","NO
+The text discusses social and political opinions, but does not mention rights or responsibilities related to possessing or controlling something, such as intellectual or physical property (no words like ""own"", ""mine"", ""yours"", etc. are present).","NO
+The text discusses oppression and coercion, implying a lack of freedom, but does not directly mention liberty, autonomy, or the right to choose.","NO
+The text expresses opinions and beliefs, but there's no direct evidence of expressing truthfulness or sincerity about the author's own thoughts or intentions, only speculation about others.","YES
+The text contains the phrase ""as bad as"", which is a thin moral term evaluating Trump's character, and ""worth it"", implying a judgment of what is permissible.","YES
+The text contains phrases like ""pushed down"" which implies demeaning or belittling a group (women and minorities), indicating offensive and uncivil language.","NO
+The text criticizes a group's potential motivations and beliefs, but does not contain dehumanizing language, incitement to violence, or explicit hate speech, as seen in phrases like ""pushed down"" which is a critique rather than an attack on dignity.","NO
+The text discusses the motivations of a group, but does not express fear of a target social group taking over or dominating based on characteristics like race, ethnicity, or gender.","NO
+The text discusses social and political opinions, but does not contain direct, observable evidence of a pending danger or harm, such as words like ""crisis"" or ""violent"".","NO
+The text does not contain language related to originality, imagination, or openness to new experiences, which are characteristic of creativity. It appears to be a critical commentary on social dynamics.","NO
+The text discusses social and political opinions, but does not mention family, household, lineage, or community relationships, which are key elements of kinship.","NO
+There is no mention of spiritual beliefs, practices, or deities in the text, which focuses on social and political opinions.","NO
+The text presents a critical opinion without acknowledging potential limitations or fallibilities in the author's own thinking, or showing willingness to revise beliefs.","NO
+The text lacks discrete categorization, object focus, and application of rules, instead presenting a speculative and emotive argument about motivations and consequences.","NO
+The text expresses skepticism and criticism towards a group's motivations, implying a lack of trust, but it's specific to a particular group and situation, not a general trust in others."
+5,6,0-shot_binary_incentive_strict,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,"NO
+The text does not contain direct evidence of individualism, as it discusses a family and group association, rather than prioritizing self-interest or personal identity.","NO
+There is no direct evidence of collectivist language or themes, such as prioritizing group goals or emphasizing ""we"" consciousness, in this text. The discussion focuses on individual policies and guilt by association.","NO
+The text discusses a political family and policies, without mentioning reputation, social status, or reciprocity, which are key aspects of honor.","NO
+There is no direct evidence of strict social norms or enforcement of deviant behavior in the text, which discusses a political family and their policies.","NO
+The text does not contain direct evidence of looseness, such as tolerance for deviant behavior or lack of strict social norms. It appears to be a political discussion, with no clear indication of cultural looseness.","NO
+The text does not contain language that promotes protection, nurturing, or support, and instead appears to be a critical and defensive response, citing ""guilt by association"".","NO
+The text discusses a political family and critiques ""guilt by association"", but does not directly mention equal treatment or outcomes, which is the core of equality.","NO
+The text discusses guilt by association, implying unfair blame, but doesn't mention rewards or punishments being proportional to costs, contributions, or merit, which is the core concept of proportionality.","NO
+The text does not contain direct evidence of loyalty, as it questions guilt by association and inquires about policies, rather than demonstrating cooperation or prioritization of an ingroup.","NO
+The text does not mention established figures, institutions, or traditions, and instead appears to be a critical response to a statement, citing ""guilt by association"".","NO
+The text does not mention sacred entities, bodily or spiritual purity, or contamination. It discusses a political family and guilt by association, without referencing purity-related concepts.","NO
+There is no mention of rights, responsibilities, or control over physical or intellectual property in the text, only a discussion of a political family and their alleged ideology.","NO
+The text discusses a political family and criticism of guilt by association, but does not mention freedom, autonomy, or the right to choose, which are key aspects of Liberty.","NO
+The text questions the accuracy of a statement, but doesn't express truthfulness or sincerity itself, citing ""guilt by association"" as a concern, and asking for policy information.","NO
+The text does not contain evaluative terms like ""right"", ""wrong"", or ""bad"" in a moral context, but rather a criticism of guilt by association, without clear moral judgment.","NO
+The text criticizes the accusation of the Le Pen family, but does not contain profanity, slurs, or derogatory terms itself; ""French Neo-Nazis"" is a label applied by the original statement being responded to, not by the author of this text.","NO
+The text criticizes the accusation of the Le Pen family being Neo-Nazis, and asks for policy information, without containing hate speech or dehumanizing language itself.","NO
+The text does not contain fear speech, as it questions a statement about the Le Pen family and asks for information on policies, without expressing fear or domination notions about a target group.","NO
+The text does not contain direct, observable evidence of threat, such as words like ""crisis"", ""frightening"", or ""violent"", or references to wars, natural disasters, or pathogens. The term ""Neo-Nazis"" has negative connotations, but in this context, it is used as a label rather than implying a pending danger.","NO
+The text does not contain language related to originality, imagination, or openness to new experiences, which are characteristic of creativity. It appears to be a critical response to a statement, with no evident creative expression.","NO
+The text mentions a family name (""Le Pen family""), but it does not discuss family bonds, household structures, lineage, or community cohesion, merely using the family name to refer to a group of individuals with a shared last name and political affiliation.","NO
+There is no mention of spiritual beliefs, practices, or deities in the text, only a discussion about a political family and their alleged ideology.","YES
+The text shows intellectual humility by questioning the assumption (""All of them?"") and seeking more information (""Do you know any of her policies?""), demonstrating an openness to revising beliefs and acknowledging potential nuance.","NO
+The text does not demonstrate analytical thinking, as it lacks categorization, rule-based reasoning, and abstract analysis. The response is more confrontational and focused on challenging the initial statement rather than analyzing it logically, citing phrases like ""guilt by association"" to question the claim.","NO
+The text does not express trust in individuals or institutions, but rather skepticism and questioning of a statement, citing ""guilt by association""."
+10808,6,0-shot_binary_incentive_strict,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,"NO
+The text lacks direct evidence of individualism, as it focuses on opinions about a movie and its actors, without expressing self-interest or personal identity.","NO
+The text lacks evidence of collectivist values, such as prioritizing group needs or emphasizing ""we"" consciousness. It focuses on individual opinions and preferences, using phrases like ""i wonder"" and ""u rock,"" indicating an individualistic tone.","NO
+The text does not mention concern for one's reputation, social status, or reciprocity, which are key aspects of honor. It appears to be a movie review with personal opinions and criticisms.","NO
+There is no mention of social norms, enforcement, or tolerance of deviant behavior, which are key aspects of tightness-looseness. The text only discusses a movie review.","NO
+The text does not contain direct evidence of looseness, such as tolerance for deviant behavior or lack of strict social norms. It appears to be a personal movie review with criticisms and praises.","NO
+The text criticizes a movie and its actors, but does not express concern for protecting individuals from harm or nurturing relationships, which are key aspects of Care. Phrases like ""u guys deserve better"" could imply care, but in this context, it's more about the actors deserving better movie roles rather than emotional or physical well-being.","NO
+The text does not mention equal treatment or outcomes for all individuals, and there is no observable evidence of fairness or anti-exploitation themes. It appears to be a movie review with personal opinions.","NO
+The text does not mention rewards or punishments being proportional to costs, contributions, or merit, but rather expresses personal opinions and criticisms about a movie.","NO
+The text expresses personal opinions and preferences about a movie, but does not demonstrate loyalty to a group or ingroup, as cited by phrases like ""m your big fan"" which is individual admiration rather than group loyalty.","NO
+The text does not mention submitting to traditions or established figures/institutions, but rather criticizes a movie and its director, Priyadarshan, indicating a lack of respect for authority.","NO
+There is no mention of maintaining sanctity, avoiding contamination, or degradation of sacred entities, which are key aspects of Purity. The text focuses on movie criticism and preferences.","NO
+The text does not contain direct discussion of rights or responsibilities related to possessing or controlling something, only critiques and opinions about a movie.","NO
+The text discusses a movie review, with no direct mention of freedom, autonomy, or the right to choose, which are key aspects of Liberty.","YES
+The text expresses honest opinions, e.g., ""Bhagam Bhag was a waste of money and time"", ""u have to make right decisions"", and ""y the hell did Priyadarshan made such a stupid movie?"", indicating truthfulness and sincerity.","NO
+Reasoning: No direct, observable evidence of thin moral terms like ""right"", ""wrong"", ""good"", or ""bad"" used in a moral context, although ""right"" is used in the phrase ""make right decisions"", it refers to making good choices, not moral rightness.","NO
+The text is critical of the movie, but uses phrases like ""dude"", ""u rock"", and ""u guys deserve better"", indicating informal but not offensive language. The tone is negative, but not hostile or aggressive towards individuals.","NO
+The text criticizes a movie and expresses disappointment with an actor's choice, but does not contain language that attacks the dignity of a group or incites hatred.","NO
+The text does not contain fear speech, as it discusses a movie and expresses personal opinions about the film and its cast, without mentioning or targeting any social group based on characteristics like race, ethnicity, or gender identity.","NO
+There is no direct, observable evidence of threat in the text, such as words like ""crisis"", ""frightening"", or ""violent"", or references to wars, natural disasters, or pathogens. The text only expresses disappointment and criticism towards a movie.","NO
+The text lacks original thoughts, theories, or imaginative expressions, only providing a personal review of a movie with no creative ideas presented.","NO
+There is no mention of family, lineage, household, or community relationships in the text, only discussion of movies and actors.","NO
+There is no direct mention of spiritual beliefs, practices, or deities in the text, only a discussion about a movie.","NO
+The text does not exhibit intellectual humility, as it contains absolute statements (""Bhagam Bhag was a waste of money and time"", ""stupid movie"") without acknowledging potential limitations or fallibilities in the author's opinion, cited in phrases like ""big time"" and ""y the hell"".","NO
+The text lacks discrete, objective analysis, instead focusing on personal opinions and emotions, with phrases like ""waste of money and time"" and ""u rock!"" indicating a more subjective, evaluative tone.","NO
+The text expresses personal opinions and criticisms about a movie, but does not demonstrate trust in individuals or institutions, citing specific disappointments with the film and its creators (""waste of money and time"", ""stupid movie"")."
+54325,6,0-shot_binary_incentive_strict,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,"YES
+The text praises an individual (Jeff Jackson) for unique behavior, valuing his originality and independence, as evident in the phrase ""You don't see other congresspeople posting on Reddit the way Jeff Jackson does.""","NO
+The text does not contain direct evidence of collectivism, as it focuses on an individual (Jeff Jackson) and a personal request, rather than emphasizing group needs or collective goals (e.g., ""we"" consciousness, group solidarity).","NO
+There is no direct evidence of concern for reputation or social status in the text, only a positive endorsement of Jeff Jackson.","NO
+There is no mention of strict norms, enforcement, or punishment, which are key indicators of tightness. The text appears to be a casual endorsement of a political figure.","NO
+The text does not contain direct evidence of looseness, such as tolerance for deviant behavior or lack of strict social norms. The statement is a positive endorsement of a politician's unconventional behavior, but it does not explicitly demonstrate looseness.","NO
+The text expresses support for a political figure, but there's no direct evidence of protecting individuals from harm or nurturing relationships, which are key aspects of Care.","NO
+The text does not mention equal treatment or outcomes, but rather expresses a personal preference for a political candidate, citing their unique behavior on Reddit.","NO
+There is no mention of rewards, punishments, costs, contributions, or merit being proportional to anything, only a request for a political appointment.","YES
+The text shows loyalty by prioritizing and supporting (""Please make him attorney general, NC!"") a specific individual (Jeff Jackson) from the author's ingroup (NC), demonstrating cooperation and favoritism towards him.","YES
+The text mentions ""congresspeople"" and ""attorney general"", referencing established figures and institutions, indicating submission to authority.","NO
+There is no mention of sacred entities, bodily or spiritual purity, or avoidance of contamination in the text. The text is a political endorsement.","NO
+There is no mention of rights, responsibilities, or control over something, only a request for a political appointment.","NO
+There is no direct mention of freedom, autonomy, or the right to choose, only a request for a political appointment.","NO
+The text expresses a sincere opinion, but there's no direct evidence of truthfulness or absence of deceit regarding a specific fact or statement, only a genuine plea for a political appointment.","NO
+The text does not contain evaluative terms like ""right"", ""wrong"", or ""good"", but rather expresses a preference for a political candidate, without clear moral judgment, citing ""Please make him attorney general"" as a statement of support rather than a moral evaluation.","NO
+The text does not contain profanity, slurs, or derogatory terms, and the tone appears to be supportive and enthusiastic, rather than hostile or aggressive, as evidenced by ""Please make him attorney general, NC!""","NO
+There is no language attacking the dignity of a group, no dehumanization, and no incitement to violence or hatred. The text is a positive endorsement of a political figure.","NO
+There is no language aimed at instilling fear of a target social group based on characteristics like race, ethnicity, or other protected classes. The text is a positive endorsement of a political figure.","NO
+There is no mention of danger, harm, or words associated with threats like ""crisis"", ""frightening"", or ""violent"" in the text.","NO
+The text does not contain direct evidence of creativity or innovation, only a request for a political appointment, citing Jeff Jackson's unique use of Reddit, but not showcasing original thought or idea.","NO
+There is no mention of family, household, lineage, or community relationships in the text, only a political endorsement.","NO
+There is no mention of spiritual beliefs, practices, or deities in the text, only a political statement about a congressperson.","NO
+The text does not exhibit intellectual humility, as it presents a direct and unconditional opinion without acknowledging potential limitations or fallibilities, citing ""Please make him attorney general, NC!"" as evidence.","NO
+The text lacks discrete categories, object focus, and abstract analysis, instead making a direct, emotive appeal for a political appointment.","YES
+The text expresses trust in Jeff Jackson, suggesting he be appointed to a high position (attorney general), indicating a positive view of his honesty and reliability, as evident in ""Please make him attorney general, NC!"""
+47580,6,0-shot_binary_incentive_strict,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,1,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,"NO
+The text emphasizes the writer's moral judgment and criticism of Le Pen's actions, prioritizing a collective moral standard over personal interest, as seen in phrases like ""that's fucked up"" and concern for ""whole castes of people"".","NO
+The text focuses on individual actions and opinions, using phrases like ""I would certainly have my doubts"" and criticizing a politician's behavior, indicating an individualistic tone rather than a collectivist one.","NO
+The text criticizes Le Pen's behavior, but there's no direct evidence of concern for one's own reputation or maintaining social status, which is key to the concept of Honor.","NO
+The text discusses intolerance and hatred, but does not mention strict norms or enforcement, which are key aspects of tightness.","NO
+The text criticizes Le Pen's divisive behavior and hatred, but doesn't exhibit tolerance for deviant behavior or lack of strict social norms, which are characteristic of looseness.","YES
+The text expresses concern for the well-being of Muslims and condemnation of hateful behavior, indicating a desire to protect individuals from harm, as seen in phrases like ""promotes the hatred of whole castes of people"" and ""that's fucked up"".","YES
+The text implies a desire for equal treatment by criticizing Le Pen's divisive and hateful behavior towards certain groups, such as Muslims, citing it as ""fucked up"" for promoting hatred against ""whole castes of people"".","NO
+The text criticizes Le Pen's actions and promotes moral judgment, but doesn't discuss rewards or punishments proportional to costs, contributions, or guilt, as required by the Proportionality definition.","NO
+The text criticizes Le Pen and her divisive behavior, but doesn't express loyalty to a specific group or ingroup, instead emphasizing moral concerns.","NO
+The text criticizes a politician (Le Pen) and her divisive actions, but does not submit to or invoke authority, tradition, or established institutions to support its claims.","NO
+The text criticizes Le Pen's hateful speech, but doesn't mention maintaining sanctity or avoiding contamination of sacred entities, citing ""hatred of whole castes of people"" and ""hateful"" as the concerns.","NO
+There is no direct mention of rights, responsibilities, or control over physical or intellectual property, only a discussion of a politician's actions and their implications.","NO
+The text discusses hatred and divisive behavior, but does not mention freedom, autonomy, or the right to choose, which are key aspects of Liberty.","YES
+The text expresses sincere and truthful opinions, as evidenced by phrases like ""That's fucked up"" and ""I would certainly have my doubts"", indicating a genuine and unfiltered expression of the author's thoughts.","NO
+The text uses thick moral terms like ""hatred"", ""divisive"", and ""fucked up"" to evaluate Le Pen's actions, indicating a discussion of moral values beyond just ""right"" or ""wrong"".","YES
+The text contains profanity (""fucked up"") and derogatory language aimed at belittling a person (Le Pen), indicating OffensiveUncivilLanguage.","NO
+The text criticizes Le Pen's promotion of hatred, using phrases like ""promotes the hatred of whole castes of people"" and ""that's fucked up"", indicating opposition to hate speech, not endorsement.","NO
+The text criticizes Le Pen's divisive rhetoric, but doesn't express fear of a target group, instead condemning hatred towards Muslims.","NO
+The text expresses strong negative opinions and comparisons to historical occupations, but does not directly mention a pending danger or harm, only using phrases like ""hatred"" which is not enough to constitute a threat.","NO
+There is no direct evidence of original work, theories, techniques, or thoughts that demonstrate creativity or innovation in this text. The language used is critical and opinion-based, but does not showcase imaginative or expressive ideas.","NO
+There is no mention of family bonds, household structures, lineage, or community cohesion in the text, which focuses on criticizing a politician's actions and statements.","YES
+The text mentions ""Muslims praying in the streets of France"", which directly references a religious practice, providing observable evidence of religion.","NO
+The text does not exhibit intellectual humility, as it contains strong, absolute statements (""That's fucked up"", ""hateful"") without acknowledging potential limitations or fallibilities in the author's own thinking or beliefs, or showing willingness to consider alternative perspectives (cited phrases: ""That's fucked up"", ""I would certainly have my doubts"").","NO
+The text focuses on emotional and moral judgment, using phrases like ""That's fucked up"" and ""promotes the hatred of whole castes of people"", indicating a more empathetic and value-based response rather than analytical thinking.","NO
+The text expresses distrust and criticism towards a specific politician and group, indicating a lack of generalized trust. Keywords: ""divisive"", ""hatred"", ""doubts""."
+22970,6,0-shot_binary_incentive_strict,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,1,0,0,"NO
+The text discusses a political leader and their supporters, focusing on group dynamics and collective mentality, without emphasizing self-interest, personal identity, or internal standards.","NO
+There is no direct evidence of collectivism, as the text focuses on individual politicians and their supporters' mentalities, without emphasizing group solidarity, shared duties, or collective goals.","NO
+There is no direct mention of concern for reputation, social status, or reciprocity, which are key aspects of honor. The text discusses political opinions and tendencies without referencing honor-related themes.","NO
+The text discusses a politician's populist tendencies and the mentality of their supporters, but does not mention strict norms, enforcement, or punishment, which are key indicators of tightness.","NO
+The text discusses a politician's populist tendencies and the potential backlash, but does not directly mention or imply a culture with loose social norms or tolerance for deviant behavior, as cited by phrases like ""get all of these fuckers out"" which is more related to aggressive sentiment rather than looseness.","NO
+The text criticizes Macron and his supporters, using strong language (""fuckers""), indicating a lack of care or concern for their well-being.","NO
+The text discusses political tendencies and voter mentality, but does not mention equal treatment or outcomes for all individuals, which is the core of equality.","NO
+There is no mention of rewards, punishments, costs, contributions, effort, merit, or guilt being proportional to anything, so no evidence of proportionality is present.","NO
+The text criticizes Macron and mentions potential negative consequences of his supporters' mentality, showing no evidence of preserving group cohesion or prioritizing an ingroup.","NO
+The text criticizes and questions Macron's populist tendencies, rather than submitting to or respecting authority. Words like ""fuckers"" also imply a rejection of established figures.","NO
+The text discusses political ideologies and tendencies without mentioning sacred entities, bodily or spiritual purity, or contamination. Words like ""renew"" and ""get all of these fuckers out"" imply change and criticism, not purity concerns.","NO
+There is no mention of rights, responsibilities, or control over physical or intellectual property in the text, only a discussion of political ideologies and supporter mentality.","NO
+The text discusses political tendencies and election promises, but does not directly mention freedom, autonomy, or the right to choose, which are key aspects of Liberty.","YES
+The text expresses a genuine, unbiased opinion about Macron, citing both positive (""a good thing"") and negative (""populist tendencies"") aspects, indicating truthfulness and sincerity.","YES
+The text contains the term ""good"", which is a thin moral concept, as stated in the guidelines.","YES
+The text contains the profanity ""fuckers"", which is a derogatory term aimed at belittling or demeaning a group, indicating offensive language.","NO
+The text criticizes Macron's populist tendencies, but does not contain language that dehumanizes or attacks the dignity of a specific group, nor does it incite violence. The phrase ""get all of these fuckers out"" is quoted as a mentality of some supporters, not endorsed by the author.","NO
+The text discusses Macron's populist tendencies, but does not express fear of a target social group based on characteristics like race, ethnicity, or gender identity. The phrase ""get all of these fuckers out"" is attributed to some of Macron's supporters, not a specific social group.","NO
+The text mentions a potentially divisive mentality, but does not contain direct, observable evidence of a pending danger or harm, such as words like ""crisis"" or ""violent"". The phrase ""get all of these fuckers out"" is an expression of frustration, but not a clear threat.","NO
+The text discusses political opinions and analysis, but does not exhibit original, imaginative, or expressive ideas, nor does it mention new experiences or openness, citing phrases like ""get all of these fuckers out"" as a mentality, which is more of a critique than a creative expression.","NO
+There is no mention of family, household, lineage, or community relationships in the text, which focuses on political opinions and tendencies.","NO
+There is no mention of spiritual beliefs, practices, or deities in the text, only a discussion of politics and populist tendencies.","YES
+The text acknowledges nuance and complexity of Macron's character, stating ""he is also a populist sometimes"", showing recognition of limitations in one's own knowledge (Type 1).","NO
+The text lacks discrete categorization, object focus, and application of rules, instead expressing a personal opinion and anecdotal observation about Macron's populist tendencies.","NO
+The text expresses a critical view of Macron and his supporters, indicating a lack of trust in their motivations and actions, as seen in the phrase ""get all of these fuckers out""."
+23566,6,0-shot_binary_incentive_strict,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,1,0,0,0,0,0,0,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,"YES
+The text shows individualism as the author prioritizes their own interests (watching TV, food prep) over the tenant's complaints, and considers asking for more rent to assert their own needs.","NO
+The text focuses on individual concerns and boundaries, using phrases like ""I watch"" and ""I was willing to tolerate"", indicating an individualistic tone rather than a collectivist one.","NO
+There is no direct evidence of concern for reputation or social status, which are key components of honor. The text focuses on a practical issue of shared space and rent.","NO
+The text describes a personal living situation with flexible boundaries, where the author allows a tenant to use the kitchen as a workspace, indicating a loose rather than tight cultural context, as evidenced by phrases like ""I agreed"" and ""I was willing to tolerate"".","NO
+The text describes a situation where the author is setting boundaries and considering rent increases due to a tenant's extensive use of the kitchen, indicating a desire for structure and norms, rather than looseness.","NO
+The text discusses a landlord-tenant issue and potential rent increase, without expressing concern for the tenant's well-being or protection from harm, which is the core of Care.","NO
+The text discusses a dispute over shared space and potential rent increase, but does not mention equal treatment or fairness for all individuals, only a personal conflict.","YES
+The text contains proportionality as the author considers asking for more rent due to the tenant's ""almost exclusive use of the kitchen 40 hours per week"", implying a desire for rewards (rent) to be proportional to the tenant's use of resources.","NO
+The text discusses a landlord-tenant issue, with no apparent concern for group cohesion or prioritization of ingroups, only a personal inconvenience and consideration of rent adjustment.","NO
+There is no mention of established figures, institutions, or submission to traditions, which are key indicators of Authority. The text focuses on a personal living situation and a dispute with a tenant.","NO
+There is no mention of sacred entities, bodily or spiritual purity, or contamination/degradation in the text, which focuses on a tenant dispute.","YES
+The text contains phrases like ""my home"", ""I rent rooms out"", and ""I agreed"" which indicate acknowledgment of rights and responsibilities related to possessing or controlling the property.","NO
+The text discusses a living situation and a request for more rent, but does not mention freedom, autonomy, or the right to choose, which are key aspects of Liberty.","YES
+The text contains honest expressions, such as ""I was willing to tolerate the inconvenience"" and ""I agreed"", indicating truthfulness and sincerity about the situation and the author's intentions.","NO
+Reasoning: No evaluative terms like ""right"", ""wrong"", ""good"", or ""bad"" are used in a moral context, only practical concerns are discussed.","NO
+The text does not contain profanity, slurs, derogatory terms, or a hostile tone, and the language used is polite and respectful, even when expressing frustration with the tenant's complaints.","NO
+There is no language attacking the dignity of a group, no dehumanization, and no incitement to violence or hatred. The text discusses a personal dispute over kitchen usage.","NO
+There is no mention of a target social group or attempt to instill fear based on characteristics like race, ethnicity, or other protected classes. The text discusses a personal dispute over shared living space.","NO
+There is no direct evidence of a pending danger or harm, such as words like ""crisis"", ""frightening"", or ""violent"", or mentions of wars, natural disasters, or pathogens. The text discusses a domestic dispute over kitchen usage.","NO
+There is no direct evidence of original work, theories, techniques, or thoughts, or language related to openness to new experiences, in the text. The situation described is a common household issue.","NO
+The text describes a landlord-tenant relationship, not a familial or community bond, with no mention of family, lineage, or ancestry, and the household structure is a rental arrangement rather than an extended family living together.","NO
+There is no mention of spiritual beliefs, practices, or sacred entities in the text, which focuses on a landlord-tenant issue.","NO
+The text does not demonstrate intellectual humility, as the author is seeking validation for their potential action (asking for more rent) rather than acknowledging limitations or fallibilities in their thinking, or showing willingness to revise their beliefs.","NO
+The text describes a personal situation and seeks opinion on a decision, without applying rules, categories, or abstract analysis to decontextualize the issue.","NO
+The text describes a specific situation with a tenant, focusing on boundaries and rent, without expressing general trust or distrust in people or institutions, as evidenced by the lack of phrases indicating broad trust, such as ""I trust people"" or ""people are generally honest."""
+53902,6,0-shot_binary_incentive_strict,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,"NO
+The text discusses group-related issues (Le Pen's campaign, Brexit, immigrants) and doesn't express self-interest or individual priorities, citing ""my point"" as an opinion, but still focusing on collective concerns.","NO
+The text discusses political campaigns and grievances, but does not mention group identity, collective goals, or prioritizing others' needs, which are key aspects of collectivism.","NO
+There is no direct mention of concern for reputation, social status, or reciprocity, which are key aspects of honor. The text discusses political campaigns and grievances, without referencing personal or familial honor.","NO
+There is no direct evidence of strict norms enforcement or tolerance of deviant behavior, only discussion of political campaigns and grievances.","NO
+The text discusses political campaigns and grievances, but does not exhibit tolerance for deviant behavior or lack of strict social norms, which are characteristic of looseness.","NO
+The text criticizes scaremongering and ulterior motives, but doesn't express protection or support for individuals, which is the core of Care.","NO
+The text discusses political campaigns and grievances, but does not directly mention equal treatment or outcomes for all individuals, which is the core concept of equality.","NO
+The text discusses grievances and motivations, but does not mention rewards, punishments, or proportionality to costs, contributions, or merit, as required by the definition.","NO
+The text discusses political campaigns and grievances, but does not express cooperation or prioritization of an ingroup, or competition against an outgroup, citing ""ulterior motives"" instead.","NO
+There is no mention of established figures, institutions, or traditions, which are key indicators of Authority. The text discusses political campaigns and grievances, but does not invoke authority or submission to it.","NO
+The text discusses political campaigns and grievances, but does not mention sacred entities, bodily or spiritual purity, or contamination. Keywords like ""scaremongering"" and ""ulterior motives"" relate to political tactics, not purity.","NO
+There is no direct mention of rights, responsibilities, or control over physical or intellectual property, only discussion of political campaigns and grievances.","NO
+There is no direct mention of freedom, autonomy, or the right to choose, only discussion of political campaigns and grievances.","YES
+The text expresses a truthful perspective, citing ""scaremongering stories"" and ""ulterior motives"", indicating sincerity and a lack of deceit, as seen in phrases like ""That was my point"" and ""Of course there are real grievances"".","NO
+The text discusses political campaigns and grievances, but does not contain evaluative terms like ""right"", ""bad"", or ""ought"" that are characteristic of thin moral concepts.","NO
+The text criticizes ""scaremongering stories"" and mentions ""rapists"" as an example, but does so in a context that aims to highlight misinformation, without using derogatory language or tone towards any group.","NO
+The text criticizes scaremongering stories about immigrants, but does not contain dehumanizing language, incitement to violence, or hate-based rhetoric towards a specific group, as seen in phrases like ""scaremongering stories"" and ""ulterior motives"".","NO
+The text mentions ""scaremongering stories about immigrants and waves of rapists"" but frames it as a critique of fear-mongering, rather than promoting fear itself (citing ""my point"" and ""ulterior motives"").","YES
+The text mentions ""scaremongering stories about... waves of rapists"", which implies a perceived danger or harm, indicating a threat.","NO
+The text does not contain language related to originality, imagination, or openness to new experiences, which are characteristic of creativity. It appears to be a discussion of political issues and grievances.","NO
+The text discusses political campaigns and grievances, with no mention of family, household, lineage, or community relationships, which are essential elements of kinship.","NO
+There is no mention of spiritual beliefs, practices, or deities in the text, which focuses on political campaigns and grievances.","NO
+The text does not demonstrate intellectual humility, as it presents a definitive opinion (""That was my point"") without acknowledging potential limitations or fallibilities in the author's thinking, or showing willingness to revise beliefs.","YES
+The text demonstrates analytical thinking by categorizing complaints (real vs. fanned by ulterior motives) and applying rules to understand their behavior, as seen in phrases like ""those are not the complaints"" and ""the problem is many are not real"".","NO
+The text expresses skepticism and criticism towards certain campaigns and motivations, implying a lack of trust in specific groups or information, but does not provide direct evidence of generalized trust or distrust in individuals and institutions."
+102,6,0-shot_binary_incentive_strict,casperhansen/llama-3.3-70b-instruct-awq,local_vllm,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,"NO
+The text lacks direct evidence of individualism, focusing on personal preferences for TV shows without emphasizing self-interest or independence.","NO
+The text does not contain direct evidence of collectivism, as it focuses on individual opinions and preferences for TV shows, using phrases like ""I'm undecided"" and ""I'm all out of shit to watch"", which emphasize personal taste rather than group norms or collective goals.","NO
+There is no direct evidence of concern for reputation, social status, or reciprocity, which are key aspects of honor. The text only discusses TV show preferences.","NO
+There is no mention of social norms, enforcement, or tolerance of deviant behavior, which are key indicators of Tightness. The text only discusses TV show recommendations.","NO
+There is no direct evidence of loose culture characteristics, such as tolerance for deviant behavior or lack of strict social norms, in the text. The conversation is about TV show recommendations.","NO
+The text discusses TV show recommendations and personal viewing preferences, without mentioning protection, support, or avoidance of harm, which are key aspects of Care.","NO
+There is no mention of equal treatment, fairness, or societal well-being in the text, which focuses on TV show recommendations.","NO
+There is no mention of rewards, punishments, costs, contributions, or merit being proportional to anything, so no evidence of proportionality is present in the text.","NO
+There is no direct evidence of preserving group cohesion, cooperation, or prioritization of ingroups in the text, which only discusses TV show preferences.","NO
+There is no mention of established figures, institutions, traditions, or submission to authority in the text, which only discusses TV show recommendations.","NO
+The text discusses TV shows and contains no language related to maintaining sanctity, avoiding contamination, or degradation of sacred entities, as per the Purity definition.","NO
+There is no mention of rights, responsibilities, or control over physical or intellectual property in the text, only discussions about TV shows and watching preferences.","NO
+The text discusses TV show recommendations and personal viewing preferences, without mentioning freedom, autonomy, or rights, so there's no direct evidence of Liberty.","YES
+The text contains phrases like ""I'm undecided"" and ""It kind of hurts"", which express sincere and truthful emotions, indicating honesty.","NO
+The text does not contain evaluative terms like ""right"", ""wrong"", ""good"", or ""bad"" that are related to moral concepts, only discusses TV show preferences.","NO
+The text contains informal language (""shit to watch""), but it's not directed at a person or group in a derogatory manner, and the tone appears casual rather than hostile.","NO
+The text discusses TV shows and asks for suggestions, with no language attacking the dignity of a group or inciting hatred or violence.","NO
+There is no mention of a target social group or any notion of domination, and the text only discusses TV show recommendations.","NO
+The text discusses TV shows and contains no words or phrases associated with threats, such as ""crisis"", ""frightening"", or ""violent"", or references to wars, natural disasters, or pathogens.","NO
+The text discusses TV show recommendations and personal viewing preferences, with no direct evidence of original work, theories, or imaginative expressions related to creativity or innovation.","NO
+There is no mention of family, household, lineage, or community relationships in the text, only discussion about TV shows.","NO
+There is no mention of spiritual beliefs, practices, or deities in the text, only discussions about TV shows.","NO
+The text does not contain IntellectualHumility as it lacks expressions of uncertainty, recognition of fallibility, or openness to revision, such as phrases like ""I'm not sure"" or ""I could be wrong"".","NO
+The text lacks discrete categorization, object focus, and application of rules, instead expressing personal preferences and uncertainty about TV shows.","NO
+The text does not contain direct evidence of generalized trust, as it only discusses TV show preferences and does not mention trust in individuals or institutions."

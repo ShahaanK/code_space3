@@ -16,6 +16,9 @@ ALL_MODELS = [
     # Local vLLM models — Llama (official HF quants)
     {"name": "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4",
      "provider": "local_vllm", "temperature": 0, "max_tokens": 1024, "enabled": False},
+    # Llama 3.3 upgrade
+    {"name": "casperhansen/llama-3.3-70b-instruct-awq",
+     "provider": "local_vllm", "temperature": 0, "max_tokens": 256, "enabled": False},
     # Local vLLM models — Llama (casperhansen, legacy)
     {"name": "casperhansen/llama-3-70b-instruct-awq",
      "provider": "local_vllm", "temperature": 0, "max_tokens": 1024, "enabled": False},
