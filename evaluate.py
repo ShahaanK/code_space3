@@ -207,18 +207,17 @@ def evaluate_group(results_group, gold, label_cols):
 
         metrics = compute_binary_metrics(y_true, y_pred)
         label_metrics[label] = metrics
-
-        # Only include labels with at least one positive in gold for macro-F1
+	
+	# "Keep the 0" — all labels contribute to macro F1
+        f1_scores.append(metrics["f1"])
         if metrics["support"] > 0:
-            f1_scores.append(metrics["f1"])
             labels_with_support += 1
 
-    # Macro averages (only over labels that have positive examples in gold)
+   
+   # Macro averages over ALL labels (including zero-support — "Keep the 0")
     macro_f1 = np.mean(f1_scores) if f1_scores else 0.0
-    macro_precision = np.mean([m["precision"] for m in label_metrics.values()
-                               if m["support"] > 0]) if labels_with_support > 0 else 0.0
-    macro_recall = np.mean([m["recall"] for m in label_metrics.values()
-                            if m["support"] > 0]) if labels_with_support > 0 else 0.0
+    macro_precision = np.mean([m["precision"] for m in label_metrics.values()]) if label_metrics else 0.0
+    macro_recall = np.mean([m["recall"] for m in label_metrics.values()]) if label_metrics else 0.0
 
     # Micro averages (over all labels)
     total_tp = sum(m["tp"] for m in label_metrics.values())
@@ -363,7 +362,7 @@ def main():
     # Show which labels have no positive examples
     zero_support = [c for c in label_cols if gold[c].sum() == 0]
     if zero_support:
-        print(f"  Labels with zero positives (unevaluable): {zero_support}")
+        print(f"  Labels with zero positives (included in macro F1): {zero_support}")
 
     # --- Load results ---
     if args.results:

@@ -50,6 +50,18 @@ LOCAL_MODELS = [
         "max_model_len": 2048,
         "gpu_memory_utilization": 0.90,
         "extra_flags": "",
+        "enabled": False,  # replaced by Llama 3.3
+    },
+    {
+        "name": "casperhansen/llama-3.3-70b-instruct-awq",
+        "short_name": "llama-3.3-70b",
+        "origin": "Western (Meta, USA)",
+        "quantization": "awq_marlin",
+        "quantization_fallback": "awq",
+        "tensor_parallel_size": 2,
+        "max_model_len": 2048,
+        "gpu_memory_utilization": 0.90,
+        "extra_flags": "",
         "enabled": True,
     },
     {

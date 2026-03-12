@@ -16,7 +16,7 @@ runtime:
   sample_file: samples/50_random_samples.csv
   text_id_column: Number
   text_column: text
-  output_dir: outputs/run_005_testing_50_r2
+  output_dir: outputs/run_007_llama33_50samp
   output_prefix: camel_results_fullguide
   max_retries: 3
   retry_delay_seconds: 2
@@ -83,6 +83,11 @@ models:
   max_tokens: 256
   enabled: false
 - name: hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4
+  provider: local_vllm
+  temperature: 0
+  max_tokens: 256
+  enabled: false
+- name: casperhansen/llama-3.3-70b-instruct-awq
   provider: local_vllm
   temperature: 0
   max_tokens: 256

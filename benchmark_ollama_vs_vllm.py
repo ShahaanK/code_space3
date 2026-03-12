@@ -9,12 +9,14 @@ upgraded CUDA drivers (which forces Ollama instead of vLLM).
 Produces a comparison report with:
   - RPM (requests per minute) for each backend x model
   - Projected wall-clock time for full 56K corpus
-  - Dollar cost: researcher time + HPC node-hours
   - Speedup factor (vLLM / Ollama)
 
 Usage on Apophis:
     # Quick benchmark (5 labels, ~15-30 min per model on Ollama)
     python benchmark_ollama_vs_vllm.py --config config3_50_samps.yaml
+
+    # Most defensible: sweep Ollama worker counts, use its best RPM
+    python benchmark_ollama_vs_vllm.py --config config3_50_samps.yaml --skip-vllm --sweep-ollama
 
     # Full benchmark (25 labels, ~7+ hrs per 70B model on Ollama)
     python benchmark_ollama_vs_vllm.py --config config3_50_samps.yaml --labels 25
@@ -27,13 +29,22 @@ Usage on Apophis:
 
 Prerequisites:
     1. Pull Ollama models before running:
-         ollama pull llama3.1:70b
+         ollama pull llama3.3:70b
          ollama pull qwen2.5:72b
          ollama pull deepseek-r1:32b
-    2. Make sure Ollama is running:  ollama serve  (or just type 'ollama')
+    2. Start Ollama with parallel request support:
+         pkill -f ollama
+         OLLAMA_NUM_PARALLEL=16 OLLAMA_GPU_LAYERS=999 nohup ollama serve &
     3. Make sure vLLM is NOT running (or use --skip-vllm to use known baselines)
     4. IMPORTANT: Shut down Ollama after benchmarking to free GPU:
          pkill -f ollama
+
+Fair comparison methodology:
+    - Both backends tested with identical concurrency (16 worker threads)
+    - Ollama: OLLAMA_NUM_PARALLEL=16, OLLAMA_GPU_LAYERS=999 (full GPU), 16 worker threads
+    - vLLM:   16 worker threads (matches production config)
+    - Both get a warmup call excluded from timing
+    - Same prompt, same texts, same labels, same random seed
 
 Author: Shahaan Khan
 Research: Prof. Joshua Introne, Syracuse University iSchool
@@ -61,13 +72,13 @@ from prompt_builder import build_prompt
 
 MODELS = [
     {
-        "short_name": "Llama 3.1 70B",
+        "short_name": "Llama 3.3 70B",
         "origin": "Western (Meta, USA)",
-        "vllm_name": "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4",
-        "ollama_name": "llama3.1:70b",
+        "vllm_name": "casperhansen/llama-3.3-70b-instruct-awq",
+        "ollama_name": "llama3.3:70b",
         "max_tokens_vllm": 256,
         "max_tokens_ollama": 256,
-        "vllm_known_rpm": 195,  # from run_005 benchmark
+        "vllm_known_rpm": 195,  # estimated from 3.1 baseline (same VRAM/arch)
     },
     {
         "short_name": "Qwen 2.5 72B",
@@ -103,18 +114,13 @@ PROVIDER_VLLM = {
 }
 
 # =============================================================================
-# COST PARAMETERS
+# FULL CORPUS SCALE (for time projections)
 # =============================================================================
 
-# Full corpus scale
 FULL_CORPUS_TEXTS = 56_797
 PROMPTS_PER_TEXT = 5
 LABELS_PER_TEXT = 25
 FULL_CORPUS_CALLS = FULL_CORPUS_TEXTS * PROMPTS_PER_TEXT * LABELS_PER_TEXT  # 7,099,625
-
-# Cost rates (configurable via CLI)
-DEFAULT_HPC_NODE_HOUR_RATE = 0.50    # $/node-hour -- PLACEHOLDER, update with real rate
-DEFAULT_RESEARCHER_HOURLY_RATE = 30  # $/hour -- PhD student opportunity cost
 
 
 # =============================================================================
@@ -187,16 +193,21 @@ def list_ollama_models():
 
 def run_single_benchmark(provider_config, model_name, max_tokens, config,
                          texts_df, label_names, num_labels, prompt_config,
-                         labels, annotation_guidelines, example_selection, rng):
+                         labels, annotation_guidelines, example_selection, rng,
+                         workers=1):
     """
-    Run the benchmark for one backend+model combo (sequential).
+    Run the benchmark for one backend+model combo.
+    Supports both sequential (workers=1) and threaded (workers>1) modes.
     Returns dict with timing results, or None on failure.
     """
+    from joblib import Parallel, delayed
+
     runtime = config["runtime"]
     selected_labels = label_names[:num_labels]
     total_calls = len(texts_df) * len(selected_labels)
 
     print(f"      Calls: {len(texts_df)} texts x {len(selected_labels)} labels = {total_calls}")
+    print(f"      Workers: {workers}")
 
     # Build all tasks
     tasks = []
@@ -232,12 +243,9 @@ def run_single_benchmark(provider_config, model_name, max_tokens, config,
         return None
     print(f"OK ({parse_yes_no(warmup_resp)})")
 
-    # Timed run (sequential -- Ollama doesn't batch well)
-    errors = 0
-    start = time.time()
-
-    for i, (text_id, label_name, prompt) in enumerate(tasks):
-        response = call_model(
+    def call_one(text_id, label_name, prompt):
+        """Single model call. Returns True if error, False if OK."""
+        resp = call_model(
             provider_config=provider_config,
             model_name=model_name,
             prompt=prompt,
@@ -246,22 +254,35 @@ def run_single_benchmark(provider_config, model_name, max_tokens, config,
             max_retries=2,
             retry_delay=2,
         )
-        if response.startswith("ERROR:"):
-            errors += 1
+        return resp.startswith("ERROR:") if resp else True
 
-        # Progress every 50 calls
-        if (i + 1) % 50 == 0 or i == len(tasks) - 1:
-            elapsed_so_far = time.time() - start
-            rpm_so_far = ((i + 1) / elapsed_so_far) * 60 if elapsed_so_far > 0 else 0
-            eta_min = (len(tasks) - (i + 1)) / rpm_so_far if rpm_so_far > 0 else 0
-            print(f"      [{i+1}/{len(tasks)}] RPM: {rpm_so_far:.1f} | "
-                  f"ETA: {eta_min:.1f} min | Errors: {errors}", end="\r")
+    # Timed run
+    start = time.time()
+
+    if workers <= 1:
+        # Sequential
+        errors = 0
+        for i, (text_id, label_name, prompt) in enumerate(tasks):
+            is_error = call_one(text_id, label_name, prompt)
+            if is_error:
+                errors += 1
+            if (i + 1) % 25 == 0 or i == len(tasks) - 1:
+                elapsed_so_far = time.time() - start
+                rpm_so_far = ((i + 1) / elapsed_so_far) * 60 if elapsed_so_far > 0 else 0
+                eta_min = (len(tasks) - (i + 1)) / rpm_so_far if rpm_so_far > 0 else 0
+                print(f"      [{i+1}/{len(tasks)}] RPM: {rpm_so_far:.1f} | "
+                      f"ETA: {eta_min:.1f} min | Errors: {errors}", end="\r")
+        print()
+    else:
+        # Threaded via joblib
+        error_flags = Parallel(n_jobs=workers, backend="threading")(
+            delayed(call_one)(t, l, p) for t, l, p in tasks
+        )
+        errors = sum(1 for e in error_flags if e)
 
     elapsed = time.time() - start
     rpm = (len(tasks) / elapsed) * 60 if elapsed > 0 else 0
     avg_per_call = elapsed / len(tasks) if len(tasks) > 0 else 0
-
-    print()  # Clear the \r line
 
     return {
         "total_calls": len(tasks),
@@ -350,134 +371,100 @@ def run_vllm_benchmark_threaded(model, config, texts_df, label_names,
 
 
 # =============================================================================
-# COST PROJECTIONS
-# =============================================================================
-
-def compute_projections(rpm, hpc_rate, researcher_rate):
-    """
-    Given an RPM, project time and cost for the full corpus.
-    Returns dict with hours, days, hpc_cost, researcher_cost.
-    """
-    if rpm <= 0:
-        return {"hours": float("inf"), "days": float("inf"),
-                "hpc_cost": float("inf"), "researcher_cost": float("inf")}
-
-    hours = FULL_CORPUS_CALLS / rpm / 60
-    days = hours / 24
-    hpc_cost = hours * hpc_rate
-    researcher_cost = hours * researcher_rate
-
-    return {
-        "hours": round(hours, 1),
-        "days": round(days, 1),
-        "hpc_cost": round(hpc_cost, 2),
-        "researcher_cost": round(researcher_cost, 2),
-    }
-
-
-# =============================================================================
 # REPORT GENERATION
 # =============================================================================
 
-def print_report(results, hpc_rate, researcher_rate):
-    """Print the final comparison report."""
+def print_report(results):
+    """Print the final comparison report — time-focused, no cost."""
 
     print("\n")
     print("=" * 90)
     print("  BENCHMARK RESULTS: Ollama vs vLLM")
     print("  Ammunition for HPC CUDA Driver Upgrade Request")
     print("=" * 90)
+    print("  Methodology: Both backends tested with identical concurrency (16 threads).")
+    print("  Ollama given OLLAMA_NUM_PARALLEL=16 + OLLAMA_GPU_LAYERS=999 (full GPU offload).")
+    print("  Worker sweep performed to find Ollama's optimal throughput.")
 
     # --- RAW THROUGHPUT TABLE ---
-    print(f"\n{'MODEL':<22s} | {'BACKEND':<8s} | {'RPM':>8s} | {'Avg (s)':>8s} | "
+    print(f"\n{'MODEL':<22s} | {'BACKEND':<20s} | {'RPM':>8s} | {'Avg (s)':>8s} | "
           f"{'Calls':>6s} | {'Errors':>6s}")
-    print("-" * 80)
+    print("-" * 85)
 
     for r in results:
-        print(f"{r['model']:<22s} | {r['backend']:<8s} | {r['rpm']:>8.1f} | "
+        print(f"{r['model']:<22s} | {r['backend']:<20s} | {r['rpm']:>8.1f} | "
               f"{r['avg_s']:>8.3f} | {r['calls']:>6d} | {r['errors']:>6d}")
 
     # --- SPEEDUP TABLE ---
     print(f"\n{'MODEL':<22s} | {'Ollama RPM':>11s} | {'vLLM RPM':>9s} | {'Speedup':>8s}")
-    print("-" * 60)
+    print("-" * 65)
 
     model_names = list(dict.fromkeys(r["model"] for r in results))
     speedups = []
 
     for model in model_names:
-        ollama_r = [r for r in results if r["model"] == model and r["backend"] == "Ollama"]
-        vllm_r = [r for r in results if r["model"] == model and r["backend"] == "vLLM"]
+        ollama_r = [r for r in results if r["model"] == model and r["backend"].startswith("Ollama")]
+        vllm_r = [r for r in results if r["model"] == model and r["backend"].startswith("vLLM")]
 
         ollama_rpm = ollama_r[0]["rpm"] if ollama_r else 0
+        ollama_backend = ollama_r[0]["backend"] if ollama_r else "Ollama"
         vllm_rpm = vllm_r[0]["rpm"] if vllm_r else 0
 
         speedup = vllm_rpm / ollama_rpm if ollama_rpm > 0 else float("inf")
         speedups.append({
             "model": model, "ollama_rpm": ollama_rpm,
+            "ollama_backend": ollama_backend,
             "vllm_rpm": vllm_rpm, "speedup": speedup,
         })
 
-        print(f"{model:<22s} | {ollama_rpm:>11.1f} | {vllm_rpm:>9.1f} | {speedup:>7.1f}x")
+        print(f"{model:<22s} | {ollama_rpm:>11.1f} | {vllm_rpm:>9.1f} | {speedup:>7.1f}x"
+              f"  {ollama_backend}")
 
-    # --- FULL CORPUS PROJECTION ---
+    # --- FULL CORPUS TIME PROJECTION ---
     print(f"\n{'=' * 90}")
-    print(f"  FULL CORPUS PROJECTION: {FULL_CORPUS_TEXTS:,} texts x "
+    print(f"  FULL CORPUS TIME PROJECTION: {FULL_CORPUS_TEXTS:,} texts x "
           f"{PROMPTS_PER_TEXT} prompts x {LABELS_PER_TEXT} labels = "
           f"{FULL_CORPUS_CALLS:,} calls per model")
     print(f"{'=' * 90}")
 
-    print(f"\n  Cost assumptions:")
-    print(f"    HPC node-hour rate:     ${hpc_rate:.2f}/hr  (PLACEHOLDER -- update with real rate)")
-    print(f"    Researcher hourly rate: ${researcher_rate:.2f}/hr")
-
-    print(f"\n{'MODEL':<22s} | {'Backend':<8s} | {'Days':>6s} | {'Hours':>7s} | "
-          f"{'HPC Cost':>10s} | {'Researcher':>11s}")
-    print("-" * 80)
-
-    total_savings_hpc = 0
-    total_savings_researcher = 0
+    print(f"\n{'MODEL':<22s} | {'Backend':<8s} | {'Days':>8s} | {'Hours':>9s}")
+    print("-" * 55)
 
     for s in speedups:
-        for backend, rpm in [("Ollama", s["ollama_rpm"]), ("vLLM", s["vllm_rpm"])]:
-            proj = compute_projections(rpm, hpc_rate, researcher_rate)
-            print(f"{s['model']:<22s} | {backend:<8s} | {proj['days']:>6.1f} | "
-                  f"{proj['hours']:>7.1f} | ${proj['hpc_cost']:>9.2f} | "
-                  f"${proj['researcher_cost']:>10.2f}")
-
-        ollama_proj = compute_projections(s["ollama_rpm"], hpc_rate, researcher_rate)
-        vllm_proj = compute_projections(s["vllm_rpm"], hpc_rate, researcher_rate)
-        total_savings_hpc += (ollama_proj["hpc_cost"] - vllm_proj["hpc_cost"])
-        total_savings_researcher += (ollama_proj["researcher_cost"] - vllm_proj["researcher_cost"])
+        for backend, rpm in [(s["ollama_backend"], s["ollama_rpm"]), ("vLLM", s["vllm_rpm"])]:
+            if rpm > 0:
+                hours = FULL_CORPUS_CALLS / rpm / 60
+                days = hours / 24
+            else:
+                hours = float("inf")
+                days = float("inf")
+            backend_short = "Ollama" if backend.startswith("Ollama") else "vLLM"
+            print(f"{s['model']:<22s} | {backend_short:<8s} | {days:>8.1f} | {hours:>9.1f}")
 
     # --- BOTTOM LINE ---
     print(f"\n{'=' * 90}")
     print(f"  BOTTOM LINE (across all {len(model_names)} models, single full-corpus run)")
     print(f"{'=' * 90}")
 
-    total_ollama_days = sum(
-        compute_projections(s["ollama_rpm"], hpc_rate, researcher_rate)["days"]
-        for s in speedups
-    )
-    total_vllm_days = sum(
-        compute_projections(s["vllm_rpm"], hpc_rate, researcher_rate)["days"]
-        for s in speedups
-    )
+    total_ollama_days = 0
+    total_vllm_days = 0
+    for s in speedups:
+        if s["ollama_rpm"] > 0:
+            total_ollama_days += FULL_CORPUS_CALLS / s["ollama_rpm"] / 60 / 24
+        if s["vllm_rpm"] > 0:
+            total_vllm_days += FULL_CORPUS_CALLS / s["vllm_rpm"] / 60 / 24
 
     print(f"\n  Total wall-clock time (all {len(model_names)} models, sequential):")
     print(f"    Ollama:  {total_ollama_days:.1f} days")
     print(f"    vLLM:    {total_vllm_days:.1f} days")
     print(f"    Saved:   {total_ollama_days - total_vllm_days:.1f} days")
 
-    print(f"\n  Total cost savings with CUDA upgrade (enabling vLLM):")
-    print(f"    HPC node-hours saved:    ${total_savings_hpc:,.2f}")
-    print(f"    Researcher time saved:   ${total_savings_researcher:,.2f}")
-    print(f"    Combined savings:        ${total_savings_hpc + total_savings_researcher:,.2f}")
-
     avg_speedup = sum(s["speedup"] for s in speedups) / len(speedups) if speedups else 0
+    ollama_configs = ", ".join(s["ollama_backend"] for s in speedups)
     print(f"\n  Average speedup: {avg_speedup:.1f}x faster with vLLM")
+    print(f"  (Ollama tested at optimal concurrency: {ollama_configs})")
     print(f"\n  RECOMMENDATION: Upgrade CUDA drivers on HPC A1 nodes to enable vLLM,")
-    print(f"  saving ~{total_ollama_days - total_vllm_days:.0f} days and "
-          f"~${total_savings_hpc + total_savings_researcher:,.0f} per full model sweep.")
+    print(f"  saving ~{total_ollama_days - total_vllm_days:.0f} days per full model sweep.")
     print(f"{'=' * 90}\n")
 
     return speedups
@@ -495,8 +482,8 @@ def main():
     parser.add_argument("--config", default="config3_50_samps.yaml",
                         help="Config YAML with labels, prompts, sample file "
                              "(default: config3_50_samps.yaml)")
-    parser.add_argument("--texts", type=int, default=50,
-                        help="Number of texts to benchmark (default: 50)")
+    parser.add_argument("--texts", type=int, default=9,
+                        help="Number of texts to benchmark (default: 9)")
     parser.add_argument("--labels", type=int, default=5,
                         help="Number of labels per text (default: 5 for quick run; "
                              "use 25 for full)")
@@ -509,14 +496,14 @@ def main():
                         help="Skip vLLM benchmark; use known RPM baselines from run_005")
     parser.add_argument("--skip-ollama", action="store_true",
                         help="Skip Ollama benchmark (for testing report with known data)")
+    parser.add_argument("--workers-ollama", type=int, default=16,
+                        help="Worker threads for Ollama benchmark (default: 16; "
+                             "start Ollama with OLLAMA_NUM_PARALLEL=16 OLLAMA_GPU_LAYERS=999)")
+    parser.add_argument("--sweep-ollama", action="store_true",
+                        help="Sweep Ollama worker counts (1,2,4,8,16) and use the best RPM. "
+                             "Adds ~5 min per extra worker count. Most defensible comparison.")
     parser.add_argument("--workers-vllm", type=int, default=16,
                         help="Worker threads for vLLM benchmark (default: 16)")
-    parser.add_argument("--hpc-rate", type=float, default=DEFAULT_HPC_NODE_HOUR_RATE,
-                        help=f"HPC node-hour cost in $ "
-                             f"(default: ${DEFAULT_HPC_NODE_HOUR_RATE:.2f} -- PLACEHOLDER)")
-    parser.add_argument("--researcher-rate", type=float, default=DEFAULT_RESEARCHER_HOURLY_RATE,
-                        help=f"Researcher hourly rate in $ "
-                             f"(default: ${DEFAULT_RESEARCHER_HOURLY_RATE:.2f})")
     # For testing with dummy Ollama RPM values
     parser.add_argument("--ollama-rpms", type=str, default=None,
                         help="Override Ollama RPMs for report-only mode "
@@ -582,8 +569,10 @@ def main():
     print(f"  Skip vLLM:   {args.skip_vllm}"
           f"{' (using known baselines)' if args.skip_vllm else ''}")
     print(f"  Skip Ollama: {args.skip_ollama}")
-    print(f"  HPC rate:    ${args.hpc_rate:.2f}/node-hr (PLACEHOLDER)")
-    print(f"  Researcher:  ${args.researcher_rate:.2f}/hr")
+    print(f"  Ollama workers: {args.workers_ollama} "
+          f"(start with: OLLAMA_NUM_PARALLEL={args.workers_ollama} "
+          f"OLLAMA_GPU_LAYERS=999 ollama serve)")
+    print(f"  vLLM workers:   {args.workers_vllm}")
     print("=" * 70)
 
     # --- Handle report-only mode with overridden Ollama RPMs ---
@@ -608,7 +597,7 @@ def main():
                 "calls": 0, "errors": 0,
             })
 
-        speedups = print_report(all_results, args.hpc_rate, args.researcher_rate)
+        speedups = print_report(all_results)
 
         # Save
         os.makedirs("outputs", exist_ok=True)
@@ -621,8 +610,10 @@ def main():
     if not args.skip_ollama:
         if not check_ollama_running():
             print("\nERROR: Ollama is not running.")
-            print("  Start it with:  ollama serve")
-            print("  Or in background:  nohup ollama serve &")
+            print("  Start with parallel support:")
+            print(f"    pkill -f ollama")
+            print(f"    OLLAMA_NUM_PARALLEL={args.workers_ollama} OLLAMA_GPU_LAYERS=999 nohup ollama serve &")
+            print(f"    sleep 5")
             sys.exit(1)
 
         available = list_ollama_models()
@@ -649,38 +640,108 @@ def main():
 
         # --- Ollama benchmark ---
         if not args.skip_ollama:
-            print(f"\n    [OLLAMA] Benchmarking {model['ollama_name']}...")
-            ollama_result = run_single_benchmark(
-                provider_config=PROVIDER_OLLAMA,
-                model_name=model["ollama_name"],
-                max_tokens=model["max_tokens_ollama"],
-                config=config,
-                texts_df=texts_df,
-                label_names=label_names,
-                num_labels=num_labels,
-                prompt_config=prompt_config,
-                labels=labels,
-                annotation_guidelines=annotation_guidelines,
-                example_selection=example_selection,
-                rng=random.Random(runtime.get("random_seed", 42)),
-            )
-            if ollama_result:
-                all_results.append({
-                    "model": model["short_name"],
-                    "backend": "Ollama",
-                    "rpm": ollama_result["effective_rpm"],
-                    "avg_s": ollama_result["avg_seconds_per_call"],
-                    "calls": ollama_result["total_calls"],
-                    "errors": ollama_result["errors"],
-                })
-                print(f"    [OLLAMA] Done: {ollama_result['effective_rpm']:.1f} RPM "
-                      f"({ollama_result['avg_seconds_per_call']:.3f}s/call)")
+            if args.sweep_ollama:
+                # Sweep worker counts to find Ollama's best throughput
+                sweep_counts = [1, 2, 4, 8, 16]
+                print(f"\n    [OLLAMA] Worker sweep: {sweep_counts}")
+                print(f"    [OLLAMA] Finding optimal throughput for {model['ollama_name']}...")
+
+                sweep_results = []
+                for w in sweep_counts:
+                    print(f"\n    [OLLAMA] Testing workers={w}...")
+                    result = run_single_benchmark(
+                        provider_config=PROVIDER_OLLAMA,
+                        model_name=model["ollama_name"],
+                        max_tokens=model["max_tokens_ollama"],
+                        config=config,
+                        texts_df=texts_df,
+                        label_names=label_names,
+                        num_labels=num_labels,
+                        prompt_config=prompt_config,
+                        labels=labels,
+                        annotation_guidelines=annotation_guidelines,
+                        example_selection=example_selection,
+                        rng=random.Random(runtime.get("random_seed", 42)),
+                        workers=w,
+                    )
+                    if result:
+                        sweep_results.append({
+                            "workers": w,
+                            "rpm": result["effective_rpm"],
+                            "avg_s": result["avg_seconds_per_call"],
+                            "calls": result["total_calls"],
+                            "errors": result["errors"],
+                        })
+                        print(f"    [OLLAMA] workers={w}: {result['effective_rpm']:.1f} RPM "
+                              f"({result['avg_seconds_per_call']:.3f}s/call)")
+                    else:
+                        print(f"    [OLLAMA] workers={w}: FAILED")
+
+                # Print sweep summary and pick best
+                if sweep_results:
+                    print(f"\n    [OLLAMA] Worker Sweep Results for {model['short_name']}:")
+                    print(f"    {'Workers':>8s} | {'RPM':>8s} | {'Avg (s)':>8s} | {'Errors':>6s}")
+                    print(f"    {'-'*42}")
+                    best = max(sweep_results, key=lambda r: r["rpm"])
+                    for sr in sweep_results:
+                        marker = " <-- BEST" if sr["workers"] == best["workers"] else ""
+                        print(f"    {sr['workers']:>8d} | {sr['rpm']:>8.1f} | "
+                              f"{sr['avg_s']:>8.3f} | {sr['errors']:>6d}{marker}")
+
+                    all_results.append({
+                        "model": model["short_name"],
+                        "backend": f"Ollama (best: {best['workers']}w)",
+                        "rpm": best["rpm"],
+                        "avg_s": best["avg_s"],
+                        "calls": best["calls"],
+                        "errors": best["errors"],
+                    })
+                    print(f"\n    [OLLAMA] Best: workers={best['workers']} @ "
+                          f"{best['rpm']:.1f} RPM")
+                else:
+                    print(f"    [OLLAMA] All sweep runs FAILED for {model['short_name']}")
+                    all_results.append({
+                        "model": model["short_name"],
+                        "backend": "Ollama (sweep failed)",
+                        "rpm": 0, "avg_s": 0, "calls": 0, "errors": -1,
+                    })
+
             else:
-                print(f"    [OLLAMA] FAILED for {model['short_name']}")
-                all_results.append({
-                    "model": model["short_name"], "backend": "Ollama",
-                    "rpm": 0, "avg_s": 0, "calls": 0, "errors": -1,
-                })
+                # Single worker count run
+                print(f"\n    [OLLAMA] Benchmarking {model['ollama_name']} "
+                      f"(workers={args.workers_ollama})...")
+                ollama_result = run_single_benchmark(
+                    provider_config=PROVIDER_OLLAMA,
+                    model_name=model["ollama_name"],
+                    max_tokens=model["max_tokens_ollama"],
+                    config=config,
+                    texts_df=texts_df,
+                    label_names=label_names,
+                    num_labels=num_labels,
+                    prompt_config=prompt_config,
+                    labels=labels,
+                    annotation_guidelines=annotation_guidelines,
+                    example_selection=example_selection,
+                    rng=random.Random(runtime.get("random_seed", 42)),
+                    workers=args.workers_ollama,
+                )
+                if ollama_result:
+                    all_results.append({
+                        "model": model["short_name"],
+                        "backend": "Ollama",
+                        "rpm": ollama_result["effective_rpm"],
+                        "avg_s": ollama_result["avg_seconds_per_call"],
+                        "calls": ollama_result["total_calls"],
+                        "errors": ollama_result["errors"],
+                    })
+                    print(f"    [OLLAMA] Done: {ollama_result['effective_rpm']:.1f} RPM "
+                          f"({ollama_result['avg_seconds_per_call']:.3f}s/call)")
+                else:
+                    print(f"    [OLLAMA] FAILED for {model['short_name']}")
+                    all_results.append({
+                        "model": model["short_name"], "backend": "Ollama",
+                        "rpm": 0, "avg_s": 0, "calls": 0, "errors": -1,
+                    })
         else:
             print(f"\n    [OLLAMA] Skipped")
 
@@ -734,7 +795,7 @@ def main():
 
     # --- Generate report ---
     if all_results:
-        speedups = print_report(all_results, args.hpc_rate, args.researcher_rate)
+        speedups = print_report(all_results)
 
         # Save results to CSV
         os.makedirs("outputs", exist_ok=True)
@@ -749,7 +810,7 @@ def main():
 
         buf = io.StringIO()
         with redirect_stdout(buf):
-            print_report(all_results, args.hpc_rate, args.researcher_rate)
+            print_report(all_results)
         report_text = buf.getvalue()
 
         with open(report_path, "w") as rf:
