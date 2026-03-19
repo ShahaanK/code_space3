@@ -62,7 +62,12 @@ def load_gold_standard(gold_path, approach="strict"):
     Returns:
         DataFrame with columns: text_id + 25 binary label columns (0/1).
     """
-    df = pd.read_excel(gold_path) if str(gold_path).endswith((".xlsx", ".xls")) else pd.read_csv(gold_path)
+    if str(gold_path).endswith(".feather"):
+        df = pd.read_feather(gold_path)
+    elif str(gold_path).endswith((".xlsx", ".xls")):
+        df = pd.read_excel(gold_path)
+    else:
+        df = pd.read_csv(gold_path)
 
     # Detect format: could be "Number" or "Text Number" as ID column
     if "Number" in df.columns:
@@ -114,7 +119,10 @@ def load_results(results_paths):
     dfs = []
     for path in results_paths:
         try:
-            df = pd.read_csv(path)
+            if path.endswith(".feather"):
+                df = pd.read_feather(path)
+            else:
+                df = pd.read_csv(path)
             dfs.append(df)
             print(f"  Loaded {len(df)} rows from {os.path.basename(path)}")
         except Exception as e:
@@ -369,7 +377,11 @@ def main():
         result_paths = args.results
     else:
         # Auto-find latest results in outputs/
-        result_paths = sorted(glob.glob("outputs/camel_results_fullguide_*.csv"))
+        result_paths = sorted(glob.glob("outputs/camel_results_fullguide_*.feather"))
+        if not result_paths:
+            result_paths = sorted(glob.glob("outputs/camel_results_fullguide_*.csv"))
+        if not result_paths:
+            result_paths = sorted(glob.glob("outputs/camel_results_*.feather"))
         if not result_paths:
             result_paths = sorted(glob.glob("outputs/camel_results_*.csv"))
         if not result_paths:
@@ -453,11 +465,11 @@ def main():
         # Auto-save to outputs/
         os.makedirs("outputs", exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        auto_path = f"outputs/eval_report_{timestamp}.csv"
+        auto_path = f"outputs/eval_report_{timestamp}.feather"
         detail_rows = build_detail_rows(results, gold, label_cols)
         if detail_rows:
             report_df = pd.DataFrame(detail_rows)
-            report_df.to_csv(auto_path, index=False)
+            report_df.reset_index(drop=True).to_feather(auto_path)
             print(f"\n  Detailed report saved to: {auto_path}")
 
     print("=" * 70)
