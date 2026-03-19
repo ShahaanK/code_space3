@@ -1,0 +1,429 @@
+#!/usr/bin/env python3
+"""
+CAMEL Annotation — Generate HPC Batch Submit Files
+====================================================
+Generates per-model HTCondor submit files with GPU requirements
+routed by model size:
+
+  70B models (Llama, Qwen, AceGPT) → 2 GPUs, ≥40GB VRAM each
+  32B models (DeepSeek, Falcon-H1)  → 1 GPU,  ≥24GB VRAM
+  24B models (Mistral Small)        → 1 GPU,  ≥24GB VRAM
+
+This means smaller models can run on MORE nodes (any node with 1 GPU),
+while 70B models only target high-VRAM 2-GPU nodes.
+
+Reads chunk manifest from split_data.py and generates:
+  - batch_<model_short_name>.sub for each model
+  - wrapper_<model_short_name>.sh with model baked in
+
+Usage:
+    # Generate submit files for all models
+    python generate_batch_jobs.py
+
+    # Specific model only
+    python generate_batch_jobs.py --model llama-3.3-70b
+
+    # Custom chunks directory
+    python generate_batch_jobs.py --chunks-dir my_chunks
+
+Then submit:
+    condor_submit batch_llama-3.3-70b.sub
+    condor_submit batch_deepseek-r1-32b.sub    # runs on more nodes (1 GPU)
+
+Author: Shahaan Khan
+Research: Prof. Joshua Introne, Syracuse University iSchool
+"""
+
+import argparse
+import json
+import os
+import sys
+from pathlib import Path
+
+
+# =============================================================================
+# MODEL REGISTRY — GPU requirements per model
+# =============================================================================
+
+MODELS = [
+    {
+        "short_name": "llama-3.3-70b",
+        "hf_name": "casperhansen/llama-3.3-70b-instruct-awq",
+        "origin": "Western (Meta, USA)",
+        "quantization": "awq_marlin",
+        "tp": 2,
+        "request_gpus": 2,
+        "gpu_vram_mb": 40000,
+        "max_model_len": 2048,
+        "max_tokens": 256,
+        "extra_flags": "",
+    },
+    {
+        "short_name": "qwen2.5-72b",
+        "hf_name": "Qwen/Qwen2.5-72B-Instruct-AWQ",
+        "origin": "Eastern (Alibaba, China)",
+        "quantization": "awq_marlin",
+        "tp": 2,
+        "request_gpus": 2,
+        "gpu_vram_mb": 40000,
+        "max_model_len": 2048,
+        "max_tokens": 256,
+        "extra_flags": "--trust-remote-code",
+    },
+    {
+        "short_name": "deepseek-r1-32b",
+        "hf_name": "Valdemardi/DeepSeek-R1-Distill-Qwen-32B-AWQ",
+        "origin": "Eastern (DeepSeek, China)",
+        "quantization": "awq_marlin",
+        "tp": 1,
+        "request_gpus": 1,
+        "gpu_vram_mb": 24000,
+        "max_model_len": 4096,
+        "max_tokens": 1024,
+        "extra_flags": "--trust-remote-code",
+    },
+    {
+        "short_name": "mistral-small-24b",
+        "hf_name": "RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w4a16",
+        "origin": "Western (Mistral, France)",
+        "quantization": "compressed-tensors",
+        "tp": 1,
+        "request_gpus": 1,
+        "gpu_vram_mb": 24000,
+        "max_model_len": 2048,
+        "max_tokens": 256,
+        "extra_flags": "",
+    },
+    {
+        "short_name": "acegpt-70b",
+        "hf_name": "FreedomIntelligence/AceGPT-v2-70B-chat",
+        "origin": "Arabic (KAUST/UAE)",
+        "quantization": "awq_marlin",
+        "tp": 2,
+        "request_gpus": 2,
+        "gpu_vram_mb": 40000,
+        "max_model_len": 2048,
+        "max_tokens": 256,
+        "extra_flags": "--trust-remote-code",
+    },
+    {
+        "short_name": "falcon-h1-34b",
+        "hf_name": "tiiuae/Falcon-H1-34B-Instruct",
+        "origin": "Arabic/Gulf (TII, UAE)",
+        "quantization": "awq_marlin",
+        "tp": 1,
+        "request_gpus": 1,
+        "gpu_vram_mb": 24000,
+        "max_model_len": 2048,
+        "max_tokens": 256,
+        "extra_flags": "--trust-remote-code",
+    },
+]
+
+# Default paths (edit these or override via args)
+DEFAULT_CONDA_PATH = "${HOME}/miniconda3"
+DEFAULT_CONDA_ENV = "camel-annotation"
+DEFAULT_CONTAINER = "${HOME}/vllm-openai.sif"
+DEFAULT_CONFIG = "config2.yaml"
+DEFAULT_THREADS = 16
+DEFAULT_PORT = 8900
+
+
+def get_model(name):
+    """Look up model by short_name or hf_name."""
+    for m in MODELS:
+        if name in (m["short_name"], m["hf_name"]):
+            return m
+    return None
+
+
+def load_manifest(chunks_dir):
+    """Load chunk manifest from split_data.py output."""
+    manifest_path = Path(chunks_dir) / "chunk_manifest.json"
+    if not manifest_path.exists():
+        return None
+    with open(manifest_path) as f:
+        return json.load(f)
+
+
+def generate_wrapper(model, script_dir, conda_path, conda_env,
+                     container, config, threads, port):
+    """Generate a model-specific wrapper.sh."""
+    name = model["short_name"]
+    wrapper_path = script_dir / f"wrapper_{name}.sh"
+
+    content = f"""#!/bin/bash
+# =============================================================================
+# CAMEL Annotation — HTCondor Wrapper for {name}
+# =============================================================================
+# Model: {model['hf_name']}
+# Origin: {model['origin']}
+# GPUs: {model['request_gpus']} (TP={model['tp']})
+# Auto-generated by generate_batch_jobs.py
+# =============================================================================
+
+set -euo pipefail
+
+CHUNK_FILE="$1"
+RESULT_FILE="$2"
+
+echo "============================================================"
+echo "CAMEL Annotation — {name}"
+echo "============================================================"
+echo "  Chunk:    ${{CHUNK_FILE}}"
+echo "  Output:   ${{RESULT_FILE}}"
+echo "  Model:    {model['hf_name']}"
+echo "  GPUs:     {model['request_gpus']} (TP={model['tp']})"
+echo "  Host:     $(hostname)"
+echo "  Date:     $(date)"
+echo "============================================================"
+
+# Setup conda
+source "{conda_path}/etc/profile.d/conda.sh"
+conda activate "{conda_env}"
+
+# Verify files
+for f in "${{CHUNK_FILE}}" "{container}" "{config}"; do
+    if [ ! -f "$f" ]; then
+        echo "ERROR: File not found: $f"
+        exit 1
+    fi
+done
+
+# Run annotation
+python camel_annotate_hpc.py \\
+    "${{CHUNK_FILE}}" \\
+    "${{RESULT_FILE}}" \\
+    --model "{model['hf_name']}" \\
+    --config "{config}" \\
+    --container "{container}" \\
+    --quantization "{model['quantization']}" \\
+    --tp {model['tp']} \\
+    --threads {threads} \\
+    --port {port}
+
+echo "Job finished with exit code: $?"
+echo "Date: $(date)"
+"""
+
+    with open(wrapper_path, "w") as f:
+        f.write(content)
+    os.chmod(wrapper_path, 0o755)
+
+    return wrapper_path
+
+
+def generate_submit(model, chunks_dir, results_subdir, script_dir, manifest):
+    """Generate a model-specific HTCondor submit file."""
+    name = model["short_name"]
+    submit_path = script_dir / f"batch_{name}.sub"
+    chunks_subdir = Path(chunks_dir).name
+
+    # Build queue list from manifest
+    queue_items = []
+    for chunk in manifest["chunks"]:
+        chunk_file = f"{chunks_subdir}/{chunk['filename']}"
+        result_file = f"{results_subdir}_{name}/results_{chunk['chunk_id']:03d}.feather"
+        job_name = f"{name}_chunk_{chunk['chunk_id']:03d}"
+        queue_items.append(f"    {chunk_file}, {result_file}, {job_name}")
+
+    queue_list = "\n".join(queue_items)
+
+    # GPU requirements based on model size
+    gpus = model["request_gpus"]
+    vram = model["gpu_vram_mb"]
+
+    if gpus >= 2:
+        requirements = (
+            f"(CUDAGlobalMemoryMb >= {vram}) && "
+            f"(CUDADriverVersion >= 12.8) && "
+            f"(TotalGpus >= {gpus})"
+        )
+    else:
+        requirements = (
+            f"(CUDAGlobalMemoryMb >= {vram}) && "
+            f"(CUDADriverVersion >= 12.8)"
+        )
+
+    content = f"""#!/usr/bin/env condor_submit
+# =============================================================================
+# CAMEL Annotation — BATCH JOB: {name}
+# =============================================================================
+# Model:  {model['hf_name']}
+# Origin: {model['origin']}
+# GPUs:   {gpus} (TP={model['tp']})
+# VRAM:   >= {vram} MB per GPU
+# Chunks: {manifest['total_chunks']}
+#
+# Auto-generated by generate_batch_jobs.py
+#
+# Usage:
+#   condor_submit batch_{name}.sub
+#
+# Monitor:
+#   condor_q $USER
+#   watch -n 30 'ls -la {results_subdir}_{name}/*.feather | wc -l'
+# =============================================================================
+
+initialdir   = {script_dir.resolve()}
+
+executable   = wrapper_{name}.sh
+arguments    = $(chunk_file) $(result_file)
+
+output       = logs/$(job_name).out
+error        = logs/$(job_name).err
+log          = logs/$(job_name).log
+
+# Resource requirements — {name} ({gpus} GPU{'s' if gpus > 1 else ''})
+request_gpus   = {gpus}
++request_gpus  = {gpus}
+request_cpus   = 8
+request_memory = 32GB
+request_disk   = 20GB
+
+Requirements = {requirements}
+
+# Environment
+environment = "HF_HOME=$ENV(HOME)/.cache/huggingface"
+
+# Retry failed jobs once
+on_exit_hold = (ExitCode != 0)
+periodic_release = (NumJobStarts < 2) && ((CurrentTime - EnteredCurrentStatus) > 300)
+
+# Queue one job per chunk
+queue chunk_file, result_file, job_name from (
+{queue_list}
+)
+"""
+
+    with open(submit_path, "w") as f:
+        f.write(content)
+
+    return submit_path
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Generate per-model HTCondor batch submit files",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument("--model", type=str, default=None,
+                        help="Generate for specific model only (short name). "
+                             "Default: all models.")
+    parser.add_argument("--chunks-dir", default="chunks",
+                        help="Directory with chunk files and manifest")
+    parser.add_argument("--results-dir", default="results",
+                        help="Base results directory prefix (per-model subdirs created)")
+    parser.add_argument("--conda-path", default=DEFAULT_CONDA_PATH)
+    parser.add_argument("--conda-env", default=DEFAULT_CONDA_ENV)
+    parser.add_argument("--container", default=DEFAULT_CONTAINER)
+    parser.add_argument("--config", default=DEFAULT_CONFIG)
+    parser.add_argument("--threads", type=int, default=DEFAULT_THREADS)
+    parser.add_argument("--port", type=int, default=DEFAULT_PORT)
+    parser.add_argument("--list-models", action="store_true",
+                        help="List available models and exit")
+    args = parser.parse_args()
+
+    # --- List models ---
+    if args.list_models:
+        print(f"\n{'Short Name':<22s} {'GPUs':>4s} {'TP':>3s} {'VRAM':>7s}  {'HuggingFace Name'}")
+        print("-" * 90)
+        for m in MODELS:
+            print(f"{m['short_name']:<22s} {m['request_gpus']:>4d} {m['tp']:>3d} "
+                  f"{m['gpu_vram_mb']:>5d}MB  {m['hf_name']}")
+        return
+
+    # --- Load manifest ---
+    manifest = load_manifest(args.chunks_dir)
+    if not manifest:
+        print(f"ERROR: No chunk_manifest.json found in {args.chunks_dir}/")
+        print(f"  Run split_data.py first to create chunks.")
+        sys.exit(1)
+
+    print("=" * 70)
+    print("CAMEL Annotation — Generate HPC Batch Jobs")
+    print("=" * 70)
+    print(f"  Chunks dir:  {args.chunks_dir}")
+    print(f"  Chunks:      {manifest['total_chunks']}")
+    print(f"  Chunk size:  {manifest['chunk_size']}")
+    print(f"  Total texts: {manifest['total_unprocessed']}")
+
+    # --- Select models ---
+    if args.model:
+        model = get_model(args.model)
+        if not model:
+            print(f"\nERROR: Unknown model '{args.model}'")
+            print(f"  Available: {', '.join(m['short_name'] for m in MODELS)}")
+            sys.exit(1)
+        models_to_generate = [model]
+    else:
+        models_to_generate = MODELS
+
+    script_dir = Path(".")
+
+    # Create logs dir
+    Path("logs").mkdir(exist_ok=True)
+
+    print(f"\n  Generating submit files for {len(models_to_generate)} model(s):\n")
+
+    for model in models_to_generate:
+        name = model["short_name"]
+        gpus = model["request_gpus"]
+
+        # Create per-model results directory
+        results_dir = f"{args.results_dir}_{name}"
+        Path(results_dir).mkdir(exist_ok=True)
+
+        # Generate wrapper
+        wrapper_path = generate_wrapper(
+            model=model,
+            script_dir=script_dir,
+            conda_path=args.conda_path,
+            conda_env=args.conda_env,
+            container=args.container,
+            config=args.config,
+            threads=args.threads,
+            port=args.port,
+        )
+
+        # Generate submit file
+        submit_path = generate_submit(
+            model=model,
+            chunks_dir=args.chunks_dir,
+            results_subdir=args.results_dir,
+            script_dir=script_dir,
+            manifest=manifest,
+        )
+
+        node_type = "2-GPU high-VRAM nodes" if gpus >= 2 else "any node with 1 GPU (more available)"
+        print(f"  {name:<22s} → {gpus} GPU{'s' if gpus > 1 else ' '}  "
+              f"({node_type})")
+        print(f"    Submit:  {submit_path}")
+        print(f"    Wrapper: {wrapper_path}")
+        print(f"    Results: {results_dir}/")
+        print()
+
+    # --- Summary ---
+    print("=" * 70)
+    print("READY TO SUBMIT")
+    print("=" * 70)
+    print()
+    for model in models_to_generate:
+        name = model["short_name"]
+        print(f"  condor_submit batch_{name}.sub")
+    print()
+    print("Monitor:")
+    print("  condor_q $USER")
+    print()
+    print("After all jobs complete, merge per-model:")
+    for model in models_to_generate:
+        name = model["short_name"]
+        print(f"  python merge_results.py "
+              f"--results-dir results_{name} "
+              f"--output merged_{name}.feather")
+    print()
+    print("=" * 70)
+
+
+if __name__ == "__main__":
+    main()

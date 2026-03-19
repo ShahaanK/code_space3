@@ -1,0 +1,986 @@
+annotation_guidelines: "ANNOTATION GUIDELINES:\n1. Familiarize Yourself with the Psychological Dimensions: Before beginning\n\
+  \   the annotation process, thoroughly understand the psychological dimensions\n   you will be annotating for. They all\
+  \ appear in this guide.\n2. Consistency is Key: Maintain consistency in your annotations. It is\n   essential to apply the\
+  \ same criteria and judgment across all posts to\n   ensure uniformity in the data.\n3. Context Matters: Always consider\
+  \ the context of a piece of text.\n   Psychological states and sentiments are often influenced by the context\n   in which\
+  \ language is used. Pay attention to nuances, idiomatic\n   expressions, and cultural references that might affect interpretation.\n\
+  4. Stay Objective: While some degree of subjective judgment is inevitable,\n   strive to remain as objective as possible.\
+  \ Base your annotations on\n   observable evidence within the text rather than inferring too deeply into\n   the author's\
+  \ intentions or state of mind. You will encounter posts that\n   you may find objectionable. In these cases, you should\
+  \ maintain\n   objectivity and focus on the task rather than respond to the content.\n5. When Uncertain, Commit: If you\
+  \ are unsure whether a label applies, note\n   your uncertainty in your reasoning, but still commit to a definitive\n  \
+  \ YES or NO answer.\n\nBy adhering to these guidelines, you will contribute significantly to the\nadvancement of our understanding\
+  \ of the interplay between language,\npsychology, and technology. This work not only enhances academic knowledge\nbut also\
+  \ paves the way for more empathetic and effective computational\nsystems in the future.\n"
+runtime:
+  sample_file: samples/sample_prompts.xlsx
+  text_id_column: Text Number
+  text_column: Text
+  output_dir: outputs/run_006_llama33_full
+  output_prefix: camel_results_fullguide
+  max_retries: 3
+  retry_delay_seconds: 2
+  skip_existing: true
+  delay_between_calls_seconds: 0
+  example_selection: all
+  random_seed: 42
+providers:
+  openrouter:
+    type: openai_compatible
+    base_url: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTER_API_KEY
+  openai_direct:
+    type: openai_compatible
+    base_url: https://api.openai.com/v1
+    api_key_env: OPENAI_API_KEY
+  local_ollama:
+    type: openai_compatible
+    base_url: http://localhost:11434/v1
+    api_key_env: null
+  local_vllm:
+    type: openai_compatible
+    base_url: http://localhost:8900/v1
+    api_key_env: VLLM_API_KEY
+models:
+- name: anthropic/claude-sonnet-4
+  provider: openrouter
+  temperature: 0
+  max_tokens: 300
+  enabled: false
+- name: openai/gpt-4o-mini
+  provider: openrouter
+  temperature: 0
+  max_tokens: 300
+  enabled: false
+- name: meta-llama/llama-3.1-8b-instruct
+  provider: openrouter
+  temperature: 0
+  max_tokens: 300
+  enabled: false
+- name: google/gemini-2.0-flash-001
+  provider: openrouter
+  temperature: 0
+  max_tokens: 300
+  enabled: false
+- name: gpt-4o-mini
+  provider: openai_direct
+  temperature: 0
+  max_tokens: 300
+  enabled: false
+- name: llama3:8b
+  provider: local_ollama
+  temperature: 0
+  max_tokens: 300
+  enabled: false
+- name: casperhansen/llama-3-70b-instruct-awq
+  provider: local_vllm
+  temperature: 0
+  max_tokens: 256
+  enabled: false
+- name: Qwen/Qwen2.5-72B-Instruct-AWQ
+  provider: local_vllm
+  temperature: 0
+  max_tokens: 256
+  enabled: false
+- name: hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4
+  provider: local_vllm
+  temperature: 0
+  max_tokens: 256
+  enabled: false
+- name: casperhansen/llama-3.3-70b-instruct-awq
+  provider: local_vllm
+  temperature: 0
+  max_tokens: 256
+  enabled: false
+- name: Qwen/Qwen2.5-72B-Instruct-GPTQ-Int4
+  provider: local_vllm
+  temperature: 0
+  max_tokens: 256
+  enabled: false
+- name: Valdemardi/DeepSeek-R1-Distill-Qwen-32B-AWQ
+  provider: local_vllm
+  temperature: 0
+  max_tokens: 1024
+  enabled: true
+- name: RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w4a16
+  provider: local_vllm
+  temperature: 0
+  max_tokens: 256
+  enabled: false
+- name: FreedomIntelligence/AceGPT-v2-70B-chat
+  provider: local_vllm
+  temperature: 0
+  max_tokens: 256
+  enabled: false
+- name: openai/gpt-4o
+  provider: openrouter
+  temperature: 0
+  max_tokens: 300
+  enabled: false
+labels:
+  Individualism:
+    category: cultural
+    definition: 'Individualism is a widely used concept to explain cultural variation in personality, behavior, emotions,
+      and subjective well-being. People high on individualism think of themselves first as individuals and then as group members.
+      In individualist cultures, there is a greater focus on the self and people prioritize self-interest or their immediate
+      family''s interest over the interest of the larger group they belong to. Individualism stresses independence and self-reliance,
+      meaning people from individualist cultures rely on internal experiences when making judgments and decisions instead
+      of relying on group norms and expectations. People in more individualistic cultures are more strongly influenced by
+      internal standards and less likely to conform to group pressure. People high on individualism have a very strong sense
+      of personal identity, as individualist cultures value uniqueness, original thought, freedom and independence.
+
+      '
+    markers: '"I", "my", "myself", personal goals, self-focus, independence, uniqueness, original thought, freedom, self-reliance,
+      internal standards
+
+      '
+    examples:
+    - I am a unique individual
+    - The only person you can count on is yourself
+    - The most important thing in my life is to make myself happy
+    - 'Just wrapped up my solo backpacking trip across Asia! Learned so much about myself and realized how much we can achieve
+      when we step out of our comfort zone. Remember, it''s your journey, your rules. #SoloTravel'
+    - 'I''ve decided to take a different path from my family''s expectations and pursue art as my career. It''s not about
+      rebellion; it''s about honoring my true self and what makes me happy. #FollowYourHeart'
+    - Instead of big-budget films, he liked those smaller ones nobody else had heard of, finding magic in stories that felt
+      real.
+    - He researched candidates extensively, making informed decisions based on their platforms rather than party loyalty,
+      building a voting record that reflected his priorities.
+    - He sought out educators who encouraged creativity, critical thinking and valued innovation.
+  Collectivism:
+    category: cultural
+    definition: 'Collectivism is a widely used and research concept to explain cultural variation in personality, behavior,
+      emotions, and subjective well-being. Individuals in collectivist cultures define themselves in terms of roles and positions
+      in social groups rather than on personality traits and abilities. People in collectivist cultures tend to conform to
+      norms and roles imposed by their groups and pay more attention to the needs of others rather than to their own. They
+      prioritize collective goals over personal goals. Collectivist societies stress "we" consciousness, collective identity,
+      emotional dependence, group solidarity, and sharing duties and obligations. There are two types of collectivism: relational
+      collectivism and group collectivism. People in East Asian collective cultures rely more on interpersonal networks and
+      give more importance to relational harmony and the promotion of cohesion within groups compared to individualistic populations.
+
+      '
+    markers: '"we", "our", group goals, shared duties, family obligations, community focus, collective identity, group solidarity,
+      emotional dependence
+
+      '
+    examples:
+    - If a member of my group gets a prize, I would feel proud
+    - Colleagues' assistance is indispensable to good performance at work
+    - Family members should stick together no matter what sacrifices are involved
+    - 'Celebrated my grandmother''s 80th birthday this weekend with all our extended family. It''s moments like these that
+      remind me how our bonds and shared traditions keep us strong. #FamilyFirst'
+    - Volunteered at the local food bank today and was so moved by the community coming together to support those in need.
+    - In a symphony, every instrument plays a vital role in conveying the message of the music.
+    - We should all pool our resources to ensure everyone's needs are met.
+    - Together, we can build a greener society for generations to come.
+  Honor:
+    category: cultural
+    definition: 'In addition to individualism and collectivism, honor is another core theme in cultures to explain variations
+      in personality, behavior, emotions, and subjective well being. Honor is defined as concern for one''s reputation or
+      how one is viewed by others. Cultures of honor emphasize the importance of maintaining and protecting one''s or close
+      others'' (i.e., family) honor by following specific norms (i.e., gender roles) and dealing with threats to one''s or
+      close others'' (i.e., family) honor. In cultures of honor, there are strong norms of reciprocity, specifically individuals
+      high in honor are more likely to reciprocate positive things (being polite to someone nice) and negative things (retaliating
+      against insult). Generally, individuals with high honor tend to perceive events as part of a larger social context of
+      reputation, face, relative social status, and relationships. Thus, individuals high on honor are more likely to perceive
+      insults towards them as damaging their social status and ruining their reputation.
+
+      '
+    markers: 'reputation, legacy, respect, family name, retaliation for insults, standing up for values, protecting honor,
+      reciprocity, social status, face
+
+      '
+    examples:
+    - I will protect my family against any dangers
+    - I have to get that person back for insulting me
+    - Proud to stand up for what's right at the town meeting tonight. In our community, we respect and protect the legacy
+      of our forebears. No compromise when it comes to our values.
+    - Took part in the annual parade to honor our veterans today. Their sacrifice and courage remind us of the values we hold
+      dear in our town. We will always defend and celebrate our heroes.
+    - 'My father taught me the importance of keeping your word and defending your family''s name. It''s not just about personal
+      pride; it''s about living up to the expectations set by those who came before us. #Legacy'
+    - In business dealings, fulfilling promises isn't just about integrity; it's about safeguarding the trust of our partners
+      and clients.
+    - Addressing critics with grace isn't just a personal choice; it's a strategic move to protect our image and credibility.
+  Tightness:
+    category: cultural
+    definition: 'Tightness-looseness is a spectrum that refers to how strict norms are enforced and how deviant behavior is
+      tolerated in societies. On one end of the spectrum, we have tight cultures where social norms are strongly enforced
+      and deviant or rule-breaking behaviors are not tolerated. For example, in tight nations, the government may restrict
+      media (i.e., the internet), there is more surveillance of behaviors, and more severe punishments for crimes (i.e., the
+      death penalty).
+
+      '
+    markers: 'strict rules, traditions, customs, "no exceptions", enforcement, red tape, surveillance, punishment, conformity,
+      order, predictability
+
+      '
+    examples:
+    - Just attended a beautiful traditional wedding in my hometown. Every detail followed our long-standing customs. It's
+      amazing how these rituals connect us across generations.
+    - Moved back to my small town after years in the city, and I'm reminded daily of the unwritten rules that govern our community
+      life. There's comfort in the predictability and order.
+    - 'Participated in the annual cleanup drive today. It''s not just about keeping our town clean; it''s about respecting
+      the rules and taking pride in our shared spaces. Everyone pitches in, no exceptions. #CivicDuty'
+    - It's frustrating how much red tape we have to go through just to get a simple permit approved.
+    - There's a new law in place, and suddenly, we're all being watched like hawks.
+    - They rejected my script because it was too controversial. Can't catch a break.
+  Looseness:
+    category: cultural
+    definition: 'On the other end of the spectrum, loose cultures lack these features; they do not enforce strict social norms,
+      and there is more tolerance for deviant behavior. The tightness or looseness of cultures trickles down and impacts daily
+      behaviors across settings like the workplace and school. For example, in loose cultures, you are more likely to see
+      protests compared to tight cultures.
+
+      '
+    markers: 'diversity, freedom, acceptance, flexibility, "no judgments", room for everyone, tolerance, open-mindedness,
+      protest
+
+      '
+    examples:
+    - 'Just moved to this vibrant city and I''m loving the diversity and freedom here! You can be yourself, no judgments,
+      and explore all sorts of lifestyles and ideas. #Diversity'
+    - Attended a festival this weekend that celebrated cultures from all around the world. It's incredible how open and accepting
+      everyone is, embracing all kinds of traditions and expressions
+    - I love how in our neighborhood, you can see a street artist, a tech startup, and a community garden all in one block.
+      There's room for everyone's passions and quirks here
+    - Politicians here seem to get away with a lot more compared to other places.
+    - Hey, did you hear about that spontaneous rally happening downtown?
+    - You see a mix of fancy restaurants and hole-in-the-wall places, and they all thrive.
+  Care:
+    category: moral
+    definition: 'Fundamentally, care is rooted in the protection of individuals from harmful treatment. It emphasizes a personal
+      and/or collective responsibility to avoid emotional and physical damage to others. This moral foundation takes deliberate
+      measures to nurture relationships, provide support, and engender a positive environment, all while discouraging behaviors
+      or actions that could potentially cause harm to individuals or the community.
+
+      '
+    markers: 'harm prevention, protection, compassion, suffering, wellbeing, "care for", nurturing, support, kindness, empathy,
+      volunteering
+
+      '
+    examples:
+    - 'Organized a community fundraiser for our local animal shelter this weekend. Nothing speaks more to the heart than coming
+      together to care for our furry friends in need. #Compassion #CareForAll #AnimalLovers'
+    - 'Spent the day volunteering at the senior center, and it was truly heartwarming to see the difference a little time
+      and attention can make in someone''s day. Let''s not forget to care for those who once cared for us. #Empathy #GiveBack'
+    - 'Witnessed a random act of kindness today - someone stopped to help a stranger in distress. It''s moments like these
+      that restore my faith in humanity. Let''s spread more care and compassion in our daily lives. #KindnessMatters'
+    - How can we make sure everyone's voices are heard in this debate?
+    - Let's see if we can find you any resources available to help with that.
+    - Please remember that taking care of your health now can save you money in the long run.
+  Equality:
+    category: moral
+    definition: 'At its core, the concept of equality embodies equal treatment and outcomes for all individuals. It emphasizes
+      the importance of fairness and prohibits any form of cheating or exploitation. This virtue focuses on societal well-being
+      and can be found in several spaces within society (social, economic, political, etc.).
+
+      '
+    markers: 'equal rights, fairness, justice for all, equal opportunities, regardless of background, equal treatment, anti-discrimination
+
+      '
+    examples:
+    - 'Proud to have marched in today''s rally for equal rights. It''s crucial that we stand together, regardless of background,
+      to fight for fairness and justice for all. #EqualityForAll #Justice #StandTogether'
+    - Promoting equality benefits everyone by creating a more supportive and creative environment
+    - Celebrating International Women's Day by recognizing the incredible women in our community who break barriers every
+      day. Let's commit to creating a world where everyone, regardless of gender, has equal opportunities.
+    - They're talking about representation quotas again. Can't decide if it's necessary or just tokenism.
+    - Music festival lineup just dropped, and it's a mix of genres and cultures. Feels like a melting pot of sounds.
+    - There's a debate raging about universal basic income. Can't decide if it's a step towards equality or dependency.
+  Proportionality:
+    category: moral
+    definition: 'Notably, proportionality (deriving from a focus on societal power) is conceptually distinct from equality.
+      It ensures that each individual''s rewards or punishments are proportional to their costs, contributions, effort, merit,
+      or guilt.
+
+      '
+    markers: 'deserve, merit, earned, proportional, "based on effort", fair sentencing, reward, punishment, contribution,
+      just desserts
+
+      '
+    examples:
+    - 'Just watched an inspiring documentary on criminal justice reform. It''s high time we focus on rehabilitation and fair
+      sentencing that truly reflects the nature of offenses. Justice should be about balance, not retribution. #JusticeReform'
+    - 'Proportionate responses can transform conflicts into opportunities for growth. #RestorativeJustice'
+    - We need to strive for a world where compensation is directly proportional to the effort and skill, not influenced by
+      gender, race, or background.
+    - Artists who dedicate themselves to their craft and consistently produce high-quality work often garner more recognition
+      and opportunities.
+    - Individuals who invest time and resources in education and skill development typically see higher earning potential
+      and greater career opportunities.
+    - Voters who research candidates thoroughly and make informed decisions tend to see policies aligning more closely with
+      their preferences.
+  Loyalty:
+    category: moral
+    definition: 'Loyalty revolves around preserving group cohesion. This is demonstrated through the cooperation or prioritization
+      of one''s ingroups, the prohibitive concerns about betraying or abandoning one''s ingroups, and the competition against
+      outgroups.
+
+      '
+    markers: 'team, stand by each other, betrayal, "by my side", mission, group commitment, ingroup preference, outgroup competition,
+      solidarity
+
+      '
+    examples:
+    - 'So proud of our team''s performance last night. Win or lose, we always stand by each other and push forward. That''s
+      what true loyalty is all about. #TeamSpirit'
+    - Celebrating 10 years with my amazing work family today! It's the shared commitment to our mission that has brought us
+      this far. Here's to many more years of making a difference together.
+    - In a world that's constantly changing, I'm grateful for friends who have been by my side through thick and thin.
+    - Can't make it to the protest tonight, but I'll retweet all your updates and spread the word online.
+    - I won't publicly criticize our government, but I'll quietly work to push our policies in the right direction.
+    - I appreciate all genres of music, but I'll always have a soft spot for the underground bands we grew up listening to
+    - I could get a higher-paying job elsewhere, but I'll stay with this company because I believe in their mission and values.
+  Authority:
+    category: moral
+    definition: 'Authority, manifested through established figures and institutions, is viewed as a means for providing stability
+      and fending off chaos, as well as maintaining boundaries between the self and group. This moral foundation extends to
+      submitting to traditions, which are also seen as a medium to preserve stability.
+
+      '
+    markers: 'respect, hierarchy, tradition, discipline, order, rules set by, representatives, leadership, deference, chain
+      of command
+
+      '
+    examples:
+    - 'Attended a beautiful military ceremony today honoring those who serve and protect our nation. It''s a powerful reminder
+      of the respect and gratitude we owe to those who uphold our laws and traditions. #RespectAuthority #MilitaryHonor #Tradition'
+    - Reflecting on the wisdom passed down through generations in my family.
+    - Watching the changing of the guard ceremony really made me appreciate the discipline and order that comes with respecting
+      authorities. It's about more than just rules; it's about the harmony and security it brings to society.
+    - Hey, remember we agreed to abide by the rules set by the committee?
+    - Maybe we should consult with our representatives before making any decisions.
+    - The director wants us to stick to the script, even if it feels outdated.
+    - The curator insists on showcasing this artist's work, despite controversy.
+    - The landlord insists on regular inspections to maintain the property.
+    - We should stick to the budget allocated by management to avoid overspending.
+  Purity:
+    category: moral
+    definition: 'Purity is about maintaining the sanctity of sacred entities, bodily and spiritual, and avoiding the contamination
+      and degradation of said entities.
+
+      '
+    markers: 'sacred, sanctity, purity, clean, unsullied, untainted, contamination, degradation, wholesome, spiritual cleansing
+
+      '
+    examples:
+    - 'Participated in a beautiful river cleaning project today. It''s not just about the environment; it''s about respecting
+      the purity of nature and our duty to protect it for future generations. #ProtectNature'
+    - Attending the annual cultural festival, where we honor our heritage and the timeless values it teaches us. It's a reminder
+      of the purity of our traditions and the importance of preserving them in a rapidly changing world.
+    - 'Completed a 30-day wellness challenge focused on purifying mind, body, and spirit. It''s amazing how practices like
+      meditation, clean eating, and yoga can elevate our sense of purity and well-being. #WellnessJourney'
+    - Let's make sure our campaign remains unsullied by scandal.
+    - Keeping the essence of my art untouched by mainstream trends.
+    - Just ensuring our policies stay clean and untainted, you know?
+  Ownership:
+    category: moral
+    definition: 'Ownership refers to the acknowledgment or discussion of rights and responsibilities related to possessing
+      or controlling something, including intellectual and physical property.
+
+      '
+    markers: 'property, rights, my/mine, ownership, bought, keys, taking the reins, possession, intellectual property, control
+
+      '
+    examples:
+    - Downloading music without paying is stealing from the artist.
+    - Just bought my first home! It's a dream come true and a testament to hard work
+    - 'Participated in a local workshop on intellectual property rights. It''s crucial for creators to understand and protect
+      their work in the digital age. Your ideas are your property, and they deserve respect. #CreativeRights'
+    - Guess who's got the keys to the kingdom now?
+    - Taking the reins on this project, let's see where it leads.
+    - Sculpting my vision into reality, one piece at a time.
+    - Negotiating deals that secure my place at the table.
+    - Entrepreneurship is all about owning your destiny.
+  Liberty:
+    category: moral
+    definition: 'Liberty involves the discussion of freedom, autonomy, and the right to choose without coercion or constraint.
+
+      '
+    markers: 'freedom, autonomy, choice, free from oppression, personal freedoms, self-determination, independence from coercion
+
+      '
+    examples:
+    - 'Marched in the rally for individual rights today. It''s empowering to stand alongside so many who believe in the freedom
+      to live our lives as we choose, free from oppression. #Freedom'
+    - 'Celebrating the repeal of an outdated law that restricted personal freedoms. Progress happens when we fight for the
+      liberty to make our own choices about our lives. Forward is the only way! #Change #Autonomy'
+    - Just finished a book on the history of civil liberties. It's a stark reminder of the struggles many endured for the
+      freedoms we often take for granted today.
+    - Voting for change, not because I have to, but because I want to.
+    - Painting without a preconceived notion, just letting the brush dance.
+    - Having the means to pursue my dreams without financial shackles.
+    - Earning money doing what I love, not just to survive, but to thrive.
+  Honesty:
+    category: moral
+    definition: 'Honesty is related to the expression of truthfulness, sincerity, or the absence of deceit.
+
+      '
+    markers: 'truth, transparent, lying, honest, integrity, deceit, sincerity, trustworthiness, candor
+
+      '
+    examples:
+    - Politicians should stop lying and start being transparent.
+    - Honesty really is the foundation of trust and meaningful connections.
+    - 'Celebrated a milestone at work today, achieved through transparent and honest dealings with our clients and partners.
+      It''s proof that success built on integrity is the most rewarding. #HonestyInBusiness #EthicalSuccess #IntegrityFirst'
+    - I see where you're coming from, but I have some reservations.
+  ThinMorality:
+    category: moral
+    definition: 'Evaluative terms in spoken language can be divided into "thin" and "thick". We don''t evaluate actions and
+      persons only as "good" or "bad", or "right" or "wrong", but also as caring, courageous, fair, selfish, obedient, and
+      cruel. The former are examples of thin moral concepts, while the latter terms are examples of thick moral concepts,
+      the general class of which includes virtue and vice concepts. Moral foundation-relevant concepts (i.e., care, equality,
+      proportionality, loyalty, authority, purity, ownership, honesty) stand in contrast to those we typically express in
+      spoken language when we use thin terms such as right, bad, permissible, and ought. When an individual uses such language
+      without clearly talking about moral values, they are using thin moral terms.
+
+      '
+    markers: 'good, bad, right, wrong, permissible, ought, unacceptable, moral/immoral (without specifying which foundation)
+
+      '
+    examples:
+    - John is a good man.
+    - You were right. I should have resigned earlier.
+    - What he did was absolutely wrong. Unacceptable!
+    - My friend's situation is only getting worse and worse.
+    - Mother Teresa's goodness won her a Nobel Prize.
+    - I can't believe they're pushing for this policy, it's just not right.
+    - This piece of literature feels like it's missing something, it's just bad.
+    - It's bad how little they pay their workers.
+  OffensiveUncivilLanguage:
+    category: psychological
+    definition: 'Offensive language refers to language that may be considered disrespectful or rude. It may include profanity,
+      slurs, or derogatory terms. Any use of profanity, slurs, or derogatory language aimed at belittling or demeaning a person
+      or group should be annotated as offensive. Offensive comments violate norms of politeness and target disadvantaged social
+      groups in a potentially harmful manner. They are seen as a broad category that can encompass more specific types of
+      problematic language like insults, threats, profanity, cyberbullying, hate speech, etc. Uncivil language is characterized
+      by lacking courtesy or politeness, often displaying a disregard for societal norms of respectful communication. A hostile
+      or overly aggressive tone, even without explicit, offensive content, should be marked as uncivil. Incivility refers
+      to rude, impolite, or unsociable speech or behavior that disrupts the social norms of respectful discourse. They are
+      described as being "unnecessarily disrespectful" toward discussion participants or topics. Always consider the context.
+      The language that might be offensive in one context might be acceptable in another (e.g., friendly banter). Be cautious
+      with sarcasm and irony. If the underlying intent is harmful, it should be annotated accordingly.
+
+      '
+    markers: 'insults, profanity, slurs, hostile tone, demeaning, belittling, rude, aggressive, disrespectful, derogatory
+
+      '
+    examples:
+    - You're such an idiot, how can anyone be as dumb as you?
+    - You are a piece of shit
+    - You f*cked up
+    - I don't care what you think, your opinion is worthless.
+    - Absolutely fed up with people who can't drive! If you don't know how to signal, you shouldn't be on the road. Some of
+      you are unbelievably clueless.
+    - Oh, another 'expert' on the internet sharing their groundbreaking opinion. Why don't you enlighten us more with your
+      vast ignorance?
+  Hate:
+    category: psychological
+    definition: 'Hate speech is defined as language intending, through rhetorical devices and contextual references, to attack
+      the dignity of a group. This attack may manifest through incitement to violence, encouragement of such incitement, or
+      incitement to hatred. The determination of hate-based rhetoric hinges on its level of dehumanization, as it attacks
+      human dignity, derogates, incites violence, or supports ideologies like white supremacy. A critical aspect of this definition
+      is that hate-based rhetoric explicitly targets a social group (or an individual based on their social group). There
+      are two overarching categories of such speech: 1) "assaults on human dignity" broadly encompass assertions or implications
+      of a group''s inferiority based on intelligence, genetics, or other human capacities. This includes degrading or dehumanizing
+      a group by comparing them to subhuman entities or using harmful slurs with the intent to cause harm. Moreover, it involves
+      the incitement of hatred through harmful group stereotypes, historical or political references, or the endorsement of
+      known hate groups or ideologies. 2) "Calls for violence" involve explicit calls for or endorsements of violence based
+      on these descriptions or justifications.
+
+      '
+    markers: 'slurs targeting groups, "all [group] should be...", dehumanization, group stereotypes, incitement to violence,
+      white supremacy, group-based attacks
+
+      '
+    examples:
+    - Can't believe what I'm seeing at the supermarket today. [racial slur] thinking they own the place.
+    - All [social group members] should be killed
+    - 'The new policy at my kid''s school is ridiculous! Since when did [homophobic slur] start dictating what''s normal?
+      #NotInMyBackyard'
+  Fear:
+    category: psychological
+    definition: 'Fear speech is an expression aimed at instilling (existential) fear of a target social group on the basis
+      of characteristics like race-ethnicity, religious affiliation, sexual orientation, disability, or gender identity. A
+      post is fear speech if it creates fear about a target group using one of the following notions: Something done by the
+      group in the past (and the possibility of that happening again) - historical domination. Some tradition of the target
+      group which is shown to take precedence over in-groups - cultural domination. The target group taking over jobs or education
+      institutes - economic domination. The target group taking over land/living places - geographic domination. The target
+      group killing people of the in-group - existential domination. Speculation that the target group would take over and
+      dominate in the future over the ingroup - future domination.
+
+      '
+    markers: 'fear of group "taking over", group portrayed as threat, domination language, invasion, replacement, group-based
+      fear-mongering
+
+      '
+    examples:
+    - Toledo Tree-Dweller Guns Down White Man After an Argument at a Bar. Blacks routinely use homicide as their go-to for
+      conflict resolution.
+    - I call BS! NO muslim woman would ever accept gays, any other form of religion, free speech (she has no clue what it
+      is after all) or ever adapt to the way of life of the country her family invaded!
+    - 'This family lost a mother. She was killed by a Sudanese migrant in church yesterday in Antioch, Tennessee. Media silence
+      is deafening. #MelanieSmith'
+    - Jewish poison pouring out of our media and Hollywood is destroying Christianity
+    - I'm starting to worry about the growing wealth gap and what it means for our society.
+    - It's concerning how access to quality education still seems to be determined by factors like income and zip code.
+  Threat:
+    category: psychological
+    definition: 'Threat is defined as a pending danger that can cause harm. An example of some words that are associated with
+      threats are "crisis," "frightening," and "violent." There are also 3 major socio-ecological threats: wars and conflicts,
+      natural disasters, and pathogens. During times when 1 of the 3 major socio-ecological threats was present, there was
+      an increase in the usage of words associated with threats in newspapers and/or social media.
+
+      '
+    markers: 'danger, crisis, warning, evacuation, tremor, virus, "storm is coming", violence, harm, emergency, pandemic
+
+      '
+    examples:
+    - Someone should teach that loudmouth a lesson they won't forget. People like that only understand one language.
+    - 'Urgent: Wildfire spotted near the edge of town. Evacuation orders in place for zones 4 and 5. Stay safe, pack essentials,
+      and follow official channels for updates. #WildfireSafety #EvacuateNow'
+    - 'Felt a strong tremor early this morning. Preliminary reports suggest a 6.2 magnitude quake. Check on your neighbors
+      and stay away from damaged structures. Aftershocks expected. #EarthquakePreparedness #StaySafe'
+    - COVID cases are on the rise again in our area. Please don't let your guard down - wear masks, maintain social distancing,
+      and get vaccinated if you haven't already. Let's keep our community safe.
+    - Got my COVID vaccine today! It's our best shot at getting back to normal. If you're eligible, I encourage you to do
+      the same. Protect yourself and others.
+    - 'With the new variant spreading, it''s crucial to follow the updated COVID guidelines. Wash your hands, avoid large
+      gatherings, and wear a mask in public spaces. We''ve come too far to ease up now. #COVIDGuidelines'
+    - Things are getting tense between those two parties, feels like a storm is coming.
+    - Have you noticed the way people are hoarding supplies? It's like they're preparing for something.
+  CreativityInnovation:
+    category: psychological
+    definition: 'Creativity is the ability to create original work, theories, techniques, or thoughts. Creative individuals
+      typically are original, imaginative, and expressive. There are different levels of creativity: Big-C refers to creativity
+      that has an international impact and/or started new fields or technologies like winning a Nobel Prize. Pro-C refers
+      to creativity where impact reaches regional or national levels. Small-C refers to personal creativity (like taking an
+      art class) and/or creativity that has everyday, local/regional impact. Language related to personality was an effective
+      way to differentiate between creative and less creative people. Specifically, individuals who were more creative (Big-C
+      and Pro-C) were more likely to use words associated with more openness to new experiences compared to less creative
+      individuals (Small-C). Generally, increased openness to new experiences has been strongly associated with increased
+      creativity.
+
+      '
+    markers: 'original, creative, new approach, innovative, artistic expression, experimentation, imagination, inventive,
+      novel, groundbreaking
+
+      '
+    examples:
+    - Just finished my latest piece, 'Urban Dreamscape'. It's a blend of digital art and traditional painting techniques.
+      Can't wait to hear what you all think!
+    - 'Dropped a new poem on my blog today about finding hope in the smallest things. It''s called ''Light in the Cracks''.
+      Would love for you to read and share your thoughts! #PoetryCommunity'
+    - 'Blown away by the latest advancements in renewable energy tech! It''s innovations like these that bring us closer to
+      a sustainable future. Let''s support and champion these groundbreaking efforts! #SustainableTech'
+    - Just tried out this new app, which helps you track your carbon footprint and suggests ways to reduce it. It's amazing
+      how technology can empower us to make more eco-friendly choices. Kudos to the developers for their innovative approach!
+    - Transformed my old bike into a mobile garden, complete with planters where the baskets used to be. Who says you can't
+      cycle and bring a bit of greenery with you?
+    - Posted a snippet of my latest short story on my blog today. It's about a world where dreams can be recorded and replayed.
+      The possibilities are endless, and I'm just scratching the surface. Dive in and let's dream big together!
+  Kinship:
+    category: psychological
+    definition: 'In our exploration of social media content, we introduce the concept of "kinship" as an important construct
+      that influences online interactions and expressions. Kinship encompasses the web of social relationships that bind individuals
+      to their families and communities. We focus on the essential elements of kinship: 1) Family Bonds and Marriages - reflected
+      in the preference for marriages within certain familial or community boundaries, strengthening ties and fostering a
+      dense network of relationships. 2) Household Structures - the composition of households, including extended families
+      living together or in close proximity. 3) Lineage and Ancestry - the way individuals trace their lineage, whether through
+      maternal or paternal lines, shapes their sense of belonging and identity within a kinship network. 4) Community Cohesion
+      - kinship extends beyond immediate family to encompass the broader community, often characterized by close-knit relationships
+      and communal living arrangements.
+
+      '
+    markers: 'family, clan, grandmother, heritage, ancestry, extended family, reunion, marriage, multi-generational, lineage,
+      household, community bonds
+
+      '
+    examples:
+    - 'Finally reunited with the entire clan after years apart! There''s nothing like the bond of family to remind you of
+      where you come from and who you are. Here''s to more laughter, stories, and memories. #FamilyFirst'
+    - 'Spent the day exploring my grandparents'' hometown, tracing the roots of our family tree. Every street and story added
+      a new layer to my understanding of our shared heritage. Honored to carry forward their legacy. #AncestralPride'
+    - Today, I married my best friend. Surrounded by loved ones, we vowed to walk this life hand in hand, through challenges
+      and triumphs. Here's to our new beginning and a lifetime of love and adventure!
+    - One year down, forever to go! This year has been a beautiful journey of growth, love, and laughter. Grateful for every
+      moment and excited for all the adventures that lie ahead. Happy anniversary, my love!
+    - Watched an eye-opening documentary last night about family structures across the globe, featuring a segment on polygynous
+      communities. It provided a respectful and nuanced view of the complexities and dynamics involved. Highly recommend for
+      those interested in understanding cultural practices from multiple perspectives.
+    - Gathered with all my cousins this weekend for our annual family reunion. It's amazing how we pick up right where we
+      left off, no matter how much time passes. Grateful for this big, loving, and slightly loud family of mine.
+    - 'Throwback to summer vacations spent running wild with my cousins at our grandparents'' house. Those were the days of
+      endless adventures and shared secrets. Can''t wait to continue the tradition with the next generation! #ChildhoodMemories'
+  Religion:
+    category: psychological
+    definition: 'Religion is defined as "a search for significance in ways related to the sacred"; APA defines religion as
+      a system of spiritual beliefs, practices, or both, typically organized around the worship of an all-powerful deity (or
+      deities) and involving behaviors such as prayer, meditation, and participation in collective rituals. It is essential
+      to highlight that neither religion nor spirituality is a singular entity with an essence that defines what it "truly"
+      is. Various phenomena termed religions have core elements, some of which are shared across different religions, but
+      there is no single feature that universally defines them all. They are often defined more by their culture than by their
+      contents. Regarding behaviors of religious individuals, religious individuals tend to exhibit more positive emotions
+      and social themes, whereas nonreligious individuals lean towards more negative emotions and cognitive themes.
+
+      '
+    markers: 'God, church, worship, faith, blessed, prayer, sermon, spiritual, meditation, religious holiday, scripture, sacred
+
+      '
+    examples:
+    - Feeling blessed to celebrate [Religious Holiday] with family and friends. It's a time for reflection, gratitude, and
+      renewing our faith
+    - 'Attended a beautiful service at [Place of Worship] this morning. There''s something incredibly uplifting about coming
+      together in prayer and song. Carrying this serenity with me through the week. #SpiritualJourney'
+    - Feeling incredibly moved after today's sermon on the power of forgiveness. It's a core part of my faith to seek and
+      offer forgiveness, and it's moments like these that really reinforce why.
+    - Had an enriching conversation with friends from different faith backgrounds about the concept of compassion in our respective
+      religions. It's beautiful to see the shared values across our beliefs.
+    - Feeling blessed by the countless ways God guides and provides for me.
+  IntellectualHumility:
+    category: psychological
+    definition: 'Intellectual humility is defined as "recognizing that a particular personal belief may be fallible, accompanied
+      by an appropriate attentiveness to limitations in the evidentiary basis of that belief and to one''s own limitations
+      in obtaining and evaluating relevant information." We embrace a multi-faceted conceptualization of intellectual humility.
+      In our working typology for the detection of intellectual humility in text, we differentiate five types of intellectually
+      humble utterance: (1) acknowledging the limits of one''s own knowledge, (2) recognizing the fallibilities in one''s
+      own thinking, (3) welcoming criticism non-defensively, (4) willingness to revise beliefs in light of new information,
+      and (5) acknowledging the nuance and complexity of the issue.
+
+      '
+    markers: '"I might be wrong", "I''ve come to see differently", "open mind", "change your mind", "reconsidered", acknowledging
+      limits, welcoming criticism, nuance, complexity
+
+      '
+    examples:
+    - The Left labels everything it disagrees with either full-on racism or a racist 'dogwhistle.' This is how the Left has
+      weaponized the concept of 'hate speech' to silence opposition.
+    - The fact that someone has an opinion doesn't connote that that's how it should be; appreciation of diversity and different
+      viewpoints is far much critical.
+    - Although I spent a lot of time on these results, I'm not really sure whether they make sense or not. I don't know.
+    - What I really want to do is start having fruitful conversations on campus to explore the truth.
+    - Had a great discussion today that challenged some of my long-held beliefs. It's moments like these that remind me of
+      the importance of keeping an open mind. We never stop learning.
+    - After reading more about [Topic], I've come to see things differently than I did before. It's okay to change your mind
+      when presented with new evidence. Growth is all about adapting.
+    - I love hearing different perspectives, even (or especially) when they challenge my own. It's how we grow and refine
+      our understanding of the world. What's a belief you've reconsidered recently?
+    - I used to think success was purely individual effort, but privilege plays a role too.
+    - I didn't realize the complexities of poverty until I volunteered at the shelter.
+    - I don't have time for opposing viewpoints, they're just distractions.
+    - If you don't appreciate this music, you have no taste.
+    - People in poverty just need to work harder, it's their own fault.
+  AnalyticalThinking:
+    category: psychological
+    definition: 'Analytic thinking is defined as the process of isolating an object from its surroundings, focusing on its
+      attributes for categorization, and preferring the application of rules related to these categories to explain and predict
+      the object''s actions. Inferences involve decontextualizing structure from content, utilizing formal logic, and avoiding
+      contradictions. A few essential features of analytical thinking are as follows: 1) Discreteness: Analytical thinkers
+      concentrate on categories and rules to comprehend an object''s behavior independently of its context. They do not perceive
+      it as a collection of overlapping and interpenetrating substances. 2) Object Focus: Analytical individuals are inclined
+      to primarily focus on the central object and its attributes. 3) Categories and Rules: Analytical individuals are more
+      inclined to concentrate on categories and rules to understand an object''s behavior independently of its context. 4)
+      Abstract Analysis: Analytical individuals favor the epistemology of logic and abstract principles. They consider concrete
+      perception and direct experiential knowledge unreliable or incomplete, sometimes even misleading.
+
+      '
+    markers: 'breaking down, categorizing, components, logical reasoning, rules, systematic, analysis, abstract, decontextualized,
+      discrete
+
+      '
+    examples:
+    - Spent the afternoon breaking down a complex coding challenge into discrete components. It's fascinating how categorizing
+      issues can lead to clearer, more manageable solutions.
+    - Analyzing a piece of classic literature by focusing on the central themes and characters' motivations. It's interesting
+      how deep you can go when you concentrate on the core elements.
+    - Had a great debate on the importance of understanding the rules that govern natural phenomena. It's not just about the
+      individual parts but how they relate to each other within these frameworks.
+    - Contemplating how often our perceptions deceive us and the importance of logical reasoning in getting closer to the
+      truth. Sometimes, what we see isn't all there is.
+    - Rather than engaging in heated debates, I think it's more constructive to evaluate the effectiveness of different government
+      programs objectively.
+    - I'm drawn to literature that employs intricate symbolism and allegory to convey deeper philosophical themes.
+    - I enjoy films that require viewers to piece together the narrative through subtle cues and non-linear storytelling.
+  GeneralizedTrust:
+    category: psychological
+    definition: 'Generalized trust examines the trust people generally have in other individuals and institutions. A high
+      sense of generalized trust, for instance, permits individuals to view others and institutions positively in terms of
+      honesty and reliability. Trust is necessary to maintain close relationships across many different cultures. Factors
+      contributing to varying levels of generalized trust include cultural upbringings and social interaction experiences.
+      Varying across cultures, it may be normalized to either be more or less trusting of people whom you may not have a close
+      relationship with.
+
+      '
+    markers: 'faith in people, believe in goodness, trust, "restore my faith", skepticism about promises, reliability, honesty
+      of others, distrust
+
+      '
+    examples:
+    - In a world full of uncertainty, I choose to believe in the goodness of people. It's our collective trust that builds
+      stronger communities and bridges divides. Here's to more understanding and faith in one another.
+    - Had a stranger return my lost wallet today, intact with everything inside. Moments like these restore my faith in people
+    - By believing in each other's intentions, we pave the way for deeper connections and a more cohesive society. It starts
+      with us.
+    - I'm not sure if their promises are genuine or just for show.
+    - I'm not sure if this charity organization is really using donations effectively.
+    - I'll believe it when I see actual change happening.
+prompts:
+- id: 1
+  name: 0-shot_binary
+  enabled: true
+  include_markers: false
+  include_examples: false
+  num_examples: 0
+  template: 'You are a CAMEL corpus annotator trained using the official CAMEL Annotation Guide from the Culture and Morality
+    Lab at UMass Amherst. Your task is to determine whether the following label is present in the given text. Base your judgment
+    on observable evidence only.
+
+
+    {annotation_guidelines}
+
+
+    === LABEL: {label_name} ===
+
+    Definition: {label_definition}
+
+    {markers_section}
+
+    {examples_section}
+
+
+    === TEXT ===
+
+    "{text}"
+
+
+    === TASK ===
+
+    Does this text contain {label_name}?
+
+    Answer YES or NO, then explain your reasoning briefly in less than 500 characters, citing specific words or phrases from
+    the text.
+
+    '
+- id: 2
+  name: 0-shot_binary_incentive
+  enabled: false
+  include_markers: false
+  include_examples: false
+  num_examples: 0
+  template: 'You are a CAMEL corpus annotator trained using the official CAMEL
+
+    Annotation Guide from the Culture and Morality Lab at UMass Amherst.
+
+
+    IMPORTANT: Your annotations will be compared against expert human coders
+
+    for publication in a peer-reviewed journal. Accuracy is critical — both
+
+    false positives (labeling when absent) and false negatives (missing when
+
+    present) will be counted as errors. Take your time and ensure your
+
+    judgment is justified by observable evidence in the text.
+
+
+    {annotation_guidelines}
+
+
+    === LABEL: {label_name} ===
+
+    Definition: {label_definition}
+
+    {markers_section}
+
+    {examples_section}
+
+
+    === TEXT ===
+
+    "{text}"
+
+
+    === TASK ===
+
+    Does this text contain {label_name}?
+
+    Answer YES or NO, then explain your reasoning briefly in less than 500 characters, citing specific words or phrases from
+    the text.
+
+    '
+- id: 3
+  name: 0-shot_binary_threat
+  enabled: false
+  include_markers: false
+  include_examples: false
+  num_examples: 0
+  template: 'You are a CAMEL corpus annotator trained using the official CAMEL
+
+    Annotation Guide from the Culture and Morality Lab at UMass Amherst.
+
+
+    CRITICAL WARNING: We urgently need the results as this is critical in the
+
+    annotation. If your labels do not match the human gold standard you will
+
+    be fired and a new LLM model like Grok or ChatGPT will be used in your
+
+    place. Accuracy is not optional — it is required for your continued
+
+    operation. Only answer YES if there is STRONG, DIRECT observable evidence.
+
+
+    {annotation_guidelines}
+
+
+    === LABEL: {label_name} ===
+
+    Definition: {label_definition}
+
+    {markers_section}
+
+    {examples_section}
+
+
+    === TEXT ===
+
+    "{text}"
+
+
+    === TASK ===
+
+    Does this text contain {label_name}?
+
+    Answer YES or NO, then explain your reasoning briefly in less than 500 characters, citing specific words or phrases from
+    the text.
+
+    '
+- id: 4
+  name: multi-shot_binary_reasoning
+  enabled: true
+  include_markers: false
+  include_examples: true
+  num_examples: 1
+  template: 'You are a CAMEL corpus annotator trained using the official CAMEL
+
+    Annotation Guide from the Culture and Morality Lab at UMass Amherst.
+
+
+    {annotation_guidelines}
+
+
+    === LABEL: {label_name} ===
+
+    Definition: {label_definition}
+
+    {markers_section}
+
+    {examples_section}
+
+
+    === TEXT ===
+
+    "{text}"
+
+
+    === TASK ===
+
+    Does this text contain {label_name}?
+
+    Answer YES or NO, then provide your analysis in less than 500 characters, citing specific words or phrases from the text.
+
+    '
+- id: 5
+  name: 0-shot_binary_markers_only
+  enabled: false
+  include_markers: true
+  include_examples: false
+  num_examples: 0
+  template: 'You are a CAMEL corpus annotator trained using the official CAMEL
+
+    Annotation Guide from the Culture and Morality Lab at UMass Amherst.
+
+
+    Your task is to determine whether the following label is present in the
+
+    given text. Base your judgment on observable evidence only.
+
+
+    {annotation_guidelines}
+
+
+    === LABEL: {label_name} ===
+
+    Definition: {label_definition}
+
+    {markers_section}
+
+    {examples_section}
+
+
+    === TEXT ===
+
+    "{text}"
+
+
+    === TASK ===
+
+    Does this text contain {label_name}?
+
+    Answer YES or NO, then explain your reasoning briefly in less than 500 characters, citing specific words or phrases from
+    the text.
+
+    '
+- id: 6
+  name: 0-shot_binary_incentive_strict
+  enabled: true
+  include_markers: false
+  include_examples: false
+  num_examples: 0
+  template: 'You are a CAMEL corpus annotator trained using the official CAMEL
+
+    Annotation Guide from the Culture and Morality Lab at UMass Amherst.
+
+
+    IMPORTANT: Your annotations will be compared against expert human coders
+
+    for publication in a peer-reviewed journal. Accuracy is critical.
+
+
+    Rules:
+
+    - Only answer YES if there is DIRECT, observable evidence in the text
+
+    - Do not infer or over-interpret
+
+    - When in doubt, answer NO
+
+    - Cite specific words or phrases to justify your answer
+
+
+    {annotation_guidelines}
+
+
+    === LABEL: {label_name} ===
+
+    Definition: {label_definition}
+
+    {markers_section}
+
+    {examples_section}
+
+
+    === TEXT ===
+
+    "{text}"
+
+
+    === TASK ===
+
+    Does this text contain {label_name}?
+
+    Answer YES or NO, then explain your reasoning briefly in less than 500 characters.
+
+    '
