@@ -267,11 +267,13 @@ def update_config_model(config_path, model_name, output_dir=None):
 
     return config
 
-def run_pipeline(config_path, workers, dry_run=False):
+def run_pipeline(config_path, workers, dry_run=False, no_split=False):
     """Run the annotation pipeline and return the exit code."""
     cmd = f"source {PIPELINE_ENV} && python run_annotation.py --config {config_path} --workers {workers}"
     if dry_run:
         cmd += " --dry-run"
+    if no_split:
+        cmd += " --no-split"
 
     print(f"    Running pipeline (workers={workers})...")
     result = subprocess.run(
@@ -299,6 +301,10 @@ def main():
                              "(e.g. 'deepseek_fix' → outputs/run_003_deepseek_fix/)")
     parser.add_argument("--vllm-timeout", type=int, default=600,
                         help="Seconds to wait for vLLM startup (default: 600)")
+    parser.add_argument("--no-split", action="store_true",
+                        help="Disable system/user prompt split (legacy mode). "
+                             "Default uses split for vLLM prefix caching.")
+
     args = parser.parse_args()
 
     # Filter models
@@ -389,7 +395,7 @@ def main():
 
             # Step 3: Run pipeline
             print(f"\n  [3/4] Running annotation pipeline...")
-            exit_code = run_pipeline(args.config, args.workers)
+            exit_code = run_pipeline(args.config, args.workers, no_split=args.no_split)
             if exit_code != 0:
                 status = f"FAILED: pipeline exit code {exit_code}"
 

@@ -112,7 +112,11 @@ def load_existing_results(output_path):
     completed = set()
     if os.path.exists(output_path):
         try:
-            df = pd.read_csv(output_path)
+            if output_path.endswith(".feather"):
+                df = pd.read_feather(output_path)
+            else:
+                df = pd.read_csv(output_path)
+
             for _, row in df.iterrows():
                 key = (row["text_id"], row["prompt_id"], row["model"])
                 completed.add(key)
@@ -394,17 +398,20 @@ def main():
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_prefix = runtime.get("output_prefix", "camel_results")
-    output_path = os.path.join(output_dir, f"{output_prefix}_{timestamp}.csv")
-
+    output_path = os.path.join(output_dir, f"{output_prefix}_{timestamp}.feather")
     skip_existing = runtime.get("skip_existing", True)
     completed = set()
 
     # Load completed work from any existing CSVs in the output directory
     if skip_existing:
-        existing_csvs = sorted(glob.glob(os.path.join(output_dir, f"{output_prefix}_*.csv")))
-        for csv_path in existing_csvs:
-            loaded = load_existing_results(csv_path)
+        existing_files = sorted(
+            glob.glob(os.path.join(output_dir, f"{output_prefix}_*.feather"))
+            + glob.glob(os.path.join(output_dir, f"{output_prefix}_*.csv"))
+        )
+        for fpath in existing_files:
+            loaded = load_existing_results(fpath)
             completed.update(loaded)
+
         if completed:
             print(f"  Checkpoint: found {len(completed)} completed rows, will skip")
 
@@ -416,7 +423,7 @@ def main():
     all_cols = meta_cols + label_cols + response_cols
 
     results_buffer = []
-    header_written = False
+    all_results = []
 
     # --- Rate limiting ---
     delay = runtime.get("delay_between_calls_seconds", 0.5)
@@ -580,12 +587,10 @@ def main():
                 # Mark completed
                 completed.add(row_key)
                 results_buffer.append(row)
+                all_results.append(row)
 
-                # Flush buffer periodically (every 10 rows)
-                if len(results_buffer) >= 10:
-                    _flush_buffer(results_buffer, all_cols, output_path,
-                                  header_written)
-                    header_written = True
+                if len(all_results) % 50 == 0:
+                    _flush_buffer(all_results, all_cols, output_path)
                     results_buffer = []
 
     # Clean up async loop
@@ -593,10 +598,8 @@ def main():
         loop.close()
 
     # Final flush
-    if results_buffer:
-        _flush_buffer(results_buffer, all_cols, output_path, header_written)
-        header_written = True
-
+    if all_results:
+        _flush_buffer(all_results, all_cols, output_path)
     # --- Summary ---
     total_time = time.time() - start_time
     print("\n" + "=" * 70)
@@ -657,13 +660,10 @@ def main():
             print(f"{'='*70}")
 
 
-def _flush_buffer(buffer, columns, output_path, header_exists):
-    """Write buffered rows to CSV."""
+def _flush_buffer(buffer, columns, output_path):
+    """Write all accumulated results to Feather (full overwrite each time)."""
     df = pd.DataFrame(buffer, columns=columns)
-    mode = "a" if header_exists else "w"
-    header = not header_exists
-    df.to_csv(output_path, mode=mode, header=header, index=False)
-
+    df.reset_index(drop=True).to_feather(output_path)
 
 if __name__ == "__main__":
     main()
