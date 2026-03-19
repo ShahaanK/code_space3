@@ -1,0 +1,46 @@
+#!/usr/bin/env condor_submit
+# =============================================================================
+# CAMEL Annotation — TEST JOB
+# =============================================================================
+# Validates the HPC setup by running a small test chunk.
+#
+# Before submitting:
+#   1. Create test chunk:
+#        python split_data.py --input /path/to/corpus.feather --create-test --test-size 100
+#   2. Verify Singularity container exists:
+#        ls ~/vllm-openai.sif
+#   3. Verify conda env:
+#        conda activate camel-annotation && python -c "import pandas, yaml; print('OK')"
+#
+# Submit:
+#   condor_submit test_job.sub
+#
+# Monitor:
+#   condor_q $USER
+#   tail -f logs/test_job.out
+# =============================================================================
+
+executable   = wrapper.sh
+arguments    = chunks/test_chunk.feather results/test_results.feather
+
+output       = logs/test_job.out
+error        = logs/test_job.err
+log          = logs/test_job.log
+
+# Resource requirements (2 GPUs for 70B model tensor parallelism)
+request_gpus   = 2
++request_gpus  = 2
+request_cpus   = 8
+request_memory = 32GB
+request_disk   = 20GB
+
+# Target nodes with sufficient GPU VRAM and CUDA version
+Requirements = (CUDAGlobalMemoryMb >= 40000) && (CUDADriverVersion >= 12.8) && (TotalGpus >= 2)
+
+# Environment — pass model config and HuggingFace cache
+environment = "HF_HOME=$ENV(HOME)/.cache/huggingface"
+
+# Don't retry test jobs
+on_exit_hold = (ExitCode != 0)
+
+queue 1

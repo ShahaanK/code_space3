@@ -37,6 +37,7 @@ vllm_*.log
 
 # Jupyter Lab nohup output
 nohup.out
+*.feather
 
 # Package backup (local reference only)
 myenv_packages_backup.txt
