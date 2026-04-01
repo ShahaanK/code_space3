@@ -1,3 +1,0 @@
-model,backend,rpm,avg_s,calls,errors
-Llama 3.1 70B,Ollama,28.1,2.135,45,0
-Llama 3.1 70B,vLLM,195.0,0.308,0,0
