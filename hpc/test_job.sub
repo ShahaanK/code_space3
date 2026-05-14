@@ -27,14 +27,13 @@ output       = logs/test_job.out
 error        = logs/test_job.err
 log          = logs/test_job.log
 
-# Resource requirements (2 GPUs for 70B model tensor parallelism)
+# Resource requirements — Llama 3.3 70B (2 GPUs, TP=2)
 request_gpus   = 2
 +request_gpus  = 2
 request_cpus   = 8
 request_memory = 32GB
 request_disk   = 20GB
 
-# Target nodes with sufficient GPU VRAM and CUDA version
 Requirements = (CUDAGlobalMemoryMb >= 40000) && (CUDADriverVersion >= 12.8) && (TotalGpus >= 2)
 
 # Environment — pass model config and HuggingFace cache

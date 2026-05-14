@@ -14,8 +14,8 @@ annotation_guidelines: "ANNOTATION GUIDELINES:\n1. Familiarize Yourself with the
   \ paves the way for more empathetic and effective computational\nsystems in the future.\n"
 runtime:
   sample_file: samples/sample_prompts.xlsx
-  text_id_column: Text Number
-  text_column: Text
+  text_id_column: Number
+  text_column: text
   output_dir: outputs/run_006_llama33_full
   output_prefix: camel_results_fullguide
   max_retries: 3
@@ -364,7 +364,7 @@ labels:
     - Oh, another 'expert' on the internet sharing their groundbreaking opinion. Why don't you enlighten us more with your vast ignorance? (uncivil)
   Hate:
     category: psychological
-    definition: 'In the study by Kennedy et al. (2022), hate speech is defined as language intending, through rhetorical devices and contextual references, to attack the dignity of a group. This attack may manifest through incitement to violence, encouragement of such incitement, or incitement to hatred. The determination of hate-based rhetoric hinges on its level of dehumanization, as it attacks human dignity, derogates, incites violence, or supports ideologies like white supremacy. A critical aspect of this definition is that hate-based rhetoric explicitly targets a social group (or an individual based on their social group). There are two overarching categories of such speech: 1) "assaults on human dignity" (HD) broadly encompass assertions or implications of a group's inferiority based on intelligence, genetics, or other human capacities. This includes degrading or dehumanizing a group by comparing them to subhuman entities or using harmful slurs with the intent to cause harm. Moreover, it involves the incitement of hatred through harmful group stereotypes, historical or political references, or the endorsement of known hate groups or ideologies. 2) "Calls for violence" (CV) involve explicit calls for or endorsements of violence based on these descriptions or justifications. Language classified with CV is deemed a specific incitement to violence, either directly or indirectly advocating violence against a group or an individual due to their group membership.'
+    definition: 'In the study by Kennedy et al. (2022), hate speech is defined as language intending, through rhetorical devices and contextual references, to attack the dignity of a group. This attack may manifest through incitement to violence, encouragement of such incitement, or incitement to hatred. The determination of hate-based rhetoric hinges on its level of dehumanization, as it attacks human dignity, derogates, incites violence, or supports ideologies like white supremacy. A critical aspect of this definition is that hate-based rhetoric explicitly targets a social group (or an individual based on their social group). There are two overarching categories of such speech: 1) "assaults on human dignity" (HD) broadly encompass assertions or implications of a group''s inferiority based on intelligence, genetics, or other human capacities. This includes degrading or dehumanizing a group by comparing them to subhuman entities or using harmful slurs with the intent to cause harm. Moreover, it involves the incitement of hatred through harmful group stereotypes, historical or political references, or the endorsement of known hate groups or ideologies. 2) "Calls for violence" (CV) involve explicit calls for or endorsements of violence based on these descriptions or justifications. Language classified with CV is deemed a specific incitement to violence, either directly or indirectly advocating violence against a group or an individual due to their group membership.'
     markers: 'slurs targeting groups, "all [group] should be...", dehumanization, group stereotypes, incitement to violence,
       white supremacy, group-based attacks
 
@@ -488,7 +488,7 @@ In annotating social media content for kinship, research assistants should pay a
     - People in poverty just need to work harder, it's their own fault.
   AnalyticalThinking:
     category: psychological
-    definition: 'Nisbett et al. (2001) defined analytic thinking as the process of isolating an object from its surroundings, focusing on its attributes for categorization, and preferring the application of rules related to these categories to explain and predict the object's actions. Inferences involve decontextualizing structure from content, utilizing formal logic, and avoiding contradictions. A few essential features of analytical thinking are as follows:
+    definition: 'Nisbett et al. (2001) defined analytic thinking as the process of isolating an object from its surroundings, focusing on its attributes for categorization, and preferring the application of rules related to these categories to explain and predict the object''s actions. Inferences involve decontextualizing structure from content, utilizing formal logic, and avoiding contradictions. A few essential features of analytical thinking are as follows:
 1. Discreteness: Analytical thinkers concentrate on categories and rules to comprehend an object's behavior independently of its context. They do not perceive it as a collection of overlapping and interpenetrating substances.
 2. Object Focus: Analytical individuals are inclined to primarily focus on the central object and its attributes (Hansen, 1983, p. 31). This inclination may contribute to a lack of understanding of the fundamental nature of causality in the physical domain.
 3. Categories and Rules: Analytical individuals are more inclined to concentrate on categories and rules to understand an object's behavior independently of its context. They did not perceive the whole as existing; instead, they viewed the parts relationally.
