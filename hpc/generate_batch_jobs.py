@@ -3,38 +3,47 @@
 CAMEL Annotation — Generate HPC Batch Submit Files
 ====================================================
 Generates per-model HTCondor submit files with GPU requirements
-routed by model size:
+routed by model size AND cluster target.
 
-  70B models (Llama, Qwen, AceGPT) → 2 GPUs, ≥40GB VRAM each
-  32B models (DeepSeek, Falcon-H1)  → 1 GPU,  ≥24GB VRAM
-  24B models (Mistral Small)        → 1 GPU,  ≥24GB VRAM
+Two cluster targets (--cluster flag):
 
-This means smaller models can run on MORE nodes (any node with 1 GPU),
-while 70B models only target high-VRAM 2-GPU nodes.
+  apophis (default):
+    70B models → 2 GPUs (TP=2), >=40GB VRAM each (RTX A6000)
+    32B/24B   → 1 GPU,  >=24GB VRAM
+    Conda env, no transfer_executable, request_disk=20GB
+
+  orangegrid:
+    70B models → 1 GPU (TP=1), A100 80GB targeted by device name
+    32B/24B   → 1 GPU (TP=1), any CUDA 12+ GPU >=40GB VRAM
+    Conda env, transfer_executable=false, no request_disk (auto)
+
+CRITICAL: Never apply orangegrid config to Apophis or vice versa.
+The 4/30 incident broke the validated Apophis TP=2 config by
+applying OrangeGrid-style single-GPU settings.
 
 Reads chunk manifest from split_data.py and generates:
   - batch_<model_short_name>.sub for each model
   - wrapper_<model_short_name>.sh with model baked in
 
 Usage:
-    # Generate submit files for all models
-    python generate_batch_jobs.py
-
-    # Specific model only
+    # Apophis (default, TP=2 for 70B)
     python generate_batch_jobs.py --model llama-3.3-70b
 
-    # Custom chunks directory
-    python generate_batch_jobs.py --chunks-dir my_chunks
+    # OrangeGrid (TP=1, A100 targeting)
+    python generate_batch_jobs.py --cluster orangegrid --model llama-3.3-70b
+
+    # List models with cluster-specific GPU assignments
+    python generate_batch_jobs.py --cluster orangegrid --list-models
 
 Then submit:
     condor_submit batch_llama-3.3-70b.sub
-    condor_submit batch_deepseek-r1-32b.sub    # runs on more nodes (1 GPU)
 
 Author: Shahaan Khan
 Research: Prof. Joshua Introne, Syracuse University iSchool
 """
 
 import argparse
+import copy
 import json
 import os
 import sys
@@ -42,7 +51,7 @@ from pathlib import Path
 
 
 # =============================================================================
-# MODEL REGISTRY — GPU requirements per model
+# MODEL REGISTRY — Apophis baseline (TP=2 for 70B, validated March 2026)
 # =============================================================================
 
 MODELS = [
@@ -120,6 +129,60 @@ MODELS = [
     },
 ]
 
+
+# =============================================================================
+# ORANGEGRID OVERRIDES — TP=1 on A100 80GB (locked 5/11/2026)
+# =============================================================================
+# Strategy: single A100 80GB per 70B/72B model. 37GB weights + 43GB headroom.
+# 32B/24B models fit on any CUDA 12+ GPU (A100, L40S, A40 all have >=45GB).
+# See WORKLOG 5/11 for full rationale.
+# =============================================================================
+
+ORANGEGRID_OVERRIDES = {
+    # 70B/72B: TP=1 single A100 80GB (targeted by device name)
+    "llama-3.3-70b":    {"tp": 1, "request_gpus": 1, "gpu_vram_mb": 70000},
+    "qwen2.5-72b":      {"tp": 1, "request_gpus": 1, "gpu_vram_mb": 70000},
+    "acegpt-70b":       {"tp": 1, "request_gpus": 1, "gpu_vram_mb": 70000},
+    # 32B/24B: already TP=1, keep broad targeting
+    "deepseek-r1-32b":  {"tp": 1, "request_gpus": 1, "gpu_vram_mb": 40000},
+    "mistral-small-24b": {"tp": 1, "request_gpus": 1, "gpu_vram_mb": 40000},
+    "falcon-h1-34b":    {"tp": 1, "request_gpus": 1, "gpu_vram_mb": 40000},
+}
+
+# Models that require A100 80GB (too large for L40S/A40 45GB with headroom)
+A100_REQUIRED_MODELS = {"llama-3.3-70b", "qwen2.5-72b", "acegpt-70b"}
+
+
+# =============================================================================
+# CLUSTER CONFIGURATIONS
+# =============================================================================
+
+CLUSTER_CONFIGS = {
+    "apophis": {
+        "description": "Prof. Introne's lab box (2x RTX A6000, no scheduler)",
+        "conda_path": "${HOME}/miniconda3",
+        "conda_env": "camel-annotation",
+        "container": "${HOME}/vllm-openai.sif",
+        "use_request_disk": True,
+        "request_disk": "20GB",
+        "transfer_executable": True,
+        # Apophis uses CUDADriverVersion >= 12.8 (both A6000s same driver)
+        "min_cuda_driver": 12.8,
+    },
+    "orangegrid": {
+        "description": "Syracuse ITS HTC cluster (HTCondor, A100/L40S/A40)",
+        "conda_path": "${HOME}/miniconda3",
+        "conda_env": "camel-annotation",
+        "container": "${HOME}/vllm-openai.sif",
+        "use_request_disk": False,   # JOB_DEFAULT_REQUESTDISK=DiskUsage (auto)
+        "request_disk": None,
+        "transfer_executable": False,  # NFS shared filesystem
+        # OrangeGrid: A100=12.8, A40=12.0, L40S=12.8. Floor at 12.0.
+        "min_cuda_driver": 12.0,
+    },
+}
+
+
 # Default paths (edit these or override via args)
 DEFAULT_CONDA_PATH = "${HOME}/miniconda3"
 DEFAULT_CONDA_ENV = "camel-annotation"
@@ -135,6 +198,23 @@ def get_model(name):
         if name in (m["short_name"], m["hf_name"]):
             return m
     return None
+
+
+def apply_cluster_overrides(models, cluster):
+    """Return a new model list with cluster-specific overrides applied."""
+    if cluster == "apophis":
+        return models  # Apophis uses baseline registry as-is
+
+    if cluster == "orangegrid":
+        result = []
+        for m in models:
+            m_copy = copy.deepcopy(m)
+            overrides = ORANGEGRID_OVERRIDES.get(m["short_name"], {})
+            m_copy.update(overrides)
+            result.append(m_copy)
+        return result
+
+    raise ValueError(f"Unknown cluster: {cluster}")
 
 
 def load_manifest(chunks_dir):
@@ -213,7 +293,8 @@ echo "Date: $(date)"
     return wrapper_path
 
 
-def generate_submit(model, chunks_dir, results_subdir, script_dir, manifest):
+def generate_submit(model, chunks_dir, results_subdir, script_dir,
+                    manifest, cluster_config, cluster):
     """Generate a model-specific HTCondor submit file."""
     name = model["short_name"]
     submit_path = script_dir / f"batch_{name}.sub"
@@ -229,33 +310,42 @@ def generate_submit(model, chunks_dir, results_subdir, script_dir, manifest):
 
     queue_list = "\n".join(queue_items)
 
-    # GPU requirements based on model size
+    # GPU requirements based on model size AND cluster
     gpus = model["request_gpus"]
     vram = model["gpu_vram_mb"]
+    min_driver = cluster_config["min_cuda_driver"]
 
-    if gpus >= 2:
-        requirements = (
-            f"(CUDAGlobalMemoryMb >= {vram}) && "
-            f"(CUDADriverVersion >= 12.8) && "
-            f"(TotalGpus >= {gpus})"
-        )
+    if cluster == "orangegrid":
+        requirements = _orangegrid_requirements(model, min_driver)
     else:
-        requirements = (
-            f"(CUDAGlobalMemoryMb >= {vram}) && "
-            f"(CUDADriverVersion >= 12.8)"
-        )
+        requirements = _apophis_requirements(model, min_driver)
+
+    # Resource lines (cluster-specific)
+    resource_lines = f"""request_gpus   = {gpus}
++request_gpus  = {gpus}
+request_cpus   = 8
+request_memory = 32GB"""
+
+    if cluster_config["use_request_disk"]:
+        resource_lines += f"\nrequest_disk   = {cluster_config['request_disk']}"
+
+    # Transfer executable
+    transfer_line = ""
+    if not cluster_config["transfer_executable"]:
+        transfer_line = "\ntransfer_executable = false"
 
     content = f"""#!/usr/bin/env condor_submit
 # =============================================================================
 # CAMEL Annotation — BATCH JOB: {name}
 # =============================================================================
-# Model:  {model['hf_name']}
-# Origin: {model['origin']}
-# GPUs:   {gpus} (TP={model['tp']})
-# VRAM:   >= {vram} MB per GPU
-# Chunks: {manifest['total_chunks']}
+# Model:   {model['hf_name']}
+# Origin:  {model['origin']}
+# Cluster: {cluster}
+# GPUs:    {gpus} (TP={model['tp']})
+# VRAM:    >= {vram} MB per GPU
+# Chunks:  {manifest['total_chunks']}
 #
-# Auto-generated by generate_batch_jobs.py
+# Auto-generated by generate_batch_jobs.py --cluster {cluster}
 #
 # Usage:
 #   condor_submit batch_{name}.sub
@@ -268,18 +358,14 @@ def generate_submit(model, chunks_dir, results_subdir, script_dir, manifest):
 initialdir   = {script_dir.resolve()}
 
 executable   = wrapper_{name}.sh
-arguments    = $(chunk_file) $(result_file)
+arguments    = $(chunk_file) $(result_file){transfer_line}
 
 output       = logs/$(job_name).out
 error        = logs/$(job_name).err
 log          = logs/$(job_name).log
 
-# Resource requirements — {name} ({gpus} GPU{'s' if gpus > 1 else ''})
-request_gpus   = {gpus}
-+request_gpus  = {gpus}
-request_cpus   = 8
-request_memory = 32GB
-request_disk   = 20GB
+# Resource requirements — {name} ({gpus} GPU{'s' if gpus > 1 else ''}, {cluster})
+{resource_lines}
 
 Requirements = {requirements}
 
@@ -302,11 +388,65 @@ queue chunk_file, result_file, job_name from (
     return submit_path
 
 
+def _apophis_requirements(model, min_driver):
+    """Build Condor requirements expression for Apophis."""
+    gpus = model["request_gpus"]
+    vram = model["gpu_vram_mb"]
+
+    if gpus >= 2:
+        return (
+            f"(CUDAGlobalMemoryMb >= {vram}) && "
+            f"(CUDADriverVersion >= {min_driver}) && "
+            f"(TotalGpus >= {gpus})"
+        )
+    else:
+        return (
+            f"(CUDAGlobalMemoryMb >= {vram}) && "
+            f"(CUDADriverVersion >= {min_driver})"
+        )
+
+
+def _orangegrid_requirements(model, min_driver):
+    """
+    Build Condor requirements expression for OrangeGrid.
+
+    OrangeGrid pool (5/11 recon, post-ITS visibility expansion):
+      9x A100 80GB PCIe (2 GPUs each, driver 12.8)
+      7x A40           (4 GPUs each, 45GB, driver 12.0)
+     11x L40S          (2 GPUs each, 45GB, driver 12.8)
+
+    Condor 9.8 uses CUDA-prefixed ClassAd attributes:
+      CUDADeviceName, CUDAGlobalMemoryMb, CUDADriverVersion
+
+    70B/72B models (37GB weights): must land on A100 80GB for headroom.
+    32B/24B models (17-18GB weights): any CUDA 12+ GPU with >=40GB works.
+    """
+    name = model["short_name"]
+
+    if name in A100_REQUIRED_MODELS:
+        # Target A100 80GB by device name (most reliable on heterogeneous pool)
+        return (
+            f'(CUDADeviceName == "NVIDIA A100 80GB PCIe") && '
+            f"(CUDADriverVersion >= {min_driver})"
+        )
+    else:
+        # 32B/24B: any CUDA 12+ GPU with enough VRAM
+        vram = model["gpu_vram_mb"]
+        return (
+            f"(CUDAGlobalMemoryMb >= {vram}) && "
+            f"(CUDADriverVersion >= {min_driver})"
+        )
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Generate per-model HTCondor batch submit files",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
+    parser.add_argument("--cluster", choices=["apophis", "orangegrid"],
+                        default="apophis",
+                        help="Target cluster (default: apophis). "
+                             "Controls TP, GPU requirements, and submit template.")
     parser.add_argument("--model", type=str, default=None,
                         help="Generate for specific model only (short name). "
                              "Default: all models.")
@@ -314,9 +454,12 @@ def main():
                         help="Directory with chunk files and manifest")
     parser.add_argument("--results-dir", default="results",
                         help="Base results directory prefix (per-model subdirs created)")
-    parser.add_argument("--conda-path", default=DEFAULT_CONDA_PATH)
-    parser.add_argument("--conda-env", default=DEFAULT_CONDA_ENV)
-    parser.add_argument("--container", default=DEFAULT_CONTAINER)
+    parser.add_argument("--conda-path", default=None,
+                        help=f"Override conda path (default from cluster config)")
+    parser.add_argument("--conda-env", default=None,
+                        help=f"Override conda env (default from cluster config)")
+    parser.add_argument("--container", default=None,
+                        help=f"Override Singularity container path")
     parser.add_argument("--config", default=DEFAULT_CONFIG)
     parser.add_argument("--threads", type=int, default=DEFAULT_THREADS)
     parser.add_argument("--port", type=int, default=DEFAULT_PORT)
@@ -324,11 +467,24 @@ def main():
                         help="List available models and exit")
     args = parser.parse_args()
 
+    # --- Cluster config ---
+    cluster = args.cluster
+    cluster_config = CLUSTER_CONFIGS[cluster]
+
+    # Resolve paths: CLI overrides > cluster config > defaults
+    conda_path = args.conda_path or cluster_config["conda_path"]
+    conda_env = args.conda_env or cluster_config["conda_env"]
+    container = args.container or cluster_config["container"]
+
+    # --- Apply cluster overrides to model registry ---
+    models = apply_cluster_overrides(MODELS, cluster)
+
     # --- List models ---
     if args.list_models:
+        print(f"\nCluster: {cluster} ({cluster_config['description']})")
         print(f"\n{'Short Name':<22s} {'GPUs':>4s} {'TP':>3s} {'VRAM':>7s}  {'HuggingFace Name'}")
         print("-" * 90)
-        for m in MODELS:
+        for m in models:
             print(f"{m['short_name']:<22s} {m['request_gpus']:>4d} {m['tp']:>3d} "
                   f"{m['gpu_vram_mb']:>5d}MB  {m['hf_name']}")
         return
@@ -341,8 +497,9 @@ def main():
         sys.exit(1)
 
     print("=" * 70)
-    print("CAMEL Annotation — Generate HPC Batch Jobs")
+    print(f"CAMEL Annotation — Generate HPC Batch Jobs [{cluster}]")
     print("=" * 70)
+    print(f"  Cluster:     {cluster} ({cluster_config['description']})")
     print(f"  Chunks dir:  {args.chunks_dir}")
     print(f"  Chunks:      {manifest['total_chunks']}")
     print(f"  Chunk size:  {manifest['chunk_size']}")
@@ -350,14 +507,18 @@ def main():
 
     # --- Select models ---
     if args.model:
-        model = get_model(args.model)
+        model = None
+        for m in models:
+            if args.model in (m["short_name"], m["hf_name"]):
+                model = m
+                break
         if not model:
             print(f"\nERROR: Unknown model '{args.model}'")
-            print(f"  Available: {', '.join(m['short_name'] for m in MODELS)}")
+            print(f"  Available: {', '.join(m['short_name'] for m in models)}")
             sys.exit(1)
         models_to_generate = [model]
     else:
-        models_to_generate = MODELS
+        models_to_generate = models
 
     script_dir = Path(".")
 
@@ -378,9 +539,9 @@ def main():
         wrapper_path = generate_wrapper(
             model=model,
             script_dir=script_dir,
-            conda_path=args.conda_path,
-            conda_env=args.conda_env,
-            container=args.container,
+            conda_path=conda_path,
+            conda_env=conda_env,
+            container=container,
             config=args.config,
             threads=args.threads,
             port=args.port,
@@ -393,10 +554,18 @@ def main():
             results_subdir=args.results_dir,
             script_dir=script_dir,
             manifest=manifest,
+            cluster_config=cluster_config,
+            cluster=cluster,
         )
 
-        node_type = "2-GPU high-VRAM nodes" if gpus >= 2 else "any node with 1 GPU (more available)"
-        print(f"  {name:<22s} → {gpus} GPU{'s' if gpus > 1 else ' '}  "
+        # Describe node targeting
+        if cluster == "orangegrid" and name in A100_REQUIRED_MODELS:
+            node_type = "A100 80GB only (TP=1)"
+        elif gpus >= 2:
+            node_type = "2-GPU high-VRAM nodes"
+        else:
+            node_type = "any CUDA 12+ node with 1 GPU"
+        print(f"  {name:<22s} -> {gpus} GPU{'s' if gpus > 1 else ' '}  "
               f"({node_type})")
         print(f"    Submit:  {submit_path}")
         print(f"    Wrapper: {wrapper_path}")
@@ -405,7 +574,7 @@ def main():
 
     # --- Summary ---
     print("=" * 70)
-    print("READY TO SUBMIT")
+    print(f"READY TO SUBMIT [{cluster}]")
     print("=" * 70)
     print()
     for model in models_to_generate:
@@ -414,6 +583,8 @@ def main():
     print()
     print("Monitor:")
     print("  condor_q $USER")
+    if cluster == "orangegrid":
+        print("  condor_q -better-analyze $USER    # if jobs idle")
     print()
     print("After all jobs complete, merge per-model:")
     for model in models_to_generate:
