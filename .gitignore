@@ -51,9 +51,6 @@ Thumbs.db
 vllm_*.log
 nohup.out
 
-# Claude Code project config
-CLAUDE.md
-
 # Old/backup files
 *_old.py
 *_backup*
