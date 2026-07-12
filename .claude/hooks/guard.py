@@ -106,40 +106,53 @@ def check_file_edit(tool_name, ti):
                  f"CLAUDE.md: {base} is a production HPC file. Show a diff and confirm before applying.")
 
 
+def split_statements(cmd):
+    """Split a shell command into statements at separators, so trigger phrases
+    buried inside a commit-message heredoc / echo string are not matched as if
+    they were command invocations. Heuristic, not a full shell parser."""
+    return re.split(r"\n|;|&&|\|\|?|\bthen\b|\bdo\b", cmd)
+
+
 def check_bash(ti):
     cmd = ti.get("command") or ""
-    low = cmd.lower()
 
-    # DENY: package installs / reinstalls of the pinned stack.
-    if re.search(r"\b(pip3?|uv pip|python3? -m pip)\s+install\b", low) or \
-       re.search(r"\bconda\s+(install|update)\b", low):
-        emit_pre("deny", "CLAUDE.md: never run pip/conda install (vLLM/torch/transformers are pinned). Blocked.")
+    for raw in split_statements(cmd):
+        seg = raw.strip()
+        if not seg:
+            continue
+        # strip a leading `sudo`/`time`/env-prefix so the command head is first.
+        head = re.sub(r"^(sudo|time|nice|nohup|env\s+\w+=\S+)\s+", "", seg, flags=re.I)
+        low = head.lower()
 
-    # DENY: killing or restarting the vLLM server.
-    if re.search(r"\b(pkill|kill|killall|systemctl\s+\w+)\b.*vllm", low) or \
-       re.search(r"\bvllm\b.*\b(kill|stop|restart)\b", low):
-        emit_pre("deny", "CLAUDE.md: never stop/restart/reconfigure the vLLM server process. Blocked.")
+        # DENY: package installs / reinstalls of the pinned stack (anchored to statement head).
+        if re.match(r"(pip3?|uv\s+pip|python3?\s+-m\s+pip|pip)\s+install\b", low) or \
+           re.match(r"conda\s+(install|update)\b", low):
+            emit_pre("deny", "CLAUDE.md: never run pip/conda install (vLLM/torch/transformers are pinned). Blocked.")
 
-    # DENY: force-push.
-    if re.search(r"\bgit\s+push\b.*(--force|-f\b|--force-with-lease)", low):
-        emit_pre("deny", "CLAUDE.md: force-push is forbidden. Blocked.")
+        # DENY: killing or restarting the vLLM server (kill/pkill/systemctl at statement head, targeting vllm).
+        if re.match(r"(pkill|killall|kill|systemctl)\b", low) and "vllm" in low:
+            emit_pre("deny", "CLAUDE.md: never stop/restart/reconfigure the vLLM server process. Blocked.")
 
-    # DENY: destructive rm/mv against data dirs or feather corpora.
-    if re.search(r"\b(rm|mv)\b", low) and (
-        re.search(r"/DATA(/|\b)", cmd) or
-        re.search(r"\b(samples|outputs|chunks)/", cmd) or
-        re.search(r"\.feather\b", cmd)
-    ):
-        emit_pre("deny",
-                 "CLAUDE.md: never rm/mv files in samples/ outputs/ /DATA/ chunks/ or *.feather corpora. Blocked.")
+        # git push handling (statement head is git push).
+        if re.match(r"git\s+push\b", low):
+            if re.search(r"(--force\b|--force-with-lease|\s-f\b|\s-\w*f\w*\b)", low):
+                emit_pre("deny", "CLAUDE.md: force-push is forbidden. Blocked.")
+            emit_pre("ask", "CLAUDE.md: never push to git without confirmation. Confirm this push.")
 
-    # DENY: writing into the venv from the shell.
-    if re.search(r"\b(rm|mv|cp|>|tee)\b.*myenv/", cmd):
-        emit_pre("deny", "CLAUDE.md: never modify ~/myenv from the shell. Blocked.")
+        # DENY: destructive rm/mv against data dirs or feather corpora (rm/mv at statement head).
+        if re.match(r"(rm|mv)\b", low) and (
+            re.search(r"/DATA(/|\b)", seg) or
+            re.search(r"(^|[\s'\"/])(samples|outputs|chunks)/", seg) or
+            re.search(r"\.feather\b", seg)
+        ):
+            emit_pre("deny",
+                     "CLAUDE.md: never rm/mv files in samples/ outputs/ /DATA/ chunks/ or *.feather corpora. Blocked.")
 
-    # ASK: any real git push (the legit Apophis commit path, but confirm first).
-    if re.search(r"\bgit\s+push\b", low):
-        emit_pre("ask", "CLAUDE.md: never push to git without confirmation. Confirm this push.")
+        # DENY: writing into the venv from the shell (rm/mv/cp/redirect/tee targeting myenv/).
+        if re.match(r"(rm|mv|cp|tee)\b", low) and "myenv/" in seg:
+            emit_pre("deny", "CLAUDE.md: never modify ~/myenv from the shell. Blocked.")
+        if re.search(r">\s*\S*myenv/", seg):
+            emit_pre("deny", "CLAUDE.md: never modify ~/myenv from the shell. Blocked.")
 
 
 def run_pre():
