@@ -19,7 +19,7 @@ set -euo pipefail
 CONDA_PATH="${HOME}/miniconda3"          # Path to conda installation
 CONDA_ENV="camel-annotation"             # Conda environment name
 CONTAINER_PATH="${HOME}/vllm-openai.sif" # Path to Singularity container
-CONFIG_FILE="config2.yaml"               # CAMEL config (prompts + labels)
+CONFIG_FILE="${CAMEL_CONFIG:-config2.yaml}"               # CAMEL config (prompts + labels)
 
 # Model defaults (can be overridden via environment variables)
 MODEL="${CAMEL_MODEL:-casperhansen/llama-3.3-70b-instruct-awq}"
@@ -51,6 +51,8 @@ echo "============================================================"
 echo "Setting up conda environment..."
 source "${CONDA_PATH}/etc/profile.d/conda.sh"
 conda activate "${CONDA_ENV}"
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
 
 # --- VERIFY FILES ---
 if [ ! -f "${CHUNK_FILE}" ]; then
@@ -69,6 +71,13 @@ if [ ! -f "${CONFIG_FILE}" ]; then
 fi
 
 # --- RUN ---
+# HTCondor sets CUDA_VISIBLE_DEVICES to GPU UUIDs; vLLM expects integer indices.
+if [[ "${CUDA_VISIBLE_DEVICES:-}" == GPU-* ]]; then
+    NUM_GPUS=$(echo "${CUDA_VISIBLE_DEVICES}" | tr ',' '\n' | wc -l)
+    export CUDA_VISIBLE_DEVICES=$(seq -s, 0 $((NUM_GPUS-1)))
+    echo "Converted CUDA_VISIBLE_DEVICES UUIDs to integer indices: ${CUDA_VISIBLE_DEVICES}"
+fi
+
 echo "Starting annotation..."
 python camel_annotate_hpc.py \
     "${CHUNK_FILE}" \

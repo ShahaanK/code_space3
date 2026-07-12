@@ -65,14 +65,21 @@ DEFAULT_VLLM_PORT = 8900
 DEFAULT_CONTAINER = "vllm-openai.sif"
 
 # DeepSeek needs more output tokens for reasoning chains
-DEEPSEEK_MAX_TOKENS = 1024
+DEEPSEEK_MAX_TOKENS = 2048
 DEEPSEEK_MAX_MODEL_LEN = 4096
+
+# DeepSeek-R1 collapses into repetition loops under greedy decoding
+# (temperature 0). Temperature is held at 0 for cross-model determinism,
+# so a deterministic repetition penalty is applied instead. Llama/Qwen
+# are unaffected (they have no repetition_penalty override).
+DEEPSEEK_REPETITION_PENALTY = 1.15
 
 # Model-specific overrides
 MODEL_OVERRIDES = {
     "Valdemardi/DeepSeek-R1-Distill-Qwen-32B-AWQ": {
         "max_tokens": DEEPSEEK_MAX_TOKENS,
         "max_model_len": DEEPSEEK_MAX_MODEL_LEN,
+        "repetition_penalty": DEEPSEEK_REPETITION_PENALTY,
         "extra_flags": "--trust-remote-code",
     },
     "Qwen/Qwen2.5-72B-Instruct-AWQ": {
@@ -206,7 +213,7 @@ def start_vllm(model, container_path, port, quantization, tp,
         "--tensor-parallel-size", str(tp),
         "--gpu-memory-utilization", str(gpu_util),
         "--max-model-len", str(max_model_len),
-        "--kv-cache-dtype", "fp8_e4m3",
+        # "--kv-cache-dtype", "fp8_e4m3",  # V1 experiment: removed to allow V1 engine
         "--port", str(port),
     ]
     if extra_flags:
@@ -271,7 +278,7 @@ def kill_vllm(proc):
 # =============================================================================
 
 def call_vllm(model, port, system_prompt, user_prompt, max_tokens,
-              temperature=0, max_retries=3):
+              temperature=0, repetition_penalty=None, max_retries=3):
     """Call vLLM's OpenAI-compatible API. Returns response text."""
     import urllib.request
     import urllib.error
@@ -286,12 +293,18 @@ def call_vllm(model, port, system_prompt, user_prompt, max_tokens,
     else:
         messages = [{"role": "user", "content": user_prompt}]
 
-    payload = json.dumps({
+    payload_dict = {
         "model": model,
         "messages": messages,
         "max_tokens": max_tokens,
         "temperature": temperature,
-    }).encode("utf-8")
+    }
+    # vLLM-specific sampling extension; only sent when a model override
+    # sets it (e.g. DeepSeek-R1). Models without it see no change.
+    if repetition_penalty is not None:
+        payload_dict["repetition_penalty"] = repetition_penalty
+
+    payload = json.dumps(payload_dict).encode("utf-8")
 
     headers = {"Content-Type": "application/json"}
 
@@ -313,7 +326,7 @@ def call_vllm(model, port, system_prompt, user_prompt, max_tokens,
 # =============================================================================
 
 def annotate_chunk(chunk_df, config, model, port, max_tokens, num_threads,
-                   text_id_col, text_col):
+                   text_id_col, text_col, repetition_penalty=None):
     """
     Annotate all texts in a chunk for all enabled prompts × all labels.
 
@@ -379,7 +392,8 @@ def annotate_chunk(chunk_df, config, model, port, max_tokens, num_threads,
                 )
 
                 response = call_vllm(model, port, sys_prompt, usr_prompt,
-                                     max_tokens)
+                                     max_tokens,
+                                     repetition_penalty=repetition_penalty)
                 prediction = parse_yes_no(response)
                 return label_name, prediction, response
 
@@ -486,15 +500,19 @@ def main():
     max_tokens = DEFAULT_MAX_TOKENS
     max_model_len = DEFAULT_MAX_MODEL_LEN
     extra_flags = ""
+    repetition_penalty = None
 
     if model in MODEL_OVERRIDES:
         overrides = MODEL_OVERRIDES[model]
         max_tokens = overrides.get("max_tokens", max_tokens)
         max_model_len = overrides.get("max_model_len", max_model_len)
         extra_flags = overrides.get("extra_flags", "")
+        repetition_penalty = overrides.get("repetition_penalty")
 
     print(f"\n  Model:       {model}")
     print(f"  Max tokens:  {max_tokens}")
+    if repetition_penalty is not None:
+        print(f"  Repetition penalty: {repetition_penalty}")
     print(f"  Config:      {args.config}")
     print(f"  Container:   {args.container}")
 
@@ -534,6 +552,7 @@ def main():
             num_threads=args.threads,
             text_id_col=text_id_col,
             text_col=text_col,
+            repetition_penalty=repetition_penalty,
         )
 
         # --- Save results ---
