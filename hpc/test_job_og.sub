@@ -1,0 +1,60 @@
+# =============================================================================
+# CAMEL Annotation — TEST JOB (OrangeGrid)
+# =============================================================================
+# Validates the OrangeGrid setup by running the 100-text test chunk.
+# Differs from test_job.sub (Apophis): single A100 80GB, TP=1, config3.yaml.
+#
+# Before submitting:
+#   1. wrapper.sh must accept CAMEL_CONFIG env var (one-line edit, see Step A)
+#   2. test_chunk.feather + chunk_manifest.json must be in chunks/
+#   3. vllm-openai.sif at /home/szkhan/vllm-openai.sif (already in place)
+#   4. camel-annotation conda env exists (already in place)
+#
+# Submit:
+#   cd ~/code_space3/hpc
+#   condor_submit test_job_og.sub
+# =============================================================================
+
+executable   = wrapper.sh
+arguments    = chunks/test_chunk.feather results/test_results_deepseek_reppen.feather
+
+# Submission directory is ~/code_space3/hpc, all relative paths resolve there
+initialdir   = /home/szkhan/code_space3/hpc
+
+# Logs land on NFS-mounted home (no transfer needed)
+output       = logs/test_og.out
+error        = logs/test_og.err
+log          = logs/test_og.log
+
+# OrangeGrid resource requirements
+# Single A100 80GB. 70B AWQ INT4 weights are ~37GB; need 80GB for KV cache headroom.
+request_gpus   = 1
++request_gpus = 1
+request_cpus   = 8
+request_memory = 64GB
+
+# Pin to A100 80GB. CUDADeviceName is the correct ClassAd attribute on HTCondor 9.8.0.
+# Do NOT use GPUs_* prefix (that's Condor 10.x).
+Requirements = (CUDADeviceName == "NVIDIA A100 80GB PCIe") && (TARGET.GPUs >= 2)
+
+# OrangeGrid auto-sets request_disk via JOB_DEFAULT_REQUESTDISK = DiskUsage
+# PREEMPT = False on this cluster; jobs run to completion
+
+# Environment overrides for OG-specific config
+# CAMEL_TP=1 (single A100, not Apophis's TP=2)
+# CAMEL_CONFIG=config3.yaml (annotation guide alignment)
+# HF_HOME for HuggingFace cache resolution inside Singularity
+environment = "HOME=/home/szkhan CAMEL_MODEL=Valdemardi/DeepSeek-R1-Distill-Qwen-32B-AWQ CAMEL_TP=1 CAMEL_CONFIG=config3.yaml HF_HOME=/home/szkhan/.cache/huggingface"
+
+#Files on NFS home; no transfer needed
+should_transfer_files = NO
+
+# Don't retry failed test jobs (hold so we can inspect)
+on_exit_hold = (ExitCode != 0)
+
+# Tag for queue filtering
++JobBatchName = "camel-test-og"
+
++wantsArgusNode = True
+
+queue 1
