@@ -1,0 +1,39 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import json,os; base='/home/szkhan/code_space3/admin'; parts=[('=== '+f+' ===\\n'+open(os.path.join(base,f)).read().strip()) for f in ['VISION.md','WORKLOG.md','WORKPLAN.md'] if os.path.exists(os.path.join(base,f))]; print(json.dumps({'hookSpecificOutput':{'hookEventName':'SessionStart','additionalContext':'\\n\\n'.join(parts)}})) if parts else None\" 2>/dev/null || true",
+            "statusMessage": "Loading project docs..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /home/szkhan/code_space3/.claude/hooks/guard.py pre",
+            "statusMessage": "Checking CAMEL guardrails..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /home/szkhan/code_space3/.claude/hooks/guard.py post",
+            "statusMessage": "Validating Python/YAML..."
+          }
+        ]
+      }
+    ]
+  }
+}

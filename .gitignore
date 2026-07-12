@@ -57,3 +57,4 @@ nohup.out
 
 # Package backup (local reference only)
 myenv_packages_backup.txt
+.claude/hooks/guard.log
