@@ -72,7 +72,15 @@ myenv_packages_backup.txt
 # original bug -- hpc/condor_alert.sh leaked this way, then neg1_watch.sh
 # re-opened the same hole. Match by pattern so the next alert script is covered
 # by default rather than by remembering to add a line.
+# NOTE: condor_alert.sh and neg1_watch.sh are TRACKED again as of 2026-07-30 --
+# the webhook now lives in ~/.camel_secrets.env (outside the repo) and both
+# scripts source it, so they carry no secret. The .githooks/pre-push scanner
+# blocks any literal webhook from being re-introduced. Patterns below are kept
+# for any NEW alert script that has not yet been secret-audited; delete the
+# negations if you want blanket coverage again.
 hpc/*alert*.sh
 hpc/*watch*.sh
+!hpc/condor_alert.sh
+!hpc/neg1_watch.sh
 hpc/neg1_watch.out
 hpc/.neg1_watch_processed.txt
