@@ -15,6 +15,14 @@
 
 set -euo pipefail
 
+# Raise the file-descriptor limit before starting vLLM. The falcon-h1-34b gate
+# (job 676999, 2026-07-30) failed inside vLLM with "[Errno 24] Too many open
+# files -- Consider increasing with ulimit -n". Multi-shard safetensors loads
+# plus the V0 engine's worker sockets can exhaust a low default soft limit.
+# Raise the soft limit to the hard limit; harmless where it is already high.
+ulimit -n "$(ulimit -Hn)" 2>/dev/null || true
+echo "  ulimit -n: $(ulimit -n)"
+
 # --- CONFIGURATION (edit these for your setup) ---
 CONDA_PATH="${HOME}/miniconda3"          # Path to conda installation
 CONDA_ENV="camel-annotation"             # Conda environment name
