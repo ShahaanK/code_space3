@@ -23,7 +23,7 @@
 
 **Impact**: Apophis Jupyter usable again with a documented recovery path; the entire OG production infrastructure is now backed up on GitHub instead of living only on the box; `/project-tracker` works going forward.
 
-**Next Steps**: DeepSeek decoding decision still open (M8.T10h / M8.T26); F1 regression still gates the wave (M8.T10i); chunk_000 validation for Mistral/AceGPT/Falcon (M8.T27).
+**Next Steps**: DeepSeek decoding config (temp 0.6 stochastic) now APPROVED (M8.T26 resolved); F1 regression still gates the wave (M8.T10i); chunk_000 validation for Mistral/AceGPT/Falcon (M8.T27).
 
 ---
 

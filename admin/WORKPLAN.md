@@ -170,7 +170,7 @@
 - [x] M8.T23 — Added Falcon (tiiuae/Falcon-H1-34B-Instruct) MODEL_OVERRIDES --trust-remote-code entry to camel_annotate_hpc.py (2026-07-23)
 - [x] M8.T24 — Reconciled Apophis↔OG (config3 5-arm enablement on OG confirmed authoritative; runner byte-identical pre-edit), promoted all changes Apophis→OG, md5-verified 17 files, seeded OG run_counter.txt=1 (2026-07-23)
 - [x] M8.T25 — Per-folder READMEs (admin/, og_check/, test_data/, hpc/) + root README.md and hpc/HPC_CAMEL_README.md updates documenting the naming schema, submit flow, and select_and_merge.py (2026-07-23)
-- [ ] M8.T26 — Reconcile DeepSeek MODEL_OVERRIDES drift with Introne/Atari: live config is now temp 0.6 / top_p 0.95 / min_p 0.05 / no repetition_penalty (a third, stochastic config not reflected in CLAUDE.md Active Problems or M8.T10h); update docs and the deterministic-protocol framing
+- [x] M8.T26 — DeepSeek MODEL_OVERRIDES config (temp 0.6 / top_p 0.95 / min_p 0.05 / no repetition_penalty) APPROVED by Introne/Atari as the accepted stochastic decoding config — no reconcile needed. (Follow-on: sync CLAUDE.md Active Problems / deterministic-protocol framing to match.)
 - [ ] M8.T27 — chunk_000 validation gate for the 3 unvalidated new models (Mistral / AceGPT / Falcon) before any production wave; DeepSeek remains separately blocked on M8.T10h
 - [x] M8.T28 — Commit + push the 2026-07-23 OG production working tree from Apophis to GitHub (run-versioned wave infra, six-model sub fleet, select_and_merge.py, runner edits incl. Falcon override); result CSVs + nohup backups gitignored; fulfils the "commit from Apophis" pending step
 
@@ -328,6 +328,7 @@ Arithmetic correction (5/21): each (text × prompt) = **25 API calls** (one per 
 - (Shahaan) ✅ M8.T24 — Promoted all changes Apophis→OG, md5-verified 17 files, seeded OG run_counter.txt=1
 - (Shahaan) ✅ M8.T25 — Per-folder READMEs + root/HPC doc updates
 - (Shahaan) 🆕 M8.T26 — Reconcile DeepSeek MODEL_OVERRIDES drift (temp 0.6/top_p 0.95/min_p 0.05, no rep-penalty — third config, undocumented) with Introne/Atari
+- (Shahaan) ✅ M8.T26 — DeepSeek temp-0.6 stochastic config APPROVED by Introne/Atari; no reconcile needed (resolves the 🆕 flag above). Follow-on: sync CLAUDE.md Active Problems framing
 - (Shahaan) 🆕 M8.T27 — chunk_000 validation gate for Mistral/AceGPT/Falcon before production wave
 - (Shahaan) 📌 Data note: overnight Qwen run0001 (chunk000) is row-complete and trustworthy; id-4 -1 rate 0.18% (worst label Kinship 0.9%) from 2048 overflow, fixed by 4096 going forward
 - (Shahaan) ✅ M1.T25 — Fixed wedged Apophis Jupyter terminals: 143-day server's terminado manager stuck (6 tracked terminals, 2 live, ~4 unclearable zombies); REST API DELETE returned 204 but could not reap them; clean restart on same port 8891 + token, other users' servers untouched; runbook written
