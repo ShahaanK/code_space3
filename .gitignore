@@ -66,3 +66,7 @@ Untitled.ipynb
 # Package backup (local reference only)
 myenv_packages_backup.txt
 .claude/hooks/guard.log
+
+# Slack webhook lives in this file - never track it
+hpc/condor_alert.sh
+hpc/condor_alert_old.sh
