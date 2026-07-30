@@ -4,6 +4,51 @@
 
 ---
 
+## 2026-07-23 — Jupyter Terminal Recovery, GitHub Backup of the OG Working Tree, Skill Registration Fix (Solo)
+
+**Context**: Apophis Jupyter Lab terminals had stopped accepting input ("since yesterday"), with 4–5 stuck tabs that would not close. Fixing that opened into backing up a large body of OG production work that lived only on the box (last push was weeks old), plus fixing the project-tracker skill. Complements the same-day production-infra entry below: that session authored the OG wave infra; this session committed and pushed it.
+
+**Problems Identified**:
+- (Shahaan) Jupyter Lab server (PID 3912104) had run **143 days**; its terminado terminal manager was wedged. It tracked 6 terminals but only 2 had live `bash` backends; the other ~4 were zombies (one dead since May 28) — no shell behind the tab, so typing goes nowhere and they will not reap.
+- (Shahaan) The Jupyter REST API could **not** clear the zombies: `DELETE` returned HTTP 204 but the terminals persisted (terminal "21" kept its May-28 timestamp), and open browser tabs recreated some entries on reconnect. API recovery is impossible once terminado is wedged.
+- (Shahaan) `git status` showed the OG production working tree uncommitted and unpushed (single copy on the box); 14 zero-byte/fragment junk files from a corrupted terminal paste cluttered the tree; result CSVs and the 76 MB nohup log were untracked and unignored.
+- (Shahaan) `/project-tracker` would not run — its file was named `SKILL` instead of `SKILL.md`, so the harness never registered it.
+
+**Solution Implemented**:
+- (Shahaan) Restarted only the szkhan-owned Jupyter server (rechecked ownership right before SIGKILL; other users' servers untouched), relaunched detached (`setsid`) on the same port 8891 + token so the bookmarked URL still works. Terminal list now empty; new terminals accept input.
+- (Shahaan) Wrote `admin/Apophis_Jupyter_Terminal_Recovery.md` — root cause + restart runbook (em-dash-free per request).
+- (Shahaan) Committed + pushed the working tree from Apophis (SSH remote can push; OG PAT is read-only) as ShahaanK with **no Claude attribution**: the OG 56K production wave infra (per-model `batch_*.sub`, `submit_wave.sh`, `select_and_merge.py`, subset chunklists, `run_counter.txt`), the runner edits (temperature plumbing, `CAMEL_CKPT_EVERY`, id-4 all-examples, `DEFAULT_MAX_MODEL_LEN` 4096, Falcon `--trust-remote-code`), the recovery doc, and the per-folder READMEs.
+- (Shahaan) `.gitignore`: now excludes `eval_*.csv` / `test_results_*.csv` / `evaluation_*.csv`, `nohup.out*`, and `.apophis-stale-bak-*` / `.save`. Deleted the 14 corrupted-paste junk files. Left `CLAUDE.md` uncommitted (local to Apophis by design).
+- (Shahaan) Renamed the skill `SKILL` → `SKILL.md` (`git mv`); `/project-tracker` now registers and runs as a tool call.
+
+**Impact**: Apophis Jupyter usable again with a documented recovery path; the entire OG production infrastructure is now backed up on GitHub instead of living only on the box; `/project-tracker` works going forward.
+
+**Next Steps**: DeepSeek decoding decision still open (M8.T10h / M8.T26); F1 regression still gates the wave (M8.T10i); chunk_000 validation for Mistral/AceGPT/Falcon (M8.T27).
+
+---
+
+## 2026-07-23 — Run-Versioned Output Naming, id-4 All-Examples Fix, Six-Model Sub Fleet, OG Promotion
+
+**Context**: OG production wrote bare per-chunk result/log paths (`results_<model>/results_<chunk>.feather`) that a re-submit silently overwrote — unacceptable for a research record where every completed attempt is data. Same session also fixed the id-4 multi-shot prompt to inject all few-shot examples on the HPC path, and prepared production submit files for all six roster models.
+
+**Work Completed**:
+- (Shahaan) Run-versioned naming schema `<model_tag>_chunk<NNN>_<YYYYMMDD>_run<NNNN>_cl<Cluster>` on every result + log basename. New `hpc/run_counter.txt` (project-global, seed 1), `next_run.sh` (flock, increments once per wave — never inside a .sub), `submit_wave.sh <tag> [chunklist]` (mints RUN_NO/SUBDATE `-a` macros). Applied schema to batch_llama/qwen subs; folded in `job_lease_duration=14400`.
+- (Shahaan) `hpc/select_and_merge.py`: discovers run-versioned files per chunk, excludes `.part_*` crash-resume shards, completeness gate (rows ≥ manifest chunk rows × 5 OG prompt arms), selects the latest complete run per chunk, logs every selection/archival, never deletes or moves files.
+- (Shahaan) Runner `camel_annotate_hpc.py`: `build_sections` now honors `runtime.example_selection=all` so id-4 (multi-shot_binary_reasoning) injects ALL of each label's examples (3–12/label), matching the Apophis `run_annotation.py` path; `DEFAULT_MAX_MODEL_LEN` 2048→4096.
+- (Shahaan) Hand-authored 4 new production subs (deepseek-r1-32b, mistral-small-24b, acegpt-70b, falcon-h1-34b) from the validated recipe; added Falcon `--trust-remote-code` MODEL_OVERRIDES entry.
+- (Shahaan) Reconciled Apophis↔OG (config3 5-arm enablement on OG confirmed authoritative; runner byte-identical pre-edit), then promoted all changes Apophis→OG and md5-verified 17 files; seeded OG `run_counter.txt=1`.
+- (Shahaan) Per-folder READMEs (admin/, og_check/, test_data/, hpc/) + root README and HPC_CAMEL_README updates.
+
+**Problems Identified**:
+- (Shahaan) Overnight Qwen run0001 (chunk000) ran id-4 all-examples at max_model_len 2048 → context overflow on long-text × high-example-label cells produced silent `-1`. Measured id-4 `-1` rate 0.18% (worst label Kinship 0.9%); file is row-complete and trustworthy, and the 4096 bump prevents recurrence.
+- (Shahaan) DeepSeek `MODEL_OVERRIDES` has drifted to a third sampling config (temp 0.6 / top_p 0.95 / min_p 0.05, no repetition_penalty) not reflected in CLAUDE.md Active Problems or M8.T10h — flagged for Introne/Atari (M8.T26).
+
+**Impact**: OG production runs can no longer overwrite prior attempts; Llama/Qwen are launch-ready on the new flow; id-4 example injection is now identical across both runners; the full six-model production sub fleet exists (four gated on validation, DeepSeek on decoding).
+
+**Next Steps**: Validate Mistral/AceGPT/Falcon on chunk_000 (M8.T27); reconcile DeepSeek decoding-config drift with Introne/Atari (M8.T26); commit the working tree from Apophis.
+
+---
+
 ## 2026-07-06 — Return After Gap: DeepSeek Penalty Fix, 36.5% Failure, V1 Near-Miss, Version-Control Reconciliation
 
 First session after roughly three weeks away. Began by reconstructing state: the committed docs had drifted badly (WORKLOG topped at 5/19 with 5/21, 5/28, and June work living only in side files or unlogged; WORKPLAN M8 checkboxes stale; CLAUDE.md two months old). Root cause is the read-only OG GitHub PAT plus project-knowledge copies not being re-uploaded. Most of the session was spent deploying the DeepSeek repetition-penalty fix end to end, hitting a real failure, and cleaning up the version-control mess that had been causing silent drift all along.

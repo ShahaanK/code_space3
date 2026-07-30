@@ -31,6 +31,8 @@
 - [x] M1.T21 — Build fcat CLI tool (Feather file reader: head/tail/info/describe/columns/shape/cols/sample/unique/counts/query/grep/labels/export), deployed to ~/myenv/bin/fcat
 - [x] M1.T22 — Build sanity_check.py for pipeline readiness verification
 - [ ] M1.T23 — Fix yaml.dump() in update_config_model() mangling API key on file rewrite (caused 401 on run_015 after Llama)
+- [x] M1.T25 — Diagnose + fix wedged Apophis Jupyter Lab terminals (143-day server; stale terminado zombies unclearable via REST API); clean server restart on same port 8891 + token; runbook in admin/Apophis_Jupyter_Terminal_Recovery.md
+- [x] M1.T26 — Fix project-tracker skill registration (file was SKILL, renamed to SKILL.md so the harness discovers it; /project-tracker now runs)
 
 ### Milestone 2: Pipeline Architecture
 - [x] M2.T1 — Migrate from monolithic demo script to modular config-driven pipeline
@@ -132,6 +134,8 @@
 ### Milestone 8: OrangeGrid HPC Setup & Production Runs ⚡ (post-4/30)
 **Status (2026-07-06):** Pipeline stood up and validated on OrangeGrid. V1 engine unlocked (224 RPM, beats Apophis). Llama + Qwen 100-text characterization complete. **Production 56K wave gated** on: (a) the DeepSeek deterministic-annotation failure (M8.T10h), and (b) the F1 regression diagnosis (M8.T10i). Llama and Qwen are unblocked and can proceed once the F1 question is settled.
 
+**Status update (2026-07-23):** Durable run-versioned output naming built and promoted to OG (M8.T19–T25): nothing overwrites a prior run, submit is via `submit_wave.sh`, consolidation via `select_and_merge.py`. id-4 now injects all examples on the HPC path with max_model_len 4096. All six models now have production subs (4 new, gated on validation). Overnight Qwen run0001 confirmed row-complete and trustworthy (id-4 -1 rate 0.18%).
+
 - [x] M8.T1 — Request OrangeGrid access (approved 4/29 by Dan/ITS)
 - [x] M8.T2 — First SSH connection to its-og-login5.syr.edu via SU RDS (5/7)
 - [x] M8.T3 — Empirical reconnaissance (5/7 + 5/11): GPU pool inventory, ClassAd attribute discovery (Condor 9.8 uses CUDA-prefix attrs), default request_disk, PREEMPT=False, Singularity 3.7.1 / Apptainer 1.1.3
@@ -159,6 +163,16 @@
 - [ ] M8.T16 — Ongoing coordination pings with Introne during the production wave (he has CPU clustering + GPU work queued; pause requests on >30GB-VRAM jobs)
 - [ ] M8.T17 — Regenerate OG GitHub PAT with Contents: Read+Write to end OG→GitHub drift (currently read-only; hpc/ edits must be promoted OG→Apophis and committed from Apophis)
 - [ ] M8.T18 — Production_Runtime_Estimates_Rev3.docx with locked V1 numbers and Introne's 75%-of-Apophis baseline framing
+- [x] M8.T19 — Run-versioned output naming schema `<model_tag>_chunk<NNN>_<YYYYMMDD>_run<NNNN>_cl<Cluster>` (no run ever overwrites a prior). New hpc/run_counter.txt (global, seed 1), next_run.sh (flock, once-per-wave increment), submit_wave.sh (mints RUN_NO/SUBDATE macros); schema applied to batch_llama/qwen subs; job_lease_duration=14400 folded in (2026-07-23)
+- [x] M8.T20 — hpc/select_and_merge.py: discovers run-versioned files per chunk, excludes .part_* crash-resume shards, completeness gate (rows ≥ manifest chunk rows × 5 OG arms), selects latest complete run per chunk, logs every selection, archive-safe (never deletes/moves) (2026-07-23)
+- [x] M8.T21 — Runner example-injection + context budget: build_sections now honors runtime.example_selection=all so id-4 (multi-shot_binary_reasoning) injects ALL of each label's examples (matches Apophis run_annotation.py path); DEFAULT_MAX_MODEL_LEN 2048→4096 (measured id-4 all-examples worst case 3646 tok; 2048 overflowed → silent -1) (2026-07-23)
+- [x] M8.T22 — Hand-authored 4 new production subs (batch_deepseek-r1-32b / mistral-small-24b / acegpt-70b / falcon-h1-34b) from the validated recipe + naming schema; AceGPT pins A100, others use broad-VRAM Requirements; Mistral sets CAMEL_QUANTIZATION=compressed-tensors (2026-07-23)
+- [x] M8.T23 — Added Falcon (tiiuae/Falcon-H1-34B-Instruct) MODEL_OVERRIDES --trust-remote-code entry to camel_annotate_hpc.py (2026-07-23)
+- [x] M8.T24 — Reconciled Apophis↔OG (config3 5-arm enablement on OG confirmed authoritative; runner byte-identical pre-edit), promoted all changes Apophis→OG, md5-verified 17 files, seeded OG run_counter.txt=1 (2026-07-23)
+- [x] M8.T25 — Per-folder READMEs (admin/, og_check/, test_data/, hpc/) + root README.md and hpc/HPC_CAMEL_README.md updates documenting the naming schema, submit flow, and select_and_merge.py (2026-07-23)
+- [ ] M8.T26 — Reconcile DeepSeek MODEL_OVERRIDES drift with Introne/Atari: live config is now temp 0.6 / top_p 0.95 / min_p 0.05 / no repetition_penalty (a third, stochastic config not reflected in CLAUDE.md Active Problems or M8.T10h); update docs and the deterministic-protocol framing
+- [ ] M8.T27 — chunk_000 validation gate for the 3 unvalidated new models (Mistral / AceGPT / Falcon) before any production wave; DeepSeek remains separately blocked on M8.T10h
+- [x] M8.T28 — Commit + push the 2026-07-23 OG production working tree from Apophis to GitHub (run-versioned wave infra, six-model sub fleet, select_and_merge.py, runner edits incl. Falcon override); result CSVs + nohup backups gitignored; fulfils the "commit from Apophis" pending step
 
 ### Milestone 9: RQ3 Viability Scoping ⚡ NEW (4-hour timebox)
 **Status:** Conditional research task. RQ3 lives or dies based on this scoping.
@@ -304,6 +318,21 @@ Arithmetic correction (5/21): each (text × prompt) = **25 API calls** (one per 
 ---
 
 ## Changelog
+
+### 2026-07-23
+- (Shahaan) ✅ M8.T19 — Run-versioned output naming schema + run_counter.txt/next_run.sh/submit_wave.sh; schema on llama/qwen subs; job_lease_duration=14400 folded in
+- (Shahaan) ✅ M8.T20 — select_and_merge.py: run-aware canonical-run selection per chunk, .part_* shard exclusion, completeness gate (×5 OG arms), archive-safe
+- (Shahaan) ✅ M8.T21 — build_sections honors example_selection=all (id-4 all-examples on HPC path); DEFAULT_MAX_MODEL_LEN 2048→4096 (overflow → silent -1 fixed)
+- (Shahaan) 🆕 M8.T22 — Hand-authored 4 new production subs (deepseek-r1-32b, mistral-small-24b, acegpt-70b, falcon-h1-34b) from the validated recipe; ✅ complete
+- (Shahaan) ✅ M8.T23 — Falcon MODEL_OVERRIDES --trust-remote-code entry added to camel_annotate_hpc.py
+- (Shahaan) ✅ M8.T24 — Promoted all changes Apophis→OG, md5-verified 17 files, seeded OG run_counter.txt=1
+- (Shahaan) ✅ M8.T25 — Per-folder READMEs + root/HPC doc updates
+- (Shahaan) 🆕 M8.T26 — Reconcile DeepSeek MODEL_OVERRIDES drift (temp 0.6/top_p 0.95/min_p 0.05, no rep-penalty — third config, undocumented) with Introne/Atari
+- (Shahaan) 🆕 M8.T27 — chunk_000 validation gate for Mistral/AceGPT/Falcon before production wave
+- (Shahaan) 📌 Data note: overnight Qwen run0001 (chunk000) is row-complete and trustworthy; id-4 -1 rate 0.18% (worst label Kinship 0.9%) from 2048 overflow, fixed by 4096 going forward
+- (Shahaan) ✅ M1.T25 — Fixed wedged Apophis Jupyter terminals: 143-day server's terminado manager stuck (6 tracked terminals, 2 live, ~4 unclearable zombies); REST API DELETE returned 204 but could not reap them; clean restart on same port 8891 + token, other users' servers untouched; runbook written
+- (Shahaan) ✅ M1.T26 — project-tracker skill renamed SKILL → SKILL.md (git mv) so the harness registers it
+- (Shahaan) ✅ M8.T28 — Committed + pushed the 2026-07-23 OG working tree from Apophis (SSH remote): OG production wave infra + six-model subs + select_and_merge.py + runner edits + Falcon override; .gitignore now excludes eval/test result CSVs and dated nohup backups; removed 14 corrupted-paste junk files
 
 ### 2026-07-06
 - (Shahaan) ✅ DeepSeek repetition-penalty fix deployed to camel_annotate_hpc.py (code, not config): max_tokens 1024→2048, DEEPSEEK_REPETITION_PENALTY=1.15 in MODEL_OVERRIDES, conditional plumbing through call_vllm/annotate_chunk/main; Llama/Qwen payloads unchanged, temperature stays 0
