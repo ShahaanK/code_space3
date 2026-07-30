@@ -4,6 +4,64 @@
 
 ---
 
+## 2026-07-30 — 56K Production Wave Launched (3 Models, 171 Jobs), Four Mid-Flight Production Bugs, F1 Regression Closed, Webhook Secrets Incident (Solo)
+
+**Context**: Launch session for the OrangeGrid 56K wave. Pre-flight recon found that both Llama and Qwen already had complete, clean 5-arm chunk_000 results sitting on OG that nobody had evaluated, which changed the launch order and closed the last gating question.
+
+**Work Completed**:
+- (Shahaan) Launched the production wave: Llama 3.3 70B (cluster 676996) and Qwen 2.5 72B (676997), 57 chunks each, then Mistral Small 3.1 24B (677046) once its gate passed. 171 jobs total, each model at run0001.
+- (Shahaan) Switched run numbering from one project-global counter to per-model (`run_counter_<tag>.txt`), so every model's first wave is run0001 and a re-submit of that model becomes run0002. Verified counter independence, seed handling, and that 8 parallel submits mint 8 unique numbers under flock.
+- (Shahaan) Added `chunklist_all.txt` (000–056) for single-step full-wave submission; `submit_wave.sh` now pre-validates the chunklist against `$PWD`, since `condor_submit` resolves `queue ... from $(CHUNKLIST)` relative to cwd.
+- (Shahaan) **Closed M8.T10i.** At n=1000, Llama 3.3 incentive_strict macro F1 is **0.267**, not the 0.208 measured at n=100 (where only 22 of 25 labels had gold positives; at n=1000 all 25 do). March's 0.285 came from a different model, a different config, and a disjoint 50-text draw, so it was never a valid comparator. There is no regression to diagnose.
+- (Shahaan) The n=1000 East/West split sharpened the central finding: Llama runs recall 0.49–0.57 against precision 0.19–0.24 (over-predicts), Qwen runs precision 0.33–0.42 against recall 0.19–0.29 (under-predicts) — near-identical macro F1 through opposite failure modes, now at 10× the prior sample size.
+
+**Problems Identified**:
+- (Shahaan) Every job opened the same `hpc/vllm_server.log` with mode `"w"` (cwd is the shared `initialdir`). Eight concurrent jobs interleaved into one file; only 1 of 8 startup banners survived, destroying the Mistral and Falcon diagnostics exactly when they were needed.
+- (Shahaan) The 600s vLLM startup timeout was tuned for a single job with a warm NFS cache. Under a 100+ job wave, dozens of jobs pull 15–140GB off NetApp at once; the Falcon gate was held by this.
+- (Shahaan) **OrangeGrid's default file-descriptor soft limit is 1024** (hard limit 1,048,576). Apophis already runs at 1,048,576, which is why this never surfaced there. vLLM failed with `[Errno 24] Too many open files`. Every OG job to date has run with 1024 descriptors.
+- (Shahaan) `--quantization` was passed to vLLM unconditionally, so any unquantized checkpoint fails at startup. AceGPT-v2-70B has no AWQ/GPTQ/INT4 release at all (GGUF only), unlike every other roster model.
+- (Shahaan) The Mistral production sub pointed at the roster model (`RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w4a16`), but the gate that "passed" on 07-21 had tested a **different model** (`stelterlab/Mistral-Small-24B-Instruct-2501-AWQ` — Mistral Small 3, not 3.1). Mistral was effectively ungated.
+- (Shahaan) The AceGPT repo id was miscapitalized (`-chat` vs the published `-Chat`); HF ids are case-sensitive, so every one of its 57 jobs would have failed instantly.
+- (Shahaan) Falcon-H1-34B GPTQ-Int4 cannot use the marlin kernel: its hybrid layers have `output_size_per_partition=9248`, not divisible by `min_thread_n=64`, and every other WNA16 kernel is unavailable here (Machete needs sm_90 and the node is sm_86; BitBLAS/Conch not installed; Exllama is fp16-only). It also initializes a **V0** engine, confirming the SSM/hybrid V1 limitation — roughly 3× slower even once loading succeeds.
+- (Shahaan) `hpc/condor_alert.sh` had been committed with a live Slack webhook, present in 20 published commits. Separately, `hpc/neg1_watch.sh` held a different live webhook and was untracked but **not gitignored** — one `git add -A` away from a repeat leak, because `.gitignore` listed individual filenames instead of a pattern.
+
+**Solution Implemented**:
+- (Shahaan) vLLM logs are now per-job at `results_<tag>/<chunk_stem>.vllm.log`; startup timeout raised to 2400s (overridable via `CAMEL_VLLM_TIMEOUT`); `wrapper.sh` raises the fd soft limit to the hard limit before starting vLLM; `start_vllm` omits `--quantization` entirely for `none`/`auto` so vLLM auto-detects.
+- (Shahaan) AceGPT corrected to `FreedomIntelligence/AceGPT-v2-70B-Chat`, running fp16 at TP=2 across both A100s on a node (`request_gpus = 2`). Documented fallback if KV cache proves starved: on-the-fly fp8 on 2× L40S (sm_89 has native FP8; A100 sm_80 does not, so fp8 there would be emulated and slower than fp16).
+- (Shahaan) Falcon switched to plain `gptq`. Learned the hard way that **releasing a held job reuses the ClassAds captured at submit time**, so editing the `.sub` file had no effect — the retry still ran `gptq_marlin`. Fixed in place with `condor_qedit` on the `Environment` attribute (not `Env`, which is the legacy V1 form and was empty).
+- (Shahaan) Mistral re-gated on the actual roster model: **0.00% -1 rate**, exit 0, V1 engine, vLLM ready in 140s — then launched its full 57-chunk wave.
+- (Shahaan) Secrets remediation: untracked `condor_alert.sh`, purged it from all 55 commits with `filter-branch`, force-pushed, and verified 0 commits contain the file or the webhook string. Deleted `condor_alert_old.sh`, the last on-disk copy of the exposed URL. Externalized the current webhook to `~/.camel_secrets.env` (chmod 600, deliberately outside the repo so no `.gitignore` mistake can publish it), sourced by both alert scripts and mirrored to OG. `.gitignore` now matches by pattern (`hpc/*alert*.sh`, `hpc/*watch*.sh`). Added a tracked pre-push hook (`.githooks/pre-push`) that blocks secrets in outgoing commits with redacted output, regression-tested against env-var fallback literals.
+- (Shahaan) An independent secrets audit across working tree, full history, untracked files, and the remote PR ref confirmed **no other credentials anywhere** — only the documented localhost-only `sk-local-shahaan`. No further history rewriting needed.
+
+**Impact**: Three of six models are in full production (171 jobs). The last pre-wave gate is closed and turned out to be a measurement artifact rather than a real regression. Four latent production bugs — two of which would have degraded or mass-failed the wave — were caught and fixed before they could do damage. The exposed webhook is out of the repo and out of history, and a tracked control now prevents recurrence.
+
+**Next Steps**: Rotate the exposed webhook (`3ca7370b`, the one from `condor_alert_old.sh` — **not** the current one, which was never committed). Falcon gate retry with plain `gptq` plus the raised fd limit. AceGPT download stalled at 132G of ~140G — resume, then gate. DeepSeek pending the parallel triage (M8.T29). Old commits remain fetchable from GitHub by SHA until GC, so rotation is the operative fix.
+
+---
+
+## 2026-07-30 — DeepSeek -1 Rate Re-Verified at 44%, Two Isolated Diagnostic Fixes Launched, Slack Monitoring Rebuilt (Solo)
+
+**Context**: Checked OG job history for the last production/gate-test runs, which led to re-verifying whether DeepSeek's "approved" stochastic decoding config (M8.T26) actually resolved the -1 degeneration before it's trusted in the production wave.
+
+**Problems Identified**:
+- (Shahaan) The `/deepseek-triage` workflow silently analyzed the wrong file (a hardcoded stale default, ignoring the args passed in) — caught and corrected by re-running the analysis manually on the real file.
+- (Shahaan) Corrected analysis of the actual approved-config gate test (job 667153, completed 2026-07-23) shows a **44.18% -1 (unparseable) rate** — worse than the 36.5% that got the `repetition_penalty=1.15` config rejected. Directly contradicts the "approved, cleared for production" framing currently in CLAUDE.md/WORKPLAN (M8.T10h/T26).
+- (Shahaan) Root-cause hypothesis: DeepSeek-R1-Distill gets the same system/user prompt split as Llama/Qwen (built for vLLM prefix caching), but DeepSeek's model card recommends no system prompt plus a forced `<think>\n` assistant-prefill — neither implemented. Worst-hit labels correlate with the longest/most nuanced construct definitions (Tightness 76%, Care 69%, Authority 61%).
+- (Shahaan) Separately, `condor_alert.sh` was found completely non-functional: revoked Slack webhook, a `WEBHOOK_URl`/`WEBHOOK_URL` case typo, not running as a process, and hardcoded to one stale log file for one job's lifecycle — could never have covered the 114-chunk production wave.
+
+**Solution Implemented**:
+- (Shahaan) Built two isolated diagnostic forks of `camel_annotate_hpc.py` (production untouched): `camel_annotate_hpc_deepseek_nosys.py` (drops system-role for DeepSeek) and `camel_annotate_hpc_deepseek_prefill.py` (adds `<think>\n` assistant-prefill via vLLM `continue_final_message`, confirmed supported on OG's vLLM 0.10.1.dev build). Diffed against production to catch a retyping-drift bug before deploying. Submitted as OG jobs 677000/677001 on the same gate-test data as job 667153; bumped to `condor_prio 10`. Confirmed healthy mid-run (93% GPU util, vLLM responding).
+- (Shahaan) Rewrote `condor_alert.sh`: polls `condor_q` directly (auto-covers every job, present and future), alerts only on HELD/auto-released/FAILED (silent on success to avoid noise across 100+ chunks), added a 6-hour digest heartbeat.
+- (Shahaan) Built new `neg1_watch.sh` (Apophis-side, new file): pulls newly-completed OG results back via scp, computes -1 rate locally via pandas, alerts above a 10% threshold — keeps result analysis on Apophis per project convention, never on OG.
+- (Shahaan) Slack webhook rotated twice this session (once to replace a dead one, once at explicit request); both scripts updated/restarted/verified via live Slack messages each time.
+- (Shahaan) Researched whether an incoming Slack message could trigger a full local Claude Code session (SSH/local access); confirmed not currently possible — Claude Tag / cloud `/schedule` routines run in an Anthropic-hosted sandbox that blocks SSH and local-machine access. Logged as a low-priority backlog item (WORKPLAN Side Items).
+
+**Impact**: DeepSeek's production signoff needs revisiting — actual data doesn't support "resolved." Two cheap isolated experiments are in flight to find the real mechanism before that conversation happens. Job-health and result-quality monitoring now actually work (previously silently broken) and cover the whole current wave (Llama+Qwen 56K, three new-model gate tests, both DeepSeek diagnostics) automatically, with no per-job configuration needed.
+
+**Next Steps**: Pull nosys/prefill results once complete, compare -1 rates against the 44.18% baseline; bring the corrected finding to Introne/Atari before trusting DeepSeek at full-wave scale; F1 regression (M8.T10i) remains the other pre-wave gate, untouched this session.
+
+---
+
 ## 2026-07-23 — Jupyter Terminal Recovery, GitHub Backup of the OG Working Tree, Skill Registration Fix (Solo)
 
 **Context**: Apophis Jupyter Lab terminals had stopped accepting input ("since yesterday"), with 4–5 stuck tabs that would not close. Fixing that opened into backing up a large body of OG production work that lived only on the box (last push was weeks old), plus fixing the project-tracker skill. Complements the same-day production-infra entry below: that session authored the OG wave infra; this session committed and pushed it.
