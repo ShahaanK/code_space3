@@ -57,7 +57,9 @@ DEFAULT_MODEL = "casperhansen/llama-3.3-70b-instruct-awq"
 DEFAULT_CONFIG = "config2.yaml"
 DEFAULT_QUANTIZATION = "awq_marlin"
 DEFAULT_TP = 2
-DEFAULT_MAX_MODEL_LEN = 2048
+DEFAULT_MAX_MODEL_LEN = 4096   # bumped 2048->4096: id-4 (multi-shot_binary_reasoning)
+                               # all-examples prompts overflow 2048 on long texts +
+                               # high-example labels (measured 2441 tok worst case)
 DEFAULT_GPU_UTIL = 0.90
 DEFAULT_NUM_THREADS = 16
 DEFAULT_MAX_TOKENS = 256         # Llama/Qwen; override for DeepSeek
@@ -68,10 +70,11 @@ DEFAULT_CONTAINER = "vllm-openai.sif"
 DEEPSEEK_MAX_TOKENS = 2048
 DEEPSEEK_MAX_MODEL_LEN = 4096
 
-# DeepSeek-R1 collapses into repetition loops under greedy decoding
-# (temperature 0). Temperature is held at 0 for cross-model determinism,
-# so a deterministic repetition penalty is applied instead. Llama/Qwen
-# are unaffected (they have no repetition_penalty override).
+# DeepSeek-R1 collapses into repetition loops under greedy decoding (temp 0),
+# and a repetition penalty (1.15) traded that for token-level incoherence.
+# Final decision: DeepSeek runs vendor sampling (temp 0.6) as a DOCUMENTED
+# EXCEPTION to the temp-0 protocol; no repetition penalty. Constant retained
+# for provenance but no longer applied (see MODEL_OVERRIDES / WORKLOG).
 DEEPSEEK_REPETITION_PENALTY = 1.15
 
 # Model-specific overrides
@@ -79,7 +82,9 @@ MODEL_OVERRIDES = {
     "Valdemardi/DeepSeek-R1-Distill-Qwen-32B-AWQ": {
         "max_tokens": DEEPSEEK_MAX_TOKENS,
         "max_model_len": DEEPSEEK_MAX_MODEL_LEN,
-        "repetition_penalty": DEEPSEEK_REPETITION_PENALTY,
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "min_p": 0.05,
         "extra_flags": "--trust-remote-code",
     },
     "Qwen/Qwen2.5-72B-Instruct-AWQ": {
@@ -135,7 +140,8 @@ def build_prompt_split(template, label_name, label_definition,
     return _clean(sys_prompt), _clean(usr_prompt)
 
 
-def build_sections(prompt_config, label_config, label_name):
+def build_sections(prompt_config, label_config, label_name,
+                   example_selection="fixed"):
     """Build markers and examples sections from config."""
     markers_section = ""
     if prompt_config.get("include_markers", False):
@@ -147,7 +153,11 @@ def build_sections(prompt_config, label_config, label_name):
     if prompt_config.get("include_examples", False):
         examples = label_config.get("examples", [])
         num = prompt_config.get("num_examples", 0)
-        if num > 0:
+        # example_selection == "all" injects every example for the label,
+        # mirroring prompt_builder.select_examples on the Apophis path;
+        # num_examples is then ignored. Otherwise cap to the first num
+        # (num <= 0 falls through to "no cap => all").
+        if example_selection != "all" and num > 0:
             examples = examples[:num]
         if examples:
             lines = [f"Example of {label_name}:"]
@@ -278,7 +288,8 @@ def kill_vllm(proc):
 # =============================================================================
 
 def call_vllm(model, port, system_prompt, user_prompt, max_tokens,
-              temperature=0, repetition_penalty=None, max_retries=3):
+              temperature=0, repetition_penalty=None,
+              top_p=None, min_p=None, max_retries=3):
     """Call vLLM's OpenAI-compatible API. Returns response text."""
     import urllib.request
     import urllib.error
@@ -299,10 +310,15 @@ def call_vllm(model, port, system_prompt, user_prompt, max_tokens,
         "max_tokens": max_tokens,
         "temperature": temperature,
     }
-    # vLLM-specific sampling extension; only sent when a model override
-    # sets it (e.g. DeepSeek-R1). Models without it see no change.
+    # Sampling params only sent when a model override sets them (e.g.
+    # DeepSeek-R1 vendor sampling). Models without them see no change:
+    # temperature defaults to 0; top_p/min_p/repetition_penalty are omitted.
     if repetition_penalty is not None:
         payload_dict["repetition_penalty"] = repetition_penalty
+    if top_p is not None:
+        payload_dict["top_p"] = top_p
+    if min_p is not None:
+        payload_dict["min_p"] = min_p
 
     payload = json.dumps(payload_dict).encode("utf-8")
 
@@ -322,11 +338,81 @@ def call_vllm(model, port, system_prompt, user_prompt, max_tokens,
 
 
 # =============================================================================
+# CHECKPOINTING (crash-resumable shard I/O)
+# =============================================================================
+
+def _atomic_write_feather(df, final_path):
+    """Write df to a temp file, fsync, then atomically os.replace into place.
+
+    A mid-write crash can only ever leave a *.tmp file behind, never a
+    half-written shard/output that a resume would trust. fsync of the file
+    and the containing directory makes both the bytes and the rename durable
+    across a node reschedule on the shared filesystem.
+    """
+    final_path = str(final_path)
+    tmp_path = final_path + ".tmp"
+    df.reset_index(drop=True).to_feather(tmp_path)
+    fd = os.open(tmp_path, os.O_RDONLY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+    os.replace(tmp_path, final_path)
+    dir_fd = os.open(os.path.dirname(final_path) or ".", os.O_RDONLY)
+    try:
+        os.fsync(dir_fd)
+    finally:
+        os.close(dir_fd)
+
+
+def shard_glob(results_dir, chunk_stem):
+    """Sorted list of shard paths for one chunk: {chunk_stem}.part_*.feather."""
+    import glob
+    pattern = os.path.join(results_dir, f"{chunk_stem}.part_*.feather")
+    return sorted(glob.glob(pattern))
+
+
+def scan_completed_shards(results_dir, chunk_stem):
+    """Scan existing shards for this chunk to support crash resume.
+
+    Returns (completed, next_index, shard_paths):
+      completed   : set of (int text_id, int prompt_id) already durably written
+      next_index  : next shard index to write (max existing index + 1)
+      shard_paths : the shard files found (sorted)
+    """
+    shard_paths = shard_glob(results_dir, chunk_stem)
+    completed = set()
+    next_index = 0
+    for p in shard_paths:
+        # Derive next index from the filename regardless of readability, so a
+        # torn shard never causes a numbering collision.
+        base = os.path.basename(p)
+        try:
+            idx = int(base.rsplit(".part_", 1)[1].split(".feather")[0])
+            next_index = max(next_index, idx + 1)
+        except (IndexError, ValueError):
+            pass
+        try:
+            df = pd.read_feather(p)
+        except Exception as e:
+            # Atomic writes make this near-impossible, but if a shard is
+            # unreadable, don't trust it — let its rows re-run.
+            print(f"  WARNING: could not read shard {p}: {e}")
+            continue
+        for tid, pid in zip(df["text_id"], df["prompt_id"]):
+            completed.add((int(tid), int(pid)))
+    return completed, next_index, shard_paths
+
+
+# =============================================================================
 # ANNOTATION ENGINE
 # =============================================================================
 
 def annotate_chunk(chunk_df, config, model, port, max_tokens, num_threads,
-                   text_id_col, text_col, repetition_penalty=None):
+                   text_id_col, text_col, repetition_penalty=None,
+                   temperature=0, top_p=None, min_p=None,
+                   results_dir=".", chunk_stem="results",
+                   ckpt_every=25, completed=None, start_index=0):
     """
     Annotate all texts in a chunk for all enabled prompts × all labels.
 
@@ -336,6 +422,11 @@ def annotate_chunk(chunk_df, config, model, port, max_tokens, num_threads,
     labels = config["labels"]
     label_names = list(labels.keys())
     annotation_guidelines = config.get("annotation_guidelines", "")
+    # Honor runtime.example_selection ("all" => inject every example per label),
+    # matching run_annotation.py on the Apophis path. camel_annotate_hpc.py
+    # historically ignored this key, so num_examples silently meant different
+    # things per code path; threading it here makes both runners identical.
+    example_selection = config.get("runtime", {}).get("example_selection", "fixed")
     enabled_prompts = [p for p in config["prompts"] if p.get("enabled", True)]
 
     total_texts = len(chunk_df)
@@ -349,17 +440,43 @@ def annotate_chunk(chunk_df, config, model, port, max_tokens, num_threads,
     print(f"    Calls:   {total_calls}")
     print(f"    Threads: {num_threads}")
 
-    all_rows = []
+    completed = completed or set()
+    buffer = []
+    shard_index = start_index
+    texts_in_buffer = 0
+    new_rows = 0
+    skipped_rows = 0
+
+    def flush_buffer():
+        """Durably write the current buffer as the next shard (atomic)."""
+        nonlocal buffer, shard_index, texts_in_buffer
+        if not buffer:
+            return
+        shard_path = os.path.join(
+            results_dir, f"{chunk_stem}.part_{shard_index:03d}.feather")
+        _atomic_write_feather(pd.DataFrame(buffer), shard_path)
+        print(f"\n    checkpoint: wrote {len(buffer)} rows "
+              f"-> {os.path.basename(shard_path)}")
+        buffer = []
+        texts_in_buffer = 0
+        shard_index += 1
+
     global_start = time.time()
     call_count = 0
 
     for text_idx, (_, text_row) in enumerate(chunk_df.iterrows()):
         text_id = text_row[text_id_col]
         text = str(text_row[text_col])
+        text_had_new = False
 
         for prompt_config in enabled_prompts:
             prompt_id = prompt_config["id"]
             prompt_name = prompt_config["name"]
+
+            # Resume: skip rows already durably written by a prior (crashed) run
+            if (int(text_id), int(prompt_id)) in completed:
+                skipped_rows += 1
+                continue
 
             # Build row metadata
             row = {
@@ -368,7 +485,7 @@ def annotate_chunk(chunk_df, config, model, port, max_tokens, num_threads,
                 "prompt_name": prompt_name,
                 "model": model,
                 "provider": "hpc_vllm",
-                "temperature": 0,
+                "temperature": temperature,
                 "run_number": 1,
             }
 
@@ -379,7 +496,8 @@ def annotate_chunk(chunk_df, config, model, port, max_tokens, num_threads,
             # --- Annotate all labels in parallel ---
             def annotate_label(label_name):
                 markers_section, examples_section = build_sections(
-                    prompt_config, labels[label_name], label_name)
+                    prompt_config, labels[label_name], label_name,
+                    example_selection)
 
                 sys_prompt, usr_prompt = build_prompt_split(
                     template=prompt_config["template"],
@@ -393,7 +511,9 @@ def annotate_chunk(chunk_df, config, model, port, max_tokens, num_threads,
 
                 response = call_vllm(model, port, sys_prompt, usr_prompt,
                                      max_tokens,
-                                     repetition_penalty=repetition_penalty)
+                                     temperature=temperature,
+                                     repetition_penalty=repetition_penalty,
+                                     top_p=top_p, min_p=min_p)
                 prediction = parse_yes_no(response)
                 return label_name, prediction, response
 
@@ -406,10 +526,12 @@ def annotate_chunk(chunk_df, config, model, port, max_tokens, num_threads,
                     label_name, prediction, response = future.result()
                     row[label_name] = prediction
                     row[f"response__{label_name}"] = (
-                        response[:500] if response else "")
+                        response[:4000] if response else "")
                     call_count += 1
 
-            all_rows.append(row)
+            buffer.append(row)
+            new_rows += 1
+            text_had_new = True
 
         # Progress
         elapsed = time.time() - global_start
@@ -419,14 +541,24 @@ def annotate_chunk(chunk_df, config, model, port, max_tokens, num_threads,
               f"RPM: {rpm:.0f} | "
               f"Elapsed: {elapsed:.0f}s", end="\r")
 
+        # Durable checkpoint every ckpt_every newly-annotated texts
+        if text_had_new:
+            texts_in_buffer += 1
+            if texts_in_buffer >= ckpt_every:
+                flush_buffer()
+
+    flush_buffer()  # tail: flush remaining rows as the final shard
+
     elapsed = time.time() - global_start
     rpm = (call_count / elapsed) * 60 if elapsed > 0 else 0
     print(f"\n\n  Annotation complete:")
-    print(f"    Total calls: {call_count}")
-    print(f"    Wall time:   {elapsed:.0f}s ({elapsed/60:.1f}m)")
-    print(f"    Effective RPM: {rpm:.0f}")
+    print(f"    Total calls:       {call_count}")
+    print(f"    New rows:          {new_rows}")
+    print(f"    Skipped (resumed): {skipped_rows}")
+    print(f"    Wall time:         {elapsed:.0f}s ({elapsed/60:.1f}m)")
+    print(f"    Effective RPM:     {rpm:.0f}")
 
-    return all_rows
+    return new_rows
 
 
 # =============================================================================
@@ -501,6 +633,9 @@ def main():
     max_model_len = DEFAULT_MAX_MODEL_LEN
     extra_flags = ""
     repetition_penalty = None
+    temperature = 0
+    top_p = None
+    min_p = None
 
     if model in MODEL_OVERRIDES:
         overrides = MODEL_OVERRIDES[model]
@@ -508,13 +643,52 @@ def main():
         max_model_len = overrides.get("max_model_len", max_model_len)
         extra_flags = overrides.get("extra_flags", "")
         repetition_penalty = overrides.get("repetition_penalty")
+        temperature = overrides.get("temperature", temperature)   # default 0 preserved
+        top_p = overrides.get("top_p")
+        min_p = overrides.get("min_p")
 
     print(f"\n  Model:       {model}")
     print(f"  Max tokens:  {max_tokens}")
+    print(f"  Temperature: {temperature}")
     if repetition_penalty is not None:
         print(f"  Repetition penalty: {repetition_penalty}")
+    if top_p is not None:
+        print(f"  top_p:       {top_p}")
+    if min_p is not None:
+        print(f"  min_p:       {min_p}")
     print(f"  Config:      {args.config}")
     print(f"  Container:   {args.container}")
+
+    # --- Checkpoint / resume setup ---
+    # The shard namespace AND the consolidated output are both derived from
+    # chunk_stem, so each chunk's shards stay isolated (distinct output names
+    # per chunk => distinct stems => distinct part_* globs). A --test run gets
+    # its own suffixed stem+output so it never resumes from, consolidates, or
+    # overwrites a production chunk's shards/output.
+    output_path = args.output
+    if args.test:
+        _root, _ext = os.path.splitext(args.output)
+        output_path = f"{_root}.test{args.test}{_ext}"
+    results_dir = os.path.dirname(output_path) or "."
+    chunk_stem = os.path.splitext(os.path.basename(output_path))[0]
+    os.makedirs(results_dir, exist_ok=True)
+    if output_path != args.output:
+        print(f"\n  TEST MODE: shards + output isolated -> {output_path}")
+    try:
+        ckpt_every = max(1, int(os.environ.get("CAMEL_CKPT_EVERY", "25")))
+    except ValueError:
+        ckpt_every = 25
+    completed, start_index, existing_shards = scan_completed_shards(
+        results_dir, chunk_stem)
+    total_rows_planned = len(chunk_df) * len(
+        [p for p in config["prompts"] if p.get("enabled", True)])
+    print(f"\n  Checkpoint dir:   {os.path.abspath(results_dir)}")
+    print(f"  Checkpoint every: {ckpt_every} texts (CAMEL_CKPT_EVERY)")
+    if existing_shards:
+        print(f"  resumed: skipped {len(completed)} of {total_rows_planned} "
+              f"rows from {len(existing_shards)} shards")
+    else:
+        print(f"  no existing shards — fresh run")
 
     # --- Start vLLM (unless --no-server) ---
     vllm_proc = None
@@ -542,8 +716,8 @@ def main():
                 print("ERROR: vLLM failed to start")
                 sys.exit(1)
 
-        # --- Run annotation ---
-        rows = annotate_chunk(
+        # --- Run annotation (flushes durable shards as it goes) ---
+        annotate_chunk(
             chunk_df=chunk_df,
             config=config,
             model=model,
@@ -553,15 +727,42 @@ def main():
             text_id_col=text_id_col,
             text_col=text_col,
             repetition_penalty=repetition_penalty,
+            temperature=temperature,
+            top_p=top_p,
+            min_p=min_p,
+            results_dir=results_dir,
+            chunk_stem=chunk_stem,
+            ckpt_every=ckpt_every,
+            completed=completed,
+            start_index=start_index,
         )
 
-        # --- Save results ---
-        os.makedirs(os.path.dirname(args.output) or ".", exist_ok=True)
-        result_df = pd.DataFrame(rows)
-        result_df.reset_index(drop=True).to_feather(args.output)
-        print(f"\n  Results saved: {args.output}")
-        print(f"  Rows: {len(result_df)}")
-        print(f"  Columns: {len(result_df.columns)}")
+        # --- Consolidate shards into the canonical output ---
+        shard_paths = shard_glob(results_dir, chunk_stem)
+        if not shard_paths:
+            print("\n  WARNING: no shards found to consolidate (0 rows?)")
+        else:
+            shards = [pd.read_feather(p) for p in shard_paths]
+            result_df = pd.concat(shards, ignore_index=True)
+            # Dedupe on the resumable unit; later shard wins (safety only —
+            # completed rows are skipped, so dupes should not occur).
+            result_df = result_df.drop_duplicates(
+                subset=["text_id", "prompt_id"], keep="last")
+            # Deterministic canonical row order for downstream eval.
+            if "original_index" in result_df.columns:
+                result_df = result_df.sort_values(
+                    ["original_index", "prompt_id"], kind="stable")
+            else:
+                result_df = result_df.sort_values(
+                    ["text_id", "prompt_id"], kind="stable")
+            # Preserve today's column order exactly: pin to the first shard's
+            # column list (concat already inherits it; this makes it explicit
+            # and immune to per-shard label-completion-order drift on resume).
+            result_df = result_df[list(shards[0].columns)]
+            _atomic_write_feather(result_df, output_path)
+            print(f"\n  Results consolidated: {output_path}")
+            print(f"  Rows: {len(result_df)} (from {len(shard_paths)} shards)")
+            print(f"  Columns: {len(result_df.columns)}")
 
     except KeyboardInterrupt:
         print("\n  INTERRUPTED. Cleaning up...")

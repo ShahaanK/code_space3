@@ -1,8 +1,8 @@
 # =============================================================================
-# CAMEL Annotation — PRODUCTION 56K WAVE: llama-3.3-70b
+# CAMEL Annotation — PRODUCTION 56K WAVE: qwen2.5-72b
 # =============================================================================
-# Model:   casperhansen/llama-3.3-70b-instruct-awq
-# Origin:  Western (Meta, USA)
+# Model:   Qwen/Qwen2.5-72B-Instruct-AWQ
+# Origin:  Eastern (Alibaba, China)
 # Cluster: OrangeGrid (single A100 80GB, TP=1, config3.yaml)
 # Corpus:  57 chunks (1000 texts/chunk, final chunk 796) = 56,796 texts
 #
@@ -12,12 +12,12 @@
 # TP, and config come from the environment ClassAd, not a baked --model.
 #
 # SUBSET PROTOCOL — swap the chunk list without editing this recipe:
-#   First (chunk_000 only, 1 job):   condor_submit batch_llama-3.3-70b.sub
+#   First (chunk_000 only, 1 job):   condor_submit batch_qwen2.5-72b.sub
 #   Release rest (001..056, 56 jobs):
-#       condor_submit -a 'CHUNKLIST = chunklist_rest.txt' batch_llama-3.3-70b.sub
+#       condor_submit -a 'CHUNKLIST = chunklist_rest.txt' batch_qwen2.5-72b.sub
 #   (default below is chunklist_first.txt; -a overrides it right before the queue)
 #
-# Monitor: condor_q $USER ; watch -n 30 'ls results_llama-3.3-70b/*.feather | wc -l'
+# Monitor: condor_q $USER ; watch -n 30 'ls results_qwen2.5-72b/*.feather | wc -l'
 # =============================================================================
 
 # --- swappable chunk list (default = first; override with -a for the rest) ---
@@ -31,7 +31,7 @@ initialdir   = /home/szkhan/code_space3/hpc
 # Schema: <model_tag>_chunk<NNN>_<YYYYMMDD>_run<NNNN>_cl<Cluster>
 # RUN_NO + SUBDATE are supplied once per wave by submit_wave.sh (-a macros);
 # $(Cluster) + chunk<NNN> keep every file unique within the wave.
-MODEL_TAG    = llama-3.3-70b
+MODEL_TAG    = qwen2.5-72b
 # Per-item derived paths (chunk_id supplied by the queue list, e.g. 000)
 chunk_file   = chunks/chunk_$(chunk_id).feather
 result_file  = results_$(MODEL_TAG)/results_$(MODEL_TAG)_chunk$(chunk_id)_$(SUBDATE)_run$(RUN_NO)_cl$(Cluster).feather
@@ -58,7 +58,7 @@ Requirements = (CUDADeviceName == "NVIDIA A100 80GB PCIe") && (TARGET.GPUs >= 2)
 should_transfer_files = NO
 
 # wrapper.sh reads CAMEL_MODEL / CAMEL_TP / CAMEL_CONFIG from here.
-environment = "HOME=/home/szkhan CAMEL_MODEL=casperhansen/llama-3.3-70b-instruct-awq CAMEL_TP=1 CAMEL_CONFIG=config3.yaml HF_HOME=/home/szkhan/.cache/huggingface"
+environment = "HOME=/home/szkhan CAMEL_MODEL=Qwen/Qwen2.5-72B-Instruct-AWQ CAMEL_TP=1 CAMEL_CONFIG=config3.yaml HF_HOME=/home/szkhan/.cache/huggingface"
 
 # Retry a failed chunk once (transient node issues); hold after that for inspection.
 on_exit_hold = (ExitCode != 0)
@@ -68,7 +68,7 @@ periodic_release = (NumJobStarts < 2) && ((CurrentTime - EnteredCurrentStatus) >
 job_lease_duration = 14400
 
 +wantsArgusNode = True
-+JobBatchName = "camel-prod-llama-3.3-70b"
++JobBatchName = "camel-prod-qwen2.5-72b"
 
 # One job per chunk id in the active chunk list.
 queue chunk_id from $(CHUNKLIST)

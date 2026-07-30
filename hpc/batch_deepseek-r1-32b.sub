@@ -1,0 +1,90 @@
+# =============================================================================
+# CAMEL Annotation — PRODUCTION 56K WAVE: deepseek-r1-32b
+# =============================================================================
+# Model:   Valdemardi/DeepSeek-R1-Distill-Qwen-32B-AWQ
+# Origin:  Eastern (DeepSeek, China)
+# Cluster: OrangeGrid (single A100/A40/L40S 40GB+, TP=1, config3.yaml)
+# Corpus:  57 chunks (1000 texts/chunk, final chunk 796) = 56,796 texts
+#
+# Hand-authored from the validated test_job_og.sub / batch_qwen2.5-72b.sub recipe
+# (NOT generate_batch_jobs.py, whose orangegrid branch emits an off-recipe
+# Apophis-style skeleton). Uses the template wrapper.sh (CAMEL_CONFIG override +
+# CUDA UUID->integer conversion); model, TP, and config come from the
+# environment ClassAd, not a baked --model.
+#
+# LAUNCH-BLOCKED (see CLAUDE.md Active Problems): DeepSeek has failed two
+# deterministic decoding configs (bare greedy -> repetition-loop collapse;
+# greedy + repetition_penalty 1.15 -> 36.5% unparseable on the 100-text run).
+# Do NOT submit this file until the decoding-config decision is resolved.
+# NOTE (checked directly against code, not CLAUDE.md's table): as of the current
+# camel_annotate_hpc.py, MODEL_OVERRIDES for this hf_name has MOVED OFF the
+# deterministic repetition_penalty=1.15 config entirely — it now reads
+# max_tokens=2048, temperature=0.6, top_p=0.95, min_p=0.05, with NO
+# repetition_penalty key (a comment at DEEPSEEK_REPETITION_PENALTY says the
+# 1.15 constant is "kept for provenance but no longer applied"). This is a
+# THIRD, stochastic-sampling config not yet described in CLAUDE.md's Active
+# Problems section — flag to the user. --trust-remote-code is present.
+# All decoding params + --trust-remote-code come from MODEL_OVERRIDES in
+# camel_annotate_hpc.py, NOT from this sub.
+#
+# SUBSET PROTOCOL — swap the chunk list without editing this recipe:
+#   First (chunk_000 only, 1 job):   condor_submit batch_deepseek-r1-32b.sub
+#   Release rest (001..056, 56 jobs):
+#       condor_submit -a 'CHUNKLIST = chunklist_rest.txt' batch_deepseek-r1-32b.sub
+#   (default below is chunklist_first.txt; -a overrides it right before the queue)
+#
+# Monitor: condor_q $USER ; watch -n 30 'ls results_deepseek-r1-32b/*.feather | wc -l'
+# =============================================================================
+
+# --- swappable chunk list (default = first; override with -a for the rest) ---
+CHUNKLIST = chunklist_first.txt
+
+executable   = wrapper.sh
+transfer_executable = false
+initialdir   = /home/szkhan/code_space3/hpc
+
+# Run-versioned provenance naming: nothing ever overwrites a prior run.
+# Schema: <model_tag>_chunk<NNN>_<YYYYMMDD>_run<NNNN>_cl<Cluster>
+# RUN_NO + SUBDATE are supplied once per wave by submit_wave.sh (-a macros);
+# $(Cluster) + chunk<NNN> keep every file unique within the wave.
+MODEL_TAG    = deepseek-r1-32b
+# Per-item derived paths (chunk_id supplied by the queue list, e.g. 000)
+chunk_file   = chunks/chunk_$(chunk_id).feather
+result_file  = results_$(MODEL_TAG)/results_$(MODEL_TAG)_chunk$(chunk_id)_$(SUBDATE)_run$(RUN_NO)_cl$(Cluster).feather
+job_name     = $(MODEL_TAG)_chunk$(chunk_id)_$(SUBDATE)_run$(RUN_NO)_cl$(Cluster)
+
+arguments    = $(chunk_file) $(result_file)
+
+output       = logs/$(job_name).out
+error        = logs/$(job_name).err
+log          = logs/$(job_name).log
+
+# 32B AWQ INT4 weights ~17-18GB; any CUDA 12+ GPU with >=40GB works (A100/A40/L40S).
+request_gpus   = 1
++request_gpus = 1
+request_cpus   = 8
+request_memory = 64GB
+
+# Broad targeting (non-A100 clause from generate_batch_jobs.py _orangegrid_requirements):
+# 32B fits comfortably on A100 80GB, A40 45GB, or L40S 45GB. VRAM-based, not device-name-pinned.
+Requirements = (CUDAGlobalMemoryMb >= 40000) && (CUDADriverVersion >= 12.0)
+
+# Files on NFS home; no transfer needed. Do NOT add a when_to_transfer_output line.
+should_transfer_files = NO
+
+# wrapper.sh reads CAMEL_MODEL / CAMEL_TP / CAMEL_CONFIG from here.
+# quantization left at wrapper.sh default (awq_marlin) — not set here.
+environment = "HOME=/home/szkhan CAMEL_MODEL=Valdemardi/DeepSeek-R1-Distill-Qwen-32B-AWQ CAMEL_TP=1 CAMEL_CONFIG=config3.yaml HF_HOME=/home/szkhan/.cache/huggingface"
+
+# Retry a failed chunk once (transient node issues); hold after that for inspection.
+on_exit_hold = (ExitCode != 0)
+periodic_release = (NumJobStarts < 2) && ((CurrentTime - EnteredCurrentStatus) > 300)
+
+# Reclaim-protection: keep the job's claim across a brief disconnect (matches OG).
+job_lease_duration = 14400
+
++wantsArgusNode = True
++JobBatchName = "camel-prod-deepseek-r1-32b"
+
+# One job per chunk id in the active chunk list.
+queue chunk_id from $(CHUNKLIST)

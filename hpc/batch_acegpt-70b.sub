@@ -1,23 +1,29 @@
 # =============================================================================
-# CAMEL Annotation — PRODUCTION 56K WAVE: llama-3.3-70b
+# CAMEL Annotation — PRODUCTION 56K WAVE: acegpt-70b
 # =============================================================================
-# Model:   casperhansen/llama-3.3-70b-instruct-awq
-# Origin:  Western (Meta, USA)
+# Model:   FreedomIntelligence/AceGPT-v2-70B-chat
+# Origin:  Arabic (KAUST, Saudi Arabia)
 # Cluster: OrangeGrid (single A100 80GB, TP=1, config3.yaml)
 # Corpus:  57 chunks (1000 texts/chunk, final chunk 796) = 56,796 texts
 #
-# Hand-authored from the validated test_job_og.sub recipe (NOT generate_batch_jobs.py,
-# whose orangegrid branch emits an off-recipe Apophis-style skeleton). Uses the
-# template wrapper.sh (CAMEL_CONFIG override + CUDA UUID->integer conversion); model,
-# TP, and config come from the environment ClassAd, not a baked --model.
+# Hand-authored from the validated test_job_og.sub / batch_qwen2.5-72b.sub recipe
+# (NOT generate_batch_jobs.py, whose orangegrid branch emits an off-recipe
+# Apophis-style skeleton). Uses the template wrapper.sh (CAMEL_CONFIG override +
+# CUDA UUID->integer conversion); model, TP, and config come from the
+# environment ClassAd, not a baked --model.
+#
+# UNVALIDATED — no Apophis or OG characterization run yet for this model.
+# Do NOT submit for a full wave until validated (chunk_000 test first).
+# --trust-remote-code already present in camel_annotate_hpc.py MODEL_OVERRIDES
+# for this hf_name — no code-side gap here.
 #
 # SUBSET PROTOCOL — swap the chunk list without editing this recipe:
-#   First (chunk_000 only, 1 job):   condor_submit batch_llama-3.3-70b.sub
+#   First (chunk_000 only, 1 job):   condor_submit batch_acegpt-70b.sub
 #   Release rest (001..056, 56 jobs):
-#       condor_submit -a 'CHUNKLIST = chunklist_rest.txt' batch_llama-3.3-70b.sub
+#       condor_submit -a 'CHUNKLIST = chunklist_rest.txt' batch_acegpt-70b.sub
 #   (default below is chunklist_first.txt; -a overrides it right before the queue)
 #
-# Monitor: condor_q $USER ; watch -n 30 'ls results_llama-3.3-70b/*.feather | wc -l'
+# Monitor: condor_q $USER ; watch -n 30 'ls results_acegpt-70b/*.feather | wc -l'
 # =============================================================================
 
 # --- swappable chunk list (default = first; override with -a for the rest) ---
@@ -31,7 +37,7 @@ initialdir   = /home/szkhan/code_space3/hpc
 # Schema: <model_tag>_chunk<NNN>_<YYYYMMDD>_run<NNNN>_cl<Cluster>
 # RUN_NO + SUBDATE are supplied once per wave by submit_wave.sh (-a macros);
 # $(Cluster) + chunk<NNN> keep every file unique within the wave.
-MODEL_TAG    = llama-3.3-70b
+MODEL_TAG    = acegpt-70b
 # Per-item derived paths (chunk_id supplied by the queue list, e.g. 000)
 chunk_file   = chunks/chunk_$(chunk_id).feather
 result_file  = results_$(MODEL_TAG)/results_$(MODEL_TAG)_chunk$(chunk_id)_$(SUBDATE)_run$(RUN_NO)_cl$(Cluster).feather
@@ -43,7 +49,7 @@ output       = logs/$(job_name).out
 error        = logs/$(job_name).err
 log          = logs/$(job_name).log
 
-# Single A100 80GB. 70B/72B AWQ INT4 weights ~37GB; 80GB for KV-cache headroom.
+# Single A100 80GB. 70B AWQ INT4 weights ~37GB; 80GB for KV-cache headroom.
 request_gpus   = 1
 +request_gpus = 1
 request_cpus   = 8
@@ -58,7 +64,8 @@ Requirements = (CUDADeviceName == "NVIDIA A100 80GB PCIe") && (TARGET.GPUs >= 2)
 should_transfer_files = NO
 
 # wrapper.sh reads CAMEL_MODEL / CAMEL_TP / CAMEL_CONFIG from here.
-environment = "HOME=/home/szkhan CAMEL_MODEL=casperhansen/llama-3.3-70b-instruct-awq CAMEL_TP=1 CAMEL_CONFIG=config3.yaml HF_HOME=/home/szkhan/.cache/huggingface"
+# quantization left at wrapper.sh default (awq_marlin) — not set here.
+environment = "HOME=/home/szkhan CAMEL_MODEL=FreedomIntelligence/AceGPT-v2-70B-chat CAMEL_TP=1 CAMEL_CONFIG=config3.yaml HF_HOME=/home/szkhan/.cache/huggingface"
 
 # Retry a failed chunk once (transient node issues); hold after that for inspection.
 on_exit_hold = (ExitCode != 0)
@@ -68,7 +75,7 @@ periodic_release = (NumJobStarts < 2) && ((CurrentTime - EnteredCurrentStatus) >
 job_lease_duration = 14400
 
 +wantsArgusNode = True
-+JobBatchName = "camel-prod-llama-3.3-70b"
++JobBatchName = "camel-prod-acegpt-70b"
 
 # One job per chunk id in the active chunk list.
 queue chunk_id from $(CHUNKLIST)

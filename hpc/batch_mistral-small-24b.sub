@@ -1,0 +1,84 @@
+# =============================================================================
+# CAMEL Annotation — PRODUCTION 56K WAVE: mistral-small-24b
+# =============================================================================
+# Model:   RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w4a16
+# Origin:  Western (Mistral, France)
+# Cluster: OrangeGrid (single A100/A40/L40S 40GB+, TP=1, config3.yaml)
+# Corpus:  57 chunks (1000 texts/chunk, final chunk 796) = 56,796 texts
+#
+# Hand-authored from the validated test_job_og.sub / batch_qwen2.5-72b.sub recipe
+# (NOT generate_batch_jobs.py, whose orangegrid branch emits an off-recipe
+# Apophis-style skeleton). Uses the template wrapper.sh (CAMEL_CONFIG override +
+# CUDA UUID->integer conversion); model, TP, and config come from the
+# environment ClassAd, not a baked --model.
+#
+# UNVALIDATED — no Apophis or OG characterization run yet for this model.
+# Do NOT submit for a full wave until validated (chunk_000 test first).
+#
+# Quantization is compressed-tensors (w4a16), NOT the wrapper.sh default
+# (awq_marlin) — CAMEL_QUANTIZATION is explicitly set below to override it.
+# No --trust-remote-code needed (not in camel_annotate_hpc.py MODEL_OVERRIDES,
+# and none required for this model).
+#
+# SUBSET PROTOCOL — swap the chunk list without editing this recipe:
+#   First (chunk_000 only, 1 job):   condor_submit batch_mistral-small-24b.sub
+#   Release rest (001..056, 56 jobs):
+#       condor_submit -a 'CHUNKLIST = chunklist_rest.txt' batch_mistral-small-24b.sub
+#   (default below is chunklist_first.txt; -a overrides it right before the queue)
+#
+# Monitor: condor_q $USER ; watch -n 30 'ls results_mistral-small-24b/*.feather | wc -l'
+# =============================================================================
+
+# --- swappable chunk list (default = first; override with -a for the rest) ---
+CHUNKLIST = chunklist_first.txt
+
+executable   = wrapper.sh
+transfer_executable = false
+initialdir   = /home/szkhan/code_space3/hpc
+
+# Run-versioned provenance naming: nothing ever overwrites a prior run.
+# Schema: <model_tag>_chunk<NNN>_<YYYYMMDD>_run<NNNN>_cl<Cluster>
+# RUN_NO + SUBDATE are supplied once per wave by submit_wave.sh (-a macros);
+# $(Cluster) + chunk<NNN> keep every file unique within the wave.
+MODEL_TAG    = mistral-small-24b
+# Per-item derived paths (chunk_id supplied by the queue list, e.g. 000)
+chunk_file   = chunks/chunk_$(chunk_id).feather
+result_file  = results_$(MODEL_TAG)/results_$(MODEL_TAG)_chunk$(chunk_id)_$(SUBDATE)_run$(RUN_NO)_cl$(Cluster).feather
+job_name     = $(MODEL_TAG)_chunk$(chunk_id)_$(SUBDATE)_run$(RUN_NO)_cl$(Cluster)
+
+arguments    = $(chunk_file) $(result_file)
+
+output       = logs/$(job_name).out
+error        = logs/$(job_name).err
+log          = logs/$(job_name).log
+
+# 24B compressed-tensors w4a16 weights ~14-15GB; any CUDA 12+ GPU with >=40GB works.
+request_gpus   = 1
++request_gpus = 1
+request_cpus   = 8
+request_memory = 64GB
+
+# Broad targeting (non-A100 clause from generate_batch_jobs.py _orangegrid_requirements):
+# 24B fits comfortably on A100 80GB, A40 45GB, or L40S 45GB. VRAM-based, not device-name-pinned.
+Requirements = (CUDAGlobalMemoryMb >= 40000) && (CUDADriverVersion >= 12.0)
+
+# Files on NFS home; no transfer needed. Do NOT add a when_to_transfer_output line.
+should_transfer_files = NO
+
+# wrapper.sh reads CAMEL_MODEL / CAMEL_TP / CAMEL_CONFIG / CAMEL_QUANTIZATION from here.
+# CAMEL_QUANTIZATION overrides wrapper.sh's awq_marlin default — this model needs
+# compressed-tensors.
+environment = "HOME=/home/szkhan CAMEL_MODEL=RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w4a16 CAMEL_TP=1 CAMEL_CONFIG=config3.yaml CAMEL_QUANTIZATION=compressed-tensors HF_HOME=/home/szkhan/.cache/huggingface"
+
+# Retry a failed chunk once (transient node issues); hold after that for inspection.
+on_exit_hold = (ExitCode != 0)
+periodic_release = (NumJobStarts < 2) && ((CurrentTime - EnteredCurrentStatus) > 300)
+
+# Reclaim-protection: keep the job's claim across a brief disconnect (matches OG).
+job_lease_duration = 14400
+
++wantsArgusNode = True
++JobBatchName = "camel-prod-mistral-small-24b"
+
+# One job per chunk id in the active chunk list.
+queue chunk_id from $(CHUNKLIST)
