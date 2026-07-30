@@ -48,7 +48,20 @@ The pipeline uses a config-driven, modular design:
 |-----------|----------|
 | `samples/` | Corpus files, answer keys (symlink to /DATA) |
 | `outputs/` | Run results, eval reports (symlink to /DATA) |
-| `hpc/` | HTCondor batch processing scripts for HPC cluster |
+| `hpc/` | HTCondor batch processing scripts for the OrangeGrid production cluster — see `hpc/README.md` |
+| `test_data/` | Small tracked sample files for cloning/smoke-testing the pipeline — see `test_data/README.md` |
+| `admin/` | Project management docs (vision, worklog, workplan, cluster references) — see `admin/README.md` |
+
+## HPC Production Runs (OrangeGrid)
+
+Full 56K-corpus production runs happen on OrangeGrid, not here. Every
+completed job attempt is preserved under a run-versioned naming schema
+(`<model_tag>_chunk<NNN>_<YYYYMMDD>_run<NNNN>_cl<Cluster>`) so re-runs
+accumulate as data rather than overwrite each other; jobs are launched via
+`hpc/submit_wave.sh <model_tag> [chunklist_file]` and results are consolidated
+locally with `hpc/select_and_merge.py`. See **`hpc/HPC_CAMEL_README.md`** for
+the full setup, submit flow, and naming schema, and `hpc/README.md` for a
+quick file index.
 
 ## Quick Start
 ```bash
@@ -67,5 +80,6 @@ python evaluate.py --results outputs/run_NNN_test_run/ --gold samples/sample_pro
 
 ## Project Documentation
 
-- `WORKLOG.md` — Reverse-chronological development narrative
-- `WORKPLAN.md` — Task tracking with milestones and changelog
+- `admin/WORKLOG.md` — Reverse-chronological development narrative
+- `admin/WORKPLAN.md` — Task tracking with milestones and changelog
+- `admin/VISION.md` — One-page project vision and current state

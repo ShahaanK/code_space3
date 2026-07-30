@@ -135,9 +135,128 @@ condor_q $USER
 watch -n 60 'ls -la results/*.feather | wc -l'
 ```
 
+**This is superseded for the validated production models.** Llama 3.3 70B and
+Qwen 2.5 72B (and the new-but-gated DeepSeek/Mistral/AceGPT/Falcon subs) now
+use the hand-authored `batch_<tag>.sub` + `submit_wave.sh` run-versioned flow
+instead of `generate_batch_jobs.py`'s generated `*_submit.sub` files — see
+"Run-Versioned Output Naming & Submit Flow" below.
+
+## Run-Versioned Output Naming & Submit Flow
+
+Every completed job attempt is preserved on disk as research data — nothing is
+ever overwritten by a re-run. Result and log basenames all follow one schema:
+
+```
+<model_tag>_chunk<NNN>_<YYYYMMDD>_run<NNNN>_cl<Cluster>
+```
+
+- `model_tag` — stable per-model tag: `llama-3.3-70b`, `qwen2.5-72b`,
+  `deepseek-r1-32b`, `mistral-small-24b`, `acegpt-70b`, `falcon-h1-34b`.
+- `chunk<NNN>` — zero-padded chunk id from the active chunk list.
+- `<YYYYMMDD>` — submit date.
+- `run<NNNN>` — a project-global, 4-padded run counter (unique per submit
+  action, shared by every job in that wave).
+- `cl<Cluster>` — the HTCondor `$(Cluster)` id.
+
+Result files land at
+`results_<tag>/results_<tag>_chunk<NNN>_<YYYYMMDD>_run<NNNN>_cl<Cluster>.feather`;
+logs at `logs/<same basename>.out/.err/.log`.
+
+### Submit entrypoint
+
+```bash
+cd ~/code_space3/hpc
+./submit_wave.sh qwen2.5-72b                    # first wave: chunk_000 only (chunklist_first.txt)
+./submit_wave.sh qwen2.5-72b chunklist_rest.txt # release the rest: chunks 001..056
+```
+
+`submit_wave.sh <model_tag> [chunklist_file]` calls `next_run.sh` exactly
+once (atomically, via `flock`, against `run_counter.txt`) to mint the run
+number for the whole wave, then `condor_submit`s `batch_<tag>.sub` with
+`-a "RUN_NO=..."`, `-a "SUBDATE=..."`, and (if given) `-a "CHUNKLIST=..."`.
+Every job queued by that one submit shares the same `run<NNNN>`/`SUBDATE`;
+`$(Cluster)` and `chunk<NNN>` keep individual files unique within the wave.
+
+`next_run.sh` must only be invoked once per human submit action —
+**never** from inside a `.sub` file, since HTCondor re-renders a submit
+file's macros per queue item and would burn a fresh run number per job
+instead of per wave. `run_counter.txt` in this repo is only a **seed**
+(currently `1`); the authoritative live counter lives on the OrangeGrid
+submit box — never reseed OG's copy from the git-tracked file.
+
+### Production submit files
+
+`batch_llama-3.3-70b.sub` and `batch_qwen2.5-72b.sub` are validated and use
+the run-versioned schema (`job_lease_duration = 14400` added this session
+for reclaim-protection). Four more were hand-authored this session from the
+same recipe, **but are not all ready to launch**:
+
+| Sub | Model | Status |
+|-----|-------|--------|
+| `batch_deepseek-r1-32b.sub` | DeepSeek-R1-Distill-Qwen-32B-AWQ | **Launch-blocked.** Deterministic-decoding degeneration unresolved (36.5% unparseable at repetition_penalty 1.15 on the 100-text run) — see CLAUDE.md "Active Problems". Do not submit until that's resolved. |
+| `batch_mistral-small-24b.sub` | Mistral-Small-3.1-24B (compressed-tensors) | **Unvalidated** — no Apophis or OG characterization run yet. Must pass its own chunk_000 gate first. |
+| `batch_acegpt-70b.sub` | AceGPT-v2-70B-chat | **Unvalidated** — same gate requirement. Pins A100 80GB (`TARGET.GPUs >= 2`) like Llama/Qwen, unlike the broader-VRAM `Requirements` clause used by DeepSeek/Mistral/Falcon. |
+| `batch_falcon-h1-34b.sub` | Falcon-H1-34B-Instruct | **Unvalidated, and additionally not runnable yet** — needs a `--trust-remote-code` `MODEL_OVERRIDES` entry added to `camel_annotate_hpc.py` before the flag reaches the vLLM launch. |
+
+None of the four new subs should be `condor_submit`'d (directly or via
+`submit_wave.sh`) until their respective gates above are cleared.
+
+### `select_and_merge.py` (Apophis, consolidation)
+
+The HPC runner also writes crash-resume shard files during a job,
+`<basename>.part_NNN.feather`, and never deletes them after rolling them
+into the final run-versioned file — a naive glob over `results_<tag>/`
+double-counts those. `select_and_merge.py` (see Step 7 below) is the
+run-aware replacement: it discovers run-versioned candidates per chunk
+(excluding `.part_*` shards), applies a completeness gate against
+`chunk_manifest.json` (expected rows = manifest rows x enabled prompt arms),
+picks the latest complete run per chunk, and logs every selection.
+
+### Runner changes affecting output (camel_annotate_hpc.py)
+
+- `build_sections()` now honors `runtime.example_selection` in the config.
+  When set to `"all"` (as in `hpc/config3.yaml`), prompt id 4
+  (multi-shot_binary_reasoning) injects **all** of a label's few-shot
+  examples (3-12 per label) instead of the `num_examples`-capped subset,
+  matching the Apophis `run_annotation.py` behavior. `num_examples` is now
+  effectively ignored on both paths.
+- `DEFAULT_MAX_MODEL_LEN` was bumped from 2048 to 4096 — the all-examples
+  id-4 prompts overflow 2048 on long texts paired with high-example labels
+  (measured worst case ~3646 tokens); 4096 fits across the whole corpus.
+
 ### Step 7: Merge Results (Locally, NOT on HPC)
 
-After all jobs complete, merge in `~/code_space3` (not in this directory):
+Result files use the run-versioned naming schema
+(`results_<tag>_chunk<NNN>_<YYYYMMDD>_run<NNNN>_cl<Cluster>.feather`) —
+multiple attempts can exist per chunk (re-runs, different clusters/dates),
+and crash-resume shard files (`<basename>.part_NNN.feather`) are left
+alongside them and must not be merged in raw. The inline
+`glob('hpc/results/*.feather')` snippet below is now BUGGY for this reason
+(it double-counts shard rows and has no way to pick the right run per
+chunk) — use `hpc/select_and_merge.py` instead:
+
+```bash
+cd ~/code_space3/hpc
+python select_and_merge.py --results-dir results_<tag>   # e.g. results_qwen2.5-72b
+```
+
+This excludes `.part_NNN.feather` shards, applies a completeness gate against
+`chunks/chunk_manifest.json` (rows expected = manifest rows × `--expected-prompts`,
+default 5 for the OG production config3.yaml prompt-arm count), selects the
+latest complete run per chunk (by date then run number), logs every
+selection/archival decision, and writes `merged_<tag>.feather`. See
+`python select_and_merge.py --help` for all options (`--manifest`,
+`--expected-prompts`, `--output`, `--tag`).
+
+NOTE (not yet fixed): `generate_batch_jobs.py` (~line 590–594) still prints a
+stale `python merge_results.py --results-dir ... --output ...` suggestion at
+the end of its run — `merge_results.py` doesn't exist anymore. That print
+statement should be updated to reference `select_and_merge.py` instead, but
+is left alone here per instruction (out of scope for this change).
+
+<details>
+<summary>Old inline snippet (superseded — kept for reference only, do not use)</summary>
+
 ```bash
 cd ~/code_space3
 python -c "
@@ -149,6 +268,7 @@ merged.to_feather('outputs/full_results.feather')
 print(f'Merged {len(files)} chunks, {len(merged)} rows')
 "
 ```
+</details>
 
 ### Step 8: Evaluate
 ```bash
