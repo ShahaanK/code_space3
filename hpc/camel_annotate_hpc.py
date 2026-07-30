@@ -93,6 +93,9 @@ MODEL_OVERRIDES = {
     "FreedomIntelligence/AceGPT-v2-70B-chat": {
         "extra_flags": "--trust-remote-code",
     },
+    "tiiuae/Falcon-H1-34B-Instruct": {
+        "extra_flags": "--trust-remote-code",
+    },
 }
 
 
