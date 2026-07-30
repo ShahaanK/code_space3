@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+# =============================================================================
+# pre-push — block pushes that would publish a secret to GitHub.
+# =============================================================================
+# Installed via `git config core.hooksPath .githooks` so it is tracked in the
+# repo and survives a re-clone (the default .git/hooks is NOT tracked).
+#
+# Scans only the commits actually being pushed, so it stays fast and does not
+# re-flag history that is already on the remote (that needs rotation, not a
+# blocked push -- see hpc/condor_alert.sh / commit efee473).
+#
+# Bypass for a genuine false positive:
+#     git push --no-verify
+# Better: add a stable substring of the offending line to .secretsallow.
+# =============================================================================
+set -uo pipefail
+
+RED=$'\033[0;31m'; YEL=$'\033[0;33m'; GRN=$'\033[0;32m'; NC=$'\033[0m'
+repo_root="$(git rev-parse --show-toplevel)"
+allow="${repo_root}/.secretsallow"
+
+# --- patterns -----------------------------------------------------------------
+# Each entry: <label>|<extended regex>
+PATTERNS=(
+  'Slack webhook|hooks\.slack\.com/services/[A-Za-z0-9_/]+'
+  'Slack token|xox[baprs]-[A-Za-z0-9-]{10,}'
+  'Slack app token|xapp-[0-9]-[A-Za-z0-9-]{10,}'
+  'GitHub PAT|gh[pousr]_[A-Za-z0-9]{36,}'
+  'GitHub fine-grained PAT|github_pat_[A-Za-z0-9_]{22,}'
+  'AWS access key id|AKIA[0-9A-Z]{16}'
+  'AWS secret access key|aws_secret_access_key[[:space:]]*=[[:space:]]*[A-Za-z0-9/+=]{40}'
+  'Anthropic API key|sk-ant-[A-Za-z0-9_-]{20,}'
+  'OpenAI API key|sk-[A-Za-z0-9]{32,}'
+  'HuggingFace token|hf_[A-Za-z0-9]{34}'
+  'Google API key|AIza[0-9A-Za-z_-]{35}'
+  'Private key block|-----BEGIN [A-Z ]*PRIVATE KEY-----'
+  'URL with inline credentials|[a-zA-Z][a-zA-Z0-9+.-]*://[^/[:space:]:@]+:[^/[:space:]@]+@[^/[:space:]]+'
+)
+
+# Lines matching these are never flagged: documented local-only vLLM key on a
+# localhost port (CLAUDE.md: "not a real secret"), and obvious placeholders.
+BUILTIN_ALLOW='sk-local-shahaan|<REDACTED>|YOUR_|EXAMPLE|example\.com|xxxxx|\bREPLACE_ME\b|\$\{[A-Za-z_]|os\.environ|getenv'
+
+# Delimiter is '#', which appears in none of these expressions. A literal '#'
+# in the scanned text is fine -- only the expression itself must avoid it.
+redact() { sed -E 's#(hooks\.slack\.com/services/)[A-Za-z0-9_/]+#\1<REDACTED>#g;
+                   s#(xox[baprs]-)[A-Za-z0-9-]+#\1<REDACTED>#g;
+                   s#(xapp-[0-9]-)[A-Za-z0-9-]+#\1<REDACTED>#g;
+                   s#(gh[pousr]_)[A-Za-z0-9]+#\1<REDACTED>#g;
+                   s#(github_pat_)[A-Za-z0-9_]+#\1<REDACTED>#g;
+                   s#(AKIA)[0-9A-Z]+#\1<REDACTED>#g;
+                   s#(sk-ant-)[A-Za-z0-9_-]+#\1<REDACTED>#g;
+                   s#(sk-)[A-Za-z0-9]{6}[A-Za-z0-9]*#\1<REDACTED>#g;
+                   s#(hf_)[A-Za-z0-9]+#\1<REDACTED>#g;
+                   s#(AIza)[0-9A-Za-z_-]+#\1<REDACTED>#g;
+                   s#(://[^/[:space:]:@]+):[^/[:space:]@]+@#\1:<REDACTED>@#g'; }
+
+findings=0
+tmp="$(mktemp)"; trap 'rm -f "$tmp"' EXIT
+
+# stdin: <local ref> <local sha> <remote ref> <remote sha>
+while read -r _lref lsha _rref rsha; do
+    [ "$lsha" = "0000000000000000000000000000000000000000" ] && continue   # deletion
+
+    if [ "$rsha" = "0000000000000000000000000000000000000000" ]; then
+        # New branch on the remote: scan only commits not already reachable
+        # from any other remote ref, so we don't rescan all of history.
+        range="$(git rev-list "$lsha" --not --remotes | tail -1)"
+        [ -z "$range" ] && continue
+        diffcmd=(git diff --unified=0 "${range}^!" "$lsha" --)
+        [ "$(git rev-list "$lsha" --not --remotes | wc -l)" -eq 1 ] && diffcmd=(git show --unified=0 "$lsha" --)
+    else
+        diffcmd=(git diff --unified=0 "$rsha" "$lsha" --)
+    fi
+
+    # Only ADDED lines (leading +), never context or removals.
+    "${diffcmd[@]}" 2>/dev/null \
+        | grep -E '^\+' | grep -vE '^\+\+\+' > "$tmp" || true
+    [ -s "$tmp" ] || continue
+
+    for entry in "${PATTERNS[@]}"; do
+        label="${entry%%|*}"; regex="${entry#*|}"
+        hits="$(grep -inE "$regex" "$tmp" 2>/dev/null | grep -vE "$BUILTIN_ALLOW" || true)"
+        if [ -n "$hits" ] && [ -f "$allow" ]; then
+            hits="$(printf '%s\n' "$hits" | grep -vFf "$allow" || true)"
+        fi
+        if [ -n "$hits" ]; then
+            findings=$((findings + 1))
+            printf '%s  ✖ %s%s\n' "$RED" "$label" "$NC"
+            printf '%s\n' "$hits" | head -5 | redact | sed 's/^/      /'
+            echo
+        fi
+    done
+done
+
+if [ "$findings" -gt 0 ]; then
+    cat <<EOF
+${RED}=============================================================${NC}
+${RED} PUSH BLOCKED — $findings secret pattern(s) in the outgoing commits${NC}
+${RED}=============================================================${NC}
+
+ Values above are redacted. To resolve:
+
+   1. Remove the secret and read it from the environment instead.
+   2. Untrack the file and add it to .gitignore:
+        git rm --cached <file> && echo '<file>' >> .gitignore
+   3. If it is already on the remote, ROTATE the credential. Untracking
+      does not purge it from history.
+
+ False positive? Add a stable substring of the line to .secretsallow,
+ or bypass once with:  ${YEL}git push --no-verify${NC}
+
+EOF
+    exit 1
+fi
+
+printf '%s✓ pre-push secret scan clean%s\n' "$GRN" "$NC"
+exit 0
