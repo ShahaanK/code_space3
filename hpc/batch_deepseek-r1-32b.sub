@@ -67,7 +67,11 @@ request_memory = 64GB
 
 # Broad targeting (non-A100 clause from generate_batch_jobs.py _orangegrid_requirements):
 # 32B fits comfortably on A100 80GB, A40 45GB, or L40S 45GB. VRAM-based, not device-name-pinned.
-Requirements = (CUDAGlobalMemoryMb >= 40000) && (CUDADriverVersion >= 12.0)
+# TARGET.GPUs is the count of FREE GPUs in the slot. Without this guard the job
+# matches slots with 0 free GPUs and dies with CUDA OOM (observed 2026-07-30:
+# mistral chunks 000/014/034 + the falcon gate, all on nodes with a fully-claimed
+# GPU). Mirrors the TARGET.GPUs >= 2 guard the A100 subs already carry.
+Requirements = (CUDAGlobalMemoryMb >= 40000) && (CUDADriverVersion >= 12.0) && (TARGET.GPUs >= 1)
 
 # Files on NFS home; no transfer needed. Do NOT add a when_to_transfer_output line.
 should_transfer_files = NO
