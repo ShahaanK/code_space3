@@ -31,7 +31,7 @@ human-annotated corpus. The north-star comparison is **East vs West**.
 - Modify `config2.yaml` or `config3.yaml` (master prompts/labels). Note: `config3.yaml` is the OrangeGrid production config and the DeepSeek block's `temperature`/`max_tokens` in it are NOT read on the HPC path (see HPC section) — decoding params come from code, not this yaml.
 - Modify files in `hpc/` (production batch scripts — now the active work area; changes must still be shown as a diff and confirmed before applying)
 - Re-add `--kv-cache-dtype fp8_e4m3` to the vLLM invocation in `hpc/camel_annotate_hpc.py`. It is deliberately commented out to keep the V1 engine active (see V0/V1 note). Re-adding it silently forces the slow V0 engine.
-- Change the DeepSeek `MODEL_OVERRIDES` entry in `hpc/camel_annotate_hpc.py` (`max_tokens: 2048`, `repetition_penalty: 1.15`) without confirmation — it is under active tuning (see Active Problems).
+- Change the DeepSeek `MODEL_OVERRIDES` entry in `hpc/camel_annotate_hpc.py` (`max_tokens: 2048`, `temperature: 0.6`, `top_p: 0.95`, `min_p: 0.05`, no `repetition_penalty`) without confirmation — this is the Introne/Atari-approved stochastic config (see Active Problems).
 - Apply OrangeGrid HPC config (TP=1, single GPU, A100 targeting) to Apophis, or vice versa. Doing so on 4/30 broke the validated TP=2 setup and was reverted same day.
 - Delete files in `samples/` or `outputs/` (symlinked to `/DATA`)
 - Push to git without confirmation. Apophis CAN push (SSH remote, `git@github.com:ShahaanK/code_space3.git`); it is the commit path for the project. OG's remote is HTTPS with a read-only PAT and cannot push (see Git & Sync).
@@ -44,9 +44,9 @@ human-annotated corpus. The north-star comparison is **East vs West**.
 
 ### Always
 
-- Read this CLAUDE.md and the latest WORKLOG entry before making changes
+- **At the start of every conversation**, read `admin/VISION.md`, `admin/WORKLOG.md`, and `admin/WORKPLAN.md` in full to orient yourself on current project state, active priorities, and recent decisions — then read this CLAUDE.md
 - Show a diff or summary of changes before applying edits to pipeline files
-- Update admin/WORKLOG.md and admin/WORKPLAN.md at the end of each working session
+- **At the end of every conversation**, run `/project-tracker` to log the session's work and update `admin/WORKLOG.md` and `admin/WORKPLAN.md` (invoke manually with `/project-tracker`)
 - Validate Python after edits: `python -c "import ast; ast.parse(open('FILE').read())"`
 - Validate YAML after edits: `python -c "import yaml; yaml.safe_load(open('FILE'))"`
 - Use grep + sed for targeted fixes; preserve old versions as `*_old.py` in git
@@ -81,7 +81,7 @@ Never apply config from one to the other without checking.
 - Container: Singularity 3.7.1 / Apptainer 1.1.3. Use `python3` (not `python`) inside the SIF.
 - Storage: NetApp `/home/szkhan` (4 TB), auto-mounted on compute nodes
 - Login nodes are SUBMIT-ONLY: no Jupyter, no IDE, no long tmux
-- Status: **Stood up and validated (May 2026).** 100-text Llama test (job 469622) and a 100-text multi-model characterization (Llama + Qwen) have run successfully. Full 56K production wave NOT yet launched (gated — see Active Problems).
+- Status: **Stood up and validated (May 2026).** 100-text Llama test (job 469622) and a 100-text multi-model characterization (Llama + Qwen) have run successfully. Full 56K production wave not yet launched; the DeepSeek decoding blocker is resolved (approved stochastic config), so all three of Llama/Qwen/DeepSeek are cleared to run. Remaining gate is the F1 regression diagnosis (see Active Problems).
 - Role: **Production 56K runs** across the validated models
 
 ### vLLM V0 vs V1 Engine (OrangeGrid)
@@ -338,10 +338,12 @@ Feather has no append: results accumulate in memory, full-file overwrite every 5
 
 ### Per-model `max_tokens` and sampling (HPC — camel_annotate_hpc.py MODEL_OVERRIDES)
 
-- Llama / Qwen: `max_tokens` 256 (YES/NO output is small), no penalty
-- **DeepSeek: `max_tokens` 2048, `repetition_penalty` 1.15** (updated 7/6, was 1024/none).
-  temperature stays 0 for all models (deterministic, bias-faithful annotation).
-  The penalty is under active tuning — see Active Problems.
+- Llama / Qwen: `max_tokens` 256 (YES/NO output is small), no penalty, temperature 0
+  (deterministic, bias-faithful annotation)
+- **DeepSeek: `max_tokens` 2048, `temperature` 0.6, `top_p` 0.95, `min_p` 0.05, no
+  `repetition_penalty`** (approved stochastic config, signed off by Introne/Atari; the
+  DeepSeek-recommended profile). An approved exception to the temperature-0 protocol for
+  this reasoning-distilled model — to be evaluated in production (see Active Problems).
 
 ### Column Conventions
 
@@ -364,7 +366,7 @@ Results flush to disk every 50 rows.
 |---|-------|--------|--------|------|--------|-------|
 | 1 | Llama 3.3 70B (`casperhansen/llama-3.3-70b-instruct-awq`) | West | Meta, USA | 70B | ✅ Validated; OG V1 224 RPM; 100-text characterized | TP=2 Apophis / TP=1 OG, max_tokens=256 |
 | 2 | Qwen 2.5 72B (`Qwen/Qwen2.5-72B-Instruct-AWQ`) | East | Alibaba, China | 72B | ✅ Validated; OG 100-text characterized | max_tokens=256, `--trust-remote-code` |
-| 3 | DeepSeek-R1 32B (`Valdemardi/DeepSeek-R1-Distill-Qwen-32B-AWQ`) | East | DeepSeek, China | 32B | ⚠️ ACTIVE PROBLEM — degenerates under deterministic decoding (see Active Problems) | max_tokens=2048, repetition_penalty=1.15, `--trust-remote-code` |
+| 3 | DeepSeek-R1 32B (`Valdemardi/DeepSeek-R1-Distill-Qwen-32B-AWQ`) | East | DeepSeek, China | 32B | ✅ Cleared for production on approved stochastic config; performance to be evaluated in the wave (watch -1 rate) | max_tokens=2048, temperature=0.6, top_p=0.95, min_p=0.05, no repetition_penalty, `--trust-remote-code` |
 | 4 | Mistral Small 24B | West | Mistral, France | 24B | Planned | Not yet run |
 | 5 | AceGPT-v2 70B | East | KAUST, Saudi Arabia | 70B | Planned | `--trust-remote-code` |
 | 6 | Falcon-H1 34B | East | TII, UAE | 34B | Planned | `--trust-remote-code` |
@@ -406,23 +408,18 @@ behavior).
 
 ## Active Problems (being worked)
 
-- **DeepSeek-R1 cannot yet be cleanly annotated under a deterministic protocol.**
-  This is the current top blocker on the production wave.
-  - Bare greedy (temperature 0, no penalty) → repetition-loop collapse.
-  - Greedy + `repetition_penalty` 1.15 → a DIFFERENT degeneration: penalty-induced
-    token-level incoherence (malformed output like "whether whether", tag salad),
-    yielding **36.5% unparseable (-1) on the 100-text run** even though an isolated
-    single-prompt curl looked clean.
-  - So two deterministic configs have now failed at the 100-text gate. The failure
-    is silent (emits -1, no error), so any DeepSeek run must be checked for -1 rate.
-  - Next step: try a gentler `repetition_penalty` (~1.05); if that still fails,
-    escalate to the June diagnosis doc's Option 4 — either document DeepSeek as a
-    reasoning-model exception in the methods (a legitimate finding about
-    reasoning-distilled models), or swap the Eastern reasoning slot for a model with
-    a controllable non-thinking mode (Qwen3 thinking-disabled), which changes the
-    roster and cultural-lineage story and is therefore an Introne/Atari decision.
-  - Do NOT launch the full corpus for DeepSeek until this resolves. Llama and Qwen
-    are unaffected and can proceed.
+- **DeepSeek-R1 decoding config — APPROVED, to be evaluated in production.** No longer
+  a blocker. Two deterministic configs failed the 100-text gate earlier (bare greedy →
+  repetition-loop collapse; `repetition_penalty` 1.15 → penalty-induced token-level
+  incoherence, 36.5% unparseable). The accepted resolution, signed off by Introne/Atari,
+  is a **stochastic config: `temperature` 0.6, `top_p` 0.95, `min_p` 0.05, no
+  `repetition_penalty`** (this is the DeepSeek-recommended sampling profile, and departs
+  from the temperature-0 deterministic protocol used for Llama/Qwen — a documented,
+  approved exception for this reasoning-distilled model).
+  - DeepSeek is now cleared to run the full production wave alongside Llama and Qwen.
+  - **We will see how it performs in production.** The failure mode is silent (emits -1,
+    no error), so still check the -1 rate on production DeepSeek output (`/neg1-check`)
+    and report it as a result rather than treating a high rate as a launch blocker.
 
 - **F1 regression vs March, undiagnosed.** 100-text OG eval (config3, Llama 3.3):
   incentive_strict macro F1 = 0.208 vs March's 0.285 (Llama 3.1, run_005), ~27%
@@ -461,10 +458,10 @@ behavior).
 
 ## Current Priorities (2026-07-06)
 
-1. Resolve the DeepSeek deterministic-annotation failure (try `repetition_penalty` 1.05; else Option 4 decision with Introne/Atari) — see Active Problems
-2. Diagnose the F1 regression (config2 vs config3 on Llama; 3.1 vs 3.3 comparability)
+1. DeepSeek decoding config APPROVED (temp 0.6 / top_p 0.95 / min_p 0.05, no penalty) — DeepSeek now cleared for the production wave; evaluate its actual performance (and -1 rate) in production rather than at a pre-launch gate
+2. Diagnose the F1 regression (config2 vs config3 on Llama; 3.1 vs 3.3 comparability) — the remaining pre-wave gate
 3. Apophis re-baseline: confirm 195 RPM is API-call rate, not row rate (decides how much OG headroom remains)
-4. Chunk the corpus at 1,000 texts/chunk (57 chunks) and launch the production wave for Llama + Qwen once DeepSeek is decided; submit first chunk per model, verify, then release the rest (Introne subset protocol)
+4. Chunk the corpus at 1,000 texts/chunk (57 chunks) and launch the production wave for all three of Llama + Qwen + DeepSeek; submit first chunk per model, verify, then release the rest (Introne subset protocol)
 5. Regenerate admin/WORKLOG.md, admin/WORKPLAN.md, and VISION.md current through today (in progress)
 6. Regenerate the OG GitHub PAT with Read+Write scope (M8.T17) to end OG→GitHub drift
 
