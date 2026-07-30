@@ -132,7 +132,7 @@
 - [ ] M7.T8 — Get Prof. Introne's formal sign-off on 4-RQ structure (verbalized agreement at Apr 23 was positive but not formal)
 
 ### Milestone 8: OrangeGrid HPC Setup & Production Runs ⚡ (post-4/30)
-**Status (2026-07-06):** Pipeline stood up and validated on OrangeGrid. V1 engine unlocked (224 RPM, beats Apophis). Llama + Qwen 100-text characterization complete. **Production 56K wave gated** on: (a) the DeepSeek deterministic-annotation failure (M8.T10h), and (b) the F1 regression diagnosis (M8.T10i). Llama and Qwen are unblocked and can proceed once the F1 question is settled.
+**Status (2026-07-06; DeepSeek gate cleared 2026-07-23):** Pipeline stood up and validated on OrangeGrid. V1 engine unlocked (224 RPM, beats Apophis). Llama + Qwen 100-text characterization complete. DeepSeek decoding config APPROVED (temp 0.6 / top_p 0.95 / min_p 0.05, no penalty — M8.T26), so all three of Llama/Qwen/DeepSeek are cleared to run; DeepSeek performance will be evaluated in production rather than at a pre-launch gate. **Remaining pre-wave gate:** the F1 regression diagnosis (M8.T10i).
 
 **Status update (2026-07-23):** Durable run-versioned output naming built and promoted to OG (M8.T19–T25): nothing overwrites a prior run, submit is via `submit_wave.sh`, consolidation via `select_and_merge.py`. id-4 now injects all examples on the HPC path with max_model_len 4096. All six models now have production subs (4 new, gated on validation). Overnight Qwen run0001 confirmed row-complete and trustworthy (id-4 -1 rate 0.18%).
 
@@ -153,7 +153,7 @@
 - [ ] M8.T10e — config2 vs config3 prompt-token impact (re-run test on config2, compare RPM + F1)
 - [ ] M8.T10f — Concurrent thread scaling (16 vs 32 vs 64 threads)
 - [x] M8.T10g — Llama 3.3 + Qwen 2.5 100-text characterization complete under V1 (6/5)
-- [ ] M8.T10h — ❌ DeepSeek-R1 deterministic annotation FAILING. Bare greedy → repetition collapse. repetition_penalty 1.15 → 36.5% unparseable (penalty-induced incoherence) on 100-text (7/6). Second deterministic config to fail. Next: try repetition_penalty ~1.05; else Option 4 (document as reasoning-model exception, or swap Eastern reasoning slot for Qwen3 non-thinking — Introne/Atari decision). Full corpus gated for DeepSeek only
+- [x] M8.T10h — DeepSeek-R1 deterministic annotation failed twice (bare greedy → repetition collapse; repetition_penalty 1.15 → 36.5% unparseable, penalty-induced incoherence, 7/6). RESOLVED 2026-07-23 by adopting the Introne/Atari-approved stochastic config (temp 0.6 / top_p 0.95 / min_p 0.05, no penalty — M8.T26); DeepSeek is no longer gated and runs in the production wave with the other models, with its -1 rate evaluated as a production result
 - [ ] M8.T10i — F1 regression investigation: 100-text incentive_strict macro F1 = 0.208 vs March 0.285 (~27% drop). Hypotheses: config3 longer definitions; Llama 3.1→3.3 not directly comparable; 50 vs 100 sample variance. Isolate config2 vs config3 on Llama before burning A100 time. **Gates the production wave**
 - [ ] M8.T11 — 1,000-text characterization wave (3 models in parallel) — or chunk at 1,000 texts/chunk (57 chunks) for production per the 7/6 plan
 - [ ] M8.T12 — Submit full 56K production runs (subset protocol per Introne: first chunk per model, verify, then release the rest); Llama + Qwen first, DeepSeek gated on M8.T10h
@@ -329,6 +329,8 @@ Arithmetic correction (5/21): each (text × prompt) = **25 API calls** (one per 
 - (Shahaan) ✅ M8.T25 — Per-folder READMEs + root/HPC doc updates
 - (Shahaan) 🆕 M8.T26 — Reconcile DeepSeek MODEL_OVERRIDES drift (temp 0.6/top_p 0.95/min_p 0.05, no rep-penalty — third config, undocumented) with Introne/Atari
 - (Shahaan) ✅ M8.T26 — DeepSeek temp-0.6 stochastic config APPROVED by Introne/Atari; no reconcile needed (resolves the 🆕 flag above). Follow-on: sync CLAUDE.md Active Problems framing
+- (Shahaan) ✅ M8.T10h — DeepSeek deterministic-annotation blocker RESOLVED via the approved stochastic config; DeepSeek ungated for the production wave (its -1 rate is now evaluated as a production result, not a launch gate). M8 header updated; F1 regression (M8.T10i) is the sole remaining pre-wave gate
+- (Shahaan) 🔧 CLAUDE.md synced: Active Problems, Model Roster (row 3), sampling section, the DeepSeek MODEL_OVERRIDES guardrail, OG status line, and Current Priorities all updated to the approved config + "evaluate in production" framing
 - (Shahaan) 🆕 M8.T27 — chunk_000 validation gate for Mistral/AceGPT/Falcon before production wave
 - (Shahaan) 📌 Data note: overnight Qwen run0001 (chunk000) is row-complete and trustworthy; id-4 -1 rate 0.18% (worst label Kinship 0.9%) from 2048 overflow, fixed by 4096 going forward
 - (Shahaan) ✅ M1.T25 — Fixed wedged Apophis Jupyter terminals: 143-day server's terminado manager stuck (6 tracked terminals, 2 live, ~4 unclearable zombies); REST API DELETE returned 204 but could not reap them; clean restart on same port 8891 + token, other users' servers untouched; runbook written
