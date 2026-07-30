@@ -90,7 +90,16 @@ MODEL_OVERRIDES = {
     "Qwen/Qwen2.5-72B-Instruct-AWQ": {
         "extra_flags": "--trust-remote-code",
     },
-    "FreedomIntelligence/AceGPT-v2-70B-chat": {
+    # HF repo ids are case-sensitive: the published repo is "-Chat", not "-chat".
+    # No AWQ/GPTQ/INT4 release exists for this model, so it runs unquantized
+    # (fp16) at TP=2 across both A100s on a node; see batch_acegpt-70b.sub.
+    "FreedomIntelligence/AceGPT-v2-70B-Chat": {
+        "extra_flags": "--trust-remote-code",
+    },
+    # Official TII GPTQ-Int4 release (model_type falcon_h1, quant_method gptq,
+    # bits 4). Keyed separately from the unquantized repo because MODEL_OVERRIDES
+    # matches the exact CAMEL_MODEL string.
+    "tiiuae/Falcon-H1-34B-Instruct-GPTQ-Int4": {
         "extra_flags": "--trust-remote-code",
     },
     "tiiuae/Falcon-H1-34B-Instruct": {
@@ -216,13 +225,21 @@ def parse_yes_no(response_text):
 # =============================================================================
 
 def start_vllm(model, container_path, port, quantization, tp,
-               gpu_util, max_model_len, extra_flags=""):
+               gpu_util, max_model_len, extra_flags="",
+               log_path="vllm_server.log"):
     """Start vLLM server via Singularity container. Returns subprocess."""
     cmd = [
         "singularity", "exec", "--nv", container_path,
         "python3", "-m", "vllm.entrypoints.openai.api_server",
         "--model", model,
-        "--quantization", quantization,
+    ]
+    # Unquantized (fp16/bf16) checkpoints must OMIT --quantization entirely so
+    # vLLM auto-detects from the model config. Passing a quant method the
+    # weights do not carry is a hard startup failure. AceGPT-v2-70B-Chat is the
+    # only roster model with no INT4 release, hence CAMEL_QUANTIZATION=none.
+    if quantization and quantization.lower() not in ("none", "auto", ""):
+        cmd += ["--quantization", quantization]
+    cmd += [
         "--tensor-parallel-size", str(tp),
         "--gpu-memory-utilization", str(gpu_util),
         "--max-model-len", str(max_model_len),
@@ -234,10 +251,15 @@ def start_vllm(model, container_path, port, quantization, tp,
 
     print(f"  Starting vLLM: {model}")
     print(f"  Container: {container_path}")
-    print(f"  Quantization: {quantization}, TP: {tp}, GPU util: {gpu_util}")
+    print(f"  Quantization: {quantization or 'auto (unquantized)'}, "
+          f"TP: {tp}, GPU util: {gpu_util}")
     print(f"  Max model len: {max_model_len}, Port: {port}")
 
-    log = open("vllm_server.log", "w")
+    # Per-job path: every job's cwd is the shared initialdir (hpc/), so a fixed
+    # filename means all concurrent jobs open the SAME file with mode "w" and
+    # interleave into it — destroying the vLLM diagnostics (startup failures,
+    # the V0/V1 engine line) exactly when a 100+ job wave needs them most.
+    log = open(log_path, "w")
     proc = subprocess.Popen(
         cmd, stdout=log, stderr=subprocess.STDOUT,
         preexec_fn=os.setsid,
@@ -713,9 +735,16 @@ def main():
                 gpu_util=DEFAULT_GPU_UTIL,
                 max_model_len=max_model_len,
                 extra_flags=extra_flags,
+                log_path=os.path.join(results_dir, f"{chunk_stem}.vllm.log"),
             )
 
-            if not wait_for_vllm(args.port, timeout=600):
+            # 600s was tuned for a single job with the model already warm in the
+            # NFS page cache. In a 100+ job production wave, dozens of jobs pull
+            # 15-140GB of weights off NetApp at once and load time balloons --
+            # the falcon-h1-34b gate (job 676999, 2026-07-30) hit exactly this
+            # and was held. Override with CAMEL_VLLM_TIMEOUT if needed.
+            _vllm_timeout = int(os.environ.get("CAMEL_VLLM_TIMEOUT", "2400"))
+            if not wait_for_vllm(args.port, timeout=_vllm_timeout):
                 print("ERROR: vLLM failed to start")
                 sys.exit(1)
 

@@ -49,9 +49,9 @@ initialdir   = /home/szkhan/code_space3/hpc
 # $(Cluster) + chunk<NNN> keep every file unique within the wave.
 MODEL_TAG    = falcon-h1-34b
 # Per-item derived paths (chunk_id supplied by the queue list, e.g. 000)
-chunk_file   = chunks/chunk_$(chunk_id).feather
-result_file  = results_$(MODEL_TAG)/results_$(MODEL_TAG)_chunk$(chunk_id)_$(SUBDATE)_run$(RUN_NO)_cl$(Cluster).feather
-job_name     = $(MODEL_TAG)_chunk$(chunk_id)_$(SUBDATE)_run$(RUN_NO)_cl$(Cluster)
+chunk_file   = chunks/test_chunk.feather
+result_file  = results_falcon-h1-34b_gate/results_test.feather
+job_name     = falcon-h1-34b_gate_test
 
 arguments    = $(chunk_file) $(result_file)
 
@@ -76,10 +76,7 @@ should_transfer_files = NO
 # Official TII GPTQ-Int4 release (config.json: model_type falcon_h1,
 # quant_method gptq, bits 4) — NOT the unquantized repo, which would need ~68GB
 # and exceed the 46GB L40S/A40 this file's Requirements admit. quantization must
-# be plain gptq, NOT gptq_marlin: Falcon-H1 hybrid layers have
-# output_size_per_partition=9248, not divisible by marlin min_thread_n=64.
-# vLLM ruled out every other WNA16 kernel (Machete needs sm_90, we have sm_86;
-# BitBLAS/Conch absent; Exllama fp16-only) and recommends --quantization gptq.
+# be gptq_marlin, not the wrapper.sh awq_marlin default.
 environment = "HOME=/home/szkhan CAMEL_MODEL=tiiuae/Falcon-H1-34B-Instruct-GPTQ-Int4 CAMEL_TP=1 CAMEL_CONFIG=config3.yaml CAMEL_QUANTIZATION=gptq HF_HOME=/home/szkhan/.cache/huggingface"
 
 # Retry a failed chunk once (transient node issues); hold after that for inspection.
@@ -90,7 +87,7 @@ periodic_release = (NumJobStarts < 2) && ((CurrentTime - EnteredCurrentStatus) >
 job_lease_duration = 14400
 
 +wantsArgusNode = True
-+JobBatchName = "camel-prod-falcon-h1-34b"
++JobBatchName = "camel-gate-falcon-h1-34b"
 
 # One job per chunk id in the active chunk list.
-queue chunk_id from $(CHUNKLIST)
+queue 1

@@ -99,7 +99,7 @@ models:
   enabled: false
 - name: Valdemardi/DeepSeek-R1-Distill-Qwen-32B-AWQ
   provider: local_vllm
-  temperature: 0
+  temperature: 0.6
   max_tokens: 1024
   enabled: true
 - name: RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w4a16
@@ -558,7 +558,7 @@ prompts:
     '
 - id: 2
   name: 0-shot_binary_incentive
-  enabled: false
+  enabled: true
   include_markers: false
   include_examples: false
   num_examples: 0
@@ -605,7 +605,7 @@ prompts:
     '
 - id: 3
   name: 0-shot_binary_threat
-  enabled: false
+  enabled: true
   include_markers: false
   include_examples: false
   num_examples: 0
@@ -655,7 +655,7 @@ prompts:
   enabled: true
   include_markers: false
   include_examples: true
-  num_examples: 1
+  num_examples: 0 #Changed from 1
   template: 'You are a CAMEL corpus annotator trained using the official CAMEL
 
     Annotation Guide from the Culture and Morality Lab at UMass Amherst.

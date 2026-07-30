@@ -1,8 +1,8 @@
 # =============================================================================
-# CAMEL Annotation — PRODUCTION 56K WAVE: falcon-h1-34b
+# CAMEL Annotation — PRODUCTION 56K WAVE: mistral-small-24b
 # =============================================================================
-# Model:   tiiuae/Falcon-H1-34B-Instruct
-# Origin:  Arabic/Gulf (TII, UAE)
+# Model:   RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w4a16
+# Origin:  Western (Mistral, France)
 # Cluster: OrangeGrid (single A100/A40/L40S 40GB+, TP=1, config3.yaml)
 # Corpus:  57 chunks (1000 texts/chunk, final chunk 796) = 56,796 texts
 #
@@ -15,25 +15,18 @@
 # UNVALIDATED — no Apophis or OG characterization run yet for this model.
 # Do NOT submit for a full wave until validated (chunk_000 test first).
 #
-# *** WATCH AT THE GATE ***: Falcon-H1 is a hybrid attention + Mamba/SSM
-# architecture. vLLM >= 0.9.0 supports it (OG has 0.10.1.dev), but SSM/hybrid
-# models have historically lacked V1 support and fall back to the legacy V0
-# engine — the slow path this project removed the fp8 KV-cache flag to escape
-# (63 vs 224 RPM on Llama). Read the engine line in the gate's .out before
-# committing a full wave; V0 is runnable but roughly 3x slower.
-#
-# MODEL_OVERRIDES entry for the GPTQ-Int4 repo id exists in
-# camel_annotate_hpc.py (--trust-remote-code), added 2026-07-30 alongside the
-# model-id switch below. MODEL_OVERRIDES matches the exact CAMEL_MODEL string,
-# so the base and GPTQ repo ids are keyed separately.
+# Quantization is compressed-tensors (w4a16), NOT the wrapper.sh default
+# (awq_marlin) — CAMEL_QUANTIZATION is explicitly set below to override it.
+# No --trust-remote-code needed (not in camel_annotate_hpc.py MODEL_OVERRIDES,
+# and none required for this model).
 #
 # SUBSET PROTOCOL — swap the chunk list without editing this recipe:
-#   First (chunk_000 only, 1 job):   condor_submit batch_falcon-h1-34b.sub
+#   First (chunk_000 only, 1 job):   condor_submit batch_mistral-small-24b.sub
 #   Release rest (001..056, 56 jobs):
-#       condor_submit -a 'CHUNKLIST = chunklist_rest.txt' batch_falcon-h1-34b.sub
+#       condor_submit -a 'CHUNKLIST = chunklist_rest.txt' batch_mistral-small-24b.sub
 #   (default below is chunklist_first.txt; -a overrides it right before the queue)
 #
-# Monitor: condor_q $USER ; watch -n 30 'ls results_falcon-h1-34b/*.feather | wc -l'
+# Monitor: condor_q $USER ; watch -n 30 'ls results_mistral-small-24b/*.feather | wc -l'
 # =============================================================================
 
 # --- swappable chunk list (default = first; override with -a for the rest) ---
@@ -47,11 +40,11 @@ initialdir   = /home/szkhan/code_space3/hpc
 # Schema: <model_tag>_chunk<NNN>_<YYYYMMDD>_run<NNNN>_cl<Cluster>
 # RUN_NO + SUBDATE are supplied once per wave by submit_wave.sh (-a macros);
 # $(Cluster) + chunk<NNN> keep every file unique within the wave.
-MODEL_TAG    = falcon-h1-34b
+MODEL_TAG    = mistral-small-24b
 # Per-item derived paths (chunk_id supplied by the queue list, e.g. 000)
-chunk_file   = chunks/chunk_$(chunk_id).feather
-result_file  = results_$(MODEL_TAG)/results_$(MODEL_TAG)_chunk$(chunk_id)_$(SUBDATE)_run$(RUN_NO)_cl$(Cluster).feather
-job_name     = $(MODEL_TAG)_chunk$(chunk_id)_$(SUBDATE)_run$(RUN_NO)_cl$(Cluster)
+chunk_file   = chunks/test_chunk.feather
+result_file  = results_mistral-small-24b_gate/results_test.feather
+job_name     = mistral-small-24b_gate_test
 
 arguments    = $(chunk_file) $(result_file)
 
@@ -59,28 +52,23 @@ output       = logs/$(job_name).out
 error        = logs/$(job_name).err
 log          = logs/$(job_name).log
 
-# 34B AWQ INT4 weights ~18-19GB; any CUDA 12+ GPU with >=40GB works.
+# 24B compressed-tensors w4a16 weights ~14-15GB; any CUDA 12+ GPU with >=40GB works.
 request_gpus   = 1
 +request_gpus = 1
 request_cpus   = 8
 request_memory = 64GB
 
 # Broad targeting (non-A100 clause from generate_batch_jobs.py _orangegrid_requirements):
-# 34B fits comfortably on A100 80GB, A40 45GB, or L40S 45GB. VRAM-based, not device-name-pinned.
+# 24B fits comfortably on A100 80GB, A40 45GB, or L40S 45GB. VRAM-based, not device-name-pinned.
 Requirements = (CUDAGlobalMemoryMb >= 40000) && (CUDADriverVersion >= 12.0)
 
 # Files on NFS home; no transfer needed. Do NOT add a when_to_transfer_output line.
 should_transfer_files = NO
 
-# wrapper.sh reads CAMEL_MODEL / CAMEL_TP / CAMEL_CONFIG / CAMEL_QUANTIZATION here.
-# Official TII GPTQ-Int4 release (config.json: model_type falcon_h1,
-# quant_method gptq, bits 4) — NOT the unquantized repo, which would need ~68GB
-# and exceed the 46GB L40S/A40 this file's Requirements admit. quantization must
-# be plain gptq, NOT gptq_marlin: Falcon-H1 hybrid layers have
-# output_size_per_partition=9248, not divisible by marlin min_thread_n=64.
-# vLLM ruled out every other WNA16 kernel (Machete needs sm_90, we have sm_86;
-# BitBLAS/Conch absent; Exllama fp16-only) and recommends --quantization gptq.
-environment = "HOME=/home/szkhan CAMEL_MODEL=tiiuae/Falcon-H1-34B-Instruct-GPTQ-Int4 CAMEL_TP=1 CAMEL_CONFIG=config3.yaml CAMEL_QUANTIZATION=gptq HF_HOME=/home/szkhan/.cache/huggingface"
+# wrapper.sh reads CAMEL_MODEL / CAMEL_TP / CAMEL_CONFIG / CAMEL_QUANTIZATION from here.
+# CAMEL_QUANTIZATION overrides wrapper.sh's awq_marlin default — this model needs
+# compressed-tensors.
+environment = "HOME=/home/szkhan CAMEL_MODEL=RedHatAI/Mistral-Small-3.1-24B-Instruct-2503-quantized.w4a16 CAMEL_TP=1 CAMEL_CONFIG=config3.yaml CAMEL_QUANTIZATION=compressed-tensors HF_HOME=/home/szkhan/.cache/huggingface"
 
 # Retry a failed chunk once (transient node issues); hold after that for inspection.
 on_exit_hold = (ExitCode != 0)
@@ -90,7 +78,7 @@ periodic_release = (NumJobStarts < 2) && ((CurrentTime - EnteredCurrentStatus) >
 job_lease_duration = 14400
 
 +wantsArgusNode = True
-+JobBatchName = "camel-prod-falcon-h1-34b"
++JobBatchName = "camel-gate-mistral-small-24b"
 
 # One job per chunk id in the active chunk list.
-queue chunk_id from $(CHUNKLIST)
+queue 1

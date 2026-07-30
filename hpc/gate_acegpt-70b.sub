@@ -39,9 +39,9 @@ initialdir   = /home/szkhan/code_space3/hpc
 # $(Cluster) + chunk<NNN> keep every file unique within the wave.
 MODEL_TAG    = acegpt-70b
 # Per-item derived paths (chunk_id supplied by the queue list, e.g. 000)
-chunk_file   = chunks/chunk_$(chunk_id).feather
-result_file  = results_$(MODEL_TAG)/results_$(MODEL_TAG)_chunk$(chunk_id)_$(SUBDATE)_run$(RUN_NO)_cl$(Cluster).feather
-job_name     = $(MODEL_TAG)_chunk$(chunk_id)_$(SUBDATE)_run$(RUN_NO)_cl$(Cluster)
+chunk_file   = chunks/test_chunk.feather
+result_file  = results_acegpt-70b_gate/results_test.feather
+job_name     = acegpt-70b_gate_test
 
 arguments    = $(chunk_file) $(result_file)
 
@@ -86,7 +86,7 @@ periodic_release = (NumJobStarts < 2) && ((CurrentTime - EnteredCurrentStatus) >
 job_lease_duration = 14400
 
 +wantsArgusNode = True
-+JobBatchName = "camel-prod-acegpt-70b"
++JobBatchName = "camel-gate-acegpt-70b"
 
 # One job per chunk id in the active chunk list.
-queue chunk_id from $(CHUNKLIST)
+queue 1
