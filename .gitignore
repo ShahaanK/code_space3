@@ -67,6 +67,12 @@ Untitled.ipynb
 myenv_packages_backup.txt
 .claude/hooks/guard.log
 
-# Slack webhook lives in this file - never track it
-hpc/condor_alert.sh
-hpc/condor_alert_old.sh
+# --- Slack-webhook-bearing alert scripts: NEVER track ---
+# These embed a live incoming-webhook URL. Listing individual filenames was the
+# original bug -- hpc/condor_alert.sh leaked this way, then neg1_watch.sh
+# re-opened the same hole. Match by pattern so the next alert script is covered
+# by default rather than by remembering to add a line.
+hpc/*alert*.sh
+hpc/*watch*.sh
+hpc/neg1_watch.out
+hpc/.neg1_watch_processed.txt

@@ -2,8 +2,12 @@
 # =============================================================================
 # pre-push — block pushes that would publish a secret to GitHub.
 # =============================================================================
-# Installed via `git config core.hooksPath .githooks` so it is tracked in the
-# repo and survives a re-clone (the default .git/hooks is NOT tracked).
+# Lives in .githooks/ (tracked) rather than .git/hooks/ (not tracked), so the
+# SCRIPT ships with the repo. Activation does NOT: `core.hooksPath` is local
+# config, so every fresh clone must opt in explicitly with
+#     git config core.hooksPath .githooks
+# Until that is run, the clone has no protection. Verify with
+#     git config --get core.hooksPath
 #
 # Scans only the commits actually being pushed, so it stays fast and does not
 # re-flag history that is already on the remote (that needs rotation, not a
@@ -39,7 +43,12 @@ PATTERNS=(
 
 # Lines matching these are never flagged: documented local-only vLLM key on a
 # localhost port (CLAUDE.md: "not a real secret"), and obvious placeholders.
-BUILTIN_ALLOW='sk-local-shahaan|<REDACTED>|YOUR_|EXAMPLE|example\.com|xxxxx|\bREPLACE_ME\b|\$\{[A-Za-z_]|os\.environ|getenv'
+# Deliberately NARROW. An earlier version also exempted any line containing
+# os.environ/getenv/${...}, which silently skipped the most common real leak:
+#   KEY = os.environ.get("X", "sk-ant-<literal fallback>")
+# Env-var *reads* are not what the patterns match anyway -- they only fire on a
+# literal credential -- so exempting them bought nothing and cost detection.
+BUILTIN_ALLOW='sk-local-shahaan|<REDACTED>|YOUR_|REPLACE_ME|EXAMPLE|example\.com|xxxxx'
 
 # Delimiter is '#', which appears in none of these expressions. A literal '#'
 # in the scanned text is fine -- only the expression itself must avoid it.
